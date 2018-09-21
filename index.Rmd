@@ -11,6 +11,10 @@ author:
     url: https://www.procedurallearning.org/
     affiliation: University of Michigan, PLSC
     affiliation_url: https://www.procedurallearning.org/
+  - name: Seth Berry
+    url: https://mendoza.nd.edu/research-and-faculty/directory/seth-berry/
+    affiliation: University of Notre Dame, Mendoza
+    affiliation_url: https://mendoza.nd.edu/
   - name: Brian C. George
     url: https://www.procedurallearning.org/
     affiliation: University of Michigan, PLSC
@@ -19,13 +23,17 @@ date: "`r Sys.Date()`"
 output: 
   radix::radix_article:
     css: radix.css
+    toc: true
+    toc_float: true
+repository_url: https://github.com/m-clark/reliability
+citation_url: https://m-clark.github.io/reliability
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-
+# Introduction
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat massa a nisi posuere interdum a vitae urna. Ut efficitur ullamcorper eros vitae pulvinar. Morbi tempor justo in condimentum sollicitudin. Mauris rhoncus ac ipsum non porttitor. Nulla ipsum leo, vulputate vel turpis quis, blandit mollis metus. Phasellus tempus erat sed dignissim fermentum. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce egestas, mi et tincidunt sagittis, nibh nisl faucibus nunc, non elementum ligula orci eu sem. Nunc at massa fringilla, eleifend ligula at, posuere orci. Vivamus vel dignissim magna, in tempus dolor. Mauris vel ligula eu lacus dictum fringilla at ac magna. 
 
@@ -42,9 +50,23 @@ ggplot(data=d, aes(x=x2, y=y)) +
 ```
 </aside>
 
-Nunc egestas, justo et pharetra fringilla, tortor enim rutrum neque, ut elementum odio elit varius sem. Nulla lacinia ultricies libero. Vestibulum dignissim lorem ex, vehicula condimentum odio vehicula id. Fusce condimentum semper hendrerit. Integer fringilla lectus a ipsum interdum sagittis. Nulla dui ligula, venenatis et laoreet efficitur, lacinia a elit. Sed consectetur lorem purus, tempor dignissim lectus ultrices eget. Donec in tellus lectus.
+Nunc egestas, justo et pharetra fringilla, tortor enim rutrum neque, ut elementum odio elit varius sem. Nulla lacinia ultricies libero. Vestibulum dignissim lorem ex, vehicula condimentum odio vehicula id. Fusce condimentum semper hendrerit. Integer fringilla lectus a ipsum interdum sagittis. Nulla dui ligula, venenatis et laoreet efficitur, lacinia a elit. Sed consectetur lorem purus, tempor dignissim lectus ultrices eget. Donec in tellus lectus. [^testfootnote]
+
+```{r echo=TRUE}
+library(tidyverse); library(tidyext)
+mtcars %>% 
+  describe_all_num() %>% 
+  filter(Mean <= 10, Median != 4, Missing == 0)
+```
+
+
+
+# Something else
 
 Sed pretium justo aliquet hendrerit imperdiet. Integer ipsum ligula, pretium ac arcu a, tincidunt interdum dui. Praesent fermentum justo leo, vel sagittis neque efficitur non. Donec auctor, ex vitae sodales finibus, tortor nunc vulputate augue, sed tristique enim nisl a tellus. Integer eget mauris lobortis, porta mauris vel, egestas nisl. Donec laoreet eros feugiat, porttitor elit id, dapibus eros. In a dolor sit amet neque consequat lacinia. Phasellus semper porta tempor. Etiam suscipit venenatis nulla ut fringilla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla lectus nisi, faucibus et ante id, malesuada tempor nisl. Sed elit quam, imperdiet sit amet convallis eget, elementum vel odio. Etiam lorem mi, varius vitae nibh ut, maximus tempor arcu.
+
+
+### This!
 
 Fusce et felis eget turpis efficitur eleifend eget et enim. Sed tincidunt interdum augue, ornare mattis quam faucibus sit amet. Donec eget urna bibendum, feugiat tortor non, consectetur urna. Phasellus aliquam dignissim augue, et vehicula nulla efficitur nec. Nunc sed nulla ligula. Sed ut luctus arcu. Donec vel dictum lorem. Fusce hendrerit orci vel nibh consectetur scelerisque. Morbi non metus nisl. In quis neque velit.
 
@@ -52,3 +74,4 @@ Fusce et felis eget turpis efficitur eleifend eget et enim. Sed tincidunt interd
 
 
 
+[^testfootnote]: Hey!
