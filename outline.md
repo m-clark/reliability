@@ -29,6 +29,8 @@ References:
 
 Revelle beta etc. paper and psychometric text
 
+McDonald Test theory
+
 The foundations of measurement and assessment in medical education
 Mohsen Tavakol & Reg Dennick
 

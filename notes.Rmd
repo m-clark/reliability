@@ -1,0 +1,19 @@
+---
+title: "Notes"
+output: html_document
+---
+
+
+From Revelle:
+
+Reliability, defined as the correlation between two parallel forms of a test, is the
+same as the squared correlation of either test with true score and is the amount of true score
+variance in the test. Reliability is an increasing function of the correlation between random
+split halves of either test...That is, all
+six of these equations, although derived in different ways by different people have identical
+meanings.
+
+From McDonald:
+
+...the precision of measurement of a test score. Generically, this is the problem of reliability. The mathematics of the test reliability theory is extremely
+simple. The application of the theory can be problematic.
