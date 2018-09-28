@@ -5,6 +5,12 @@ output: html_document
 
 
 From Revelle:
+Rephrasing Spearman (1904b, 1910) in more current terminology (Lord and Novick, 1968;
+McDonald, 1999), reliability is the correlation between two parallel tests where tests are said
+to be parallel if for every subject, the true scores on each test are the expected scores across
+an infinite number of tests and thus the same, and the true score variances for each test are
+the same , and the error variances across subjects for each test are the same.
+
 
 Reliability, defined as the correlation between two parallel forms of a test, is the
 same as the squared correlation of either test with true score and is the amount of true score
@@ -12,6 +18,9 @@ variance in the test. Reliability is an increasing function of the correlation b
 split halves of either test...That is, all
 six of these equations, although derived in different ways by different people have identical
 meanings.
+
+ω h is an estimate of the general factor saturation of a test based upon a factor analytic
+model
 
 From McDonald:
 
