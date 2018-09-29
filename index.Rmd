@@ -15,11 +15,16 @@ author:
     url: https://mendoza.nd.edu/research-and-faculty/directory/seth-berry/
     affiliation: University of Notre Dame, Mendoza
     affiliation_url: https://mendoza.nd.edu/
+  - name: Josh Errickson
+    url: https://errickson.net/
+    affiliation: University of Michigan, CSCAR
+    affiliation_url: https://cscar.research.umich.edu/
   - name: Brian C. George
     url: https://www.procedurallearning.org/
     affiliation: University of Michigan, PLSC
     affiliation_url: https://www.procedurallearning.org/
 date: "`r Sys.Date()`"
+bibliography: measurement.bib
 output: 
   radix::radix_article:
     css: radix.css
@@ -33,45 +38,31 @@ citation_url: https://m-clark.github.io/reliability
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-# Introduction
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat massa a nisi posuere interdum a vitae urna. Ut efficitur ullamcorper eros vitae pulvinar. Morbi tempor justo in condimentum sollicitudin. Mauris rhoncus ac ipsum non porttitor. Nulla ipsum leo, vulputate vel turpis quis, blandit mollis metus. Phasellus tempus erat sed dignissim fermentum. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce egestas, mi et tincidunt sagittis, nibh nisl faucibus nunc, non elementum ligula orci eu sem. Nunc at massa fringilla, eleifend ligula at, posuere orci. Vivamus vel dignissim magna, in tempus dolor. Mauris vel ligula eu lacus dictum fringilla at ac magna. 
-
-<aside>What's this all about?</aside>
-
-Nullam semper augue et est scelerisque malesuada. Nam tincidunt augue quis erat bibendum posuere. Fusce in mauris turpis. Ut dictum semper lacus non pulvinar. Sed fermentum posuere quam eget viverra. Nunc euismod faucibus accumsan. Morbi a bibendum nisl. Cras sem quam, feugiat sed rutrum sed, lacinia quis risus. Pellentesque tincidunt interdum odio ac convallis. Aenean a ipsum vehicula, vulputate ante non, mollis ligula. Cras aliquet et neque et rhoncus.
-
-<aside>
-```{r}
-library(tidyverse)
-d = suppressMessages({mgcv::gamSim()})
-ggplot(data=d, aes(x=x2, y=y)) +
-  geom_smooth()
+```{r intro, child='intro.Rmd'}
 ```
-</aside>
 
-Nunc egestas, justo et pharetra fringilla, tortor enim rutrum neque, ut elementum odio elit varius sem. Nulla lacinia ultricies libero. Vestibulum dignissim lorem ex, vehicula condimentum odio vehicula id. Fusce condimentum semper hendrerit. Integer fringilla lectus a ipsum interdum sagittis. Nulla dui ligula, venenatis et laoreet efficitur, lacinia a elit. Sed consectetur lorem purus, tempor dignissim lectus ultrices eget. Donec in tellus lectus. [^testfootnote]
+```{r intro, child='meaning.Rmd'}
+```
 
-```{r echo=TRUE}
-library(tidyverse); library(tidyext)
-mtcars %>% 
-  describe_all_num() %>% 
-  filter(Mean <= 10, Median != 4, Missing == 0)
+```{r intro, child='demo.Rmd'}
+```
+
+
+```{r intro, child='conclusion.Rmd'}
 ```
 
 
 
-# Something else
-
-Sed pretium justo aliquet hendrerit imperdiet. Integer ipsum ligula, pretium ac arcu a, tincidunt interdum dui. Praesent fermentum justo leo, vel sagittis neque efficitur non. Donec auctor, ex vitae sodales finibus, tortor nunc vulputate augue, sed tristique enim nisl a tellus. Integer eget mauris lobortis, porta mauris vel, egestas nisl. Donec laoreet eros feugiat, porttitor elit id, dapibus eros. In a dolor sit amet neque consequat lacinia. Phasellus semper porta tempor. Etiam suscipit venenatis nulla ut fringilla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla lectus nisi, faucibus et ante id, malesuada tempor nisl. Sed elit quam, imperdiet sit amet convallis eget, elementum vel odio. Etiam lorem mi, varius vitae nibh ut, maximus tempor arcu.
-
-
-### This!
-
-Fusce et felis eget turpis efficitur eleifend eget et enim. Sed tincidunt interdum augue, ornare mattis quam faucibus sit amet. Donec eget urna bibendum, feugiat tortor non, consectetur urna. Phasellus aliquam dignissim augue, et vehicula nulla efficitur nec. Nunc sed nulla ligula. Sed ut luctus arcu. Donec vel dictum lorem. Fusce hendrerit orci vel nibh consectetur scelerisque. Morbi non metus nisl. In quis neque velit.
 
 
 
 
 
-[^testfootnote]: Hey!
+
+## Acknowledgments {.appendix}
+
+Yadda yadda
+
+## Author Contributions {.appendix}
+
+Yadda yadda

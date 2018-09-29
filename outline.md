@@ -12,7 +12,11 @@ Working outline
 
 ## G-theory
 
+
+
 ## Factor Analysis
+
+omega, ave
 
 # Conclusion and Summary
 

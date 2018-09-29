@@ -1,0 +1,16 @@
+## Demonstrations
+
+### Cronbach's $\alpha$
+
+
+#### The Uncertainty of $\alpha$
+
+### G-theory
+
+#### The Uncertainty of Generalizability
+
+### Factor Analysis
+
+omega, ave
+
+#### The Uncertainty of Factor Loadings

@@ -1,0 +1,9 @@
+## The Meaning of Reliability
+
+Definitions
+
+- Dictionary
+- Test definitions (e.g. parallel, split-half)
+- Factor models
+
+Uncertainty
