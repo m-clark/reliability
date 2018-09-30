@@ -1,1 +1,6 @@
+#### Goals/Abstract
+
+To examine reliability from different perspectives, and the uncertainty in the measurement of it.
+
+
 ## Introduction
