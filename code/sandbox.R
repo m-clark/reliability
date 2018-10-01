@@ -4,7 +4,8 @@
 library(tidyverse)
 set.seed(1234)
 N = 1000
-r_congeneric = psych::sim.congeneric(loads = rep(.8, 10))
+N_items = 10
+r_congeneric = psych::sim.congeneric(loads = rep(.8, N_items))
 # visibly::corr_heat(r_congeneric, pal = 'acton', dir = 1)
 d_congeneric = 
   mvtnorm::rmvnorm(N, sigma = r_congeneric) %>% 
@@ -209,18 +210,29 @@ alpha_boot = psych::alpha(d_congeneric, n.iter = 1000)$boot %>%
          .draw = .iter,
          Group = 'alpha_boot')
 
-# interesting!
-alpha_draws_for_plot = alpha_draws %>% mutate(Group = 'alpha_bayes_r') %>% select(-theta) 
-theta_draws_for_plot = alpha_draws %>% mutate(Group = 'theta_bayes_r') %>% select(-alpha) %>% rename(alpha = theta)
 
-var_comp_draws %>% 
+alpha_draws_for_plot = alpha_draws %>% 
+  mutate(Group = 'alpha_bayes_r') %>% 
+  select(-theta) 
+theta_draws_for_plot = alpha_draws %>% 
+  mutate(Group = 'theta_bayes_r') %>% 
+  select(-alpha) %>% 
+  rename(alpha = theta)
+
+# interesting, is pp_alpha bias or regularization? With only four items, all had same mean, but pp_alpha was still sharper
+dist_dat = var_comp_draws %>% 
   ungroup() %>% 
   select(.chain, .iteration, .draw, alpha) %>% 
   mutate(Group = 'alpha_bayes_icc') %>% 
   bind_rows(alpha_draws_for_plot, theta_draws_for_plot) %>% 
-  bind_rows(alpha_boot) %>% 
-  ggplot(aes(x=alpha, color=Group, fill=Group)) +
+  bind_rows(alpha_boot)
+
+dist_means = dist_dat %>% tidyext::num_by(alpha, Group, digits=5)
+
+ggplot(dist_dat, aes(x=alpha, color=Group, fill=Group)) +
+  geom_point(x = alpha(d_congeneric)$total$std, y=0, size=10, color='gray50', alpha=.25) +
   geom_density(alpha = .25) +
+  geom_point(aes(x = Mean, y = 0), data = dist_means) +
   scico::scale_color_scico_d() +
   scico::scale_fill_scico_d() +
   visibly::theme_trueMinimal()
