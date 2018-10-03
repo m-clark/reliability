@@ -19,6 +19,10 @@ author:
     url: https://errickson.net/
     affiliation: University of Michigan, CSCAR
     affiliation_url: https://cscar.research.umich.edu/
+  - name: Richard Herrington
+    url: https://errickson.net/
+    affiliation: University of North Texas, DSA
+    affiliation_url: https://it.unt.edu/research/
   - name: Brian C. George
     url: https://www.procedurallearning.org/
     affiliation: University of Michigan, PLSC

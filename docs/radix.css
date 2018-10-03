@@ -23,7 +23,7 @@ d-title p {
 
 d-byline .authors-affiliations {
     grid-column-end: span 2;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1.2fr 2fr;
     margin-bottom: 1em;
 }
 

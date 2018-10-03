@@ -3,4 +3,8 @@
 To examine reliability from different perspectives, and the uncertainty in the measurement of it.
 
 
+#### Audience
+
+Applied practitioners of statistics in fields where the reporting of reliability of measurement is commonplace (e.g. psychology, education, biomedical sciences).  Supplemental material may go deeper and be of interest to methodologists.
+
 ## Introduction

@@ -4,7 +4,9 @@
 library(tidyverse)
 set.seed(1234)
 N = 1000
-r_congeneric = psych::sim.congeneric(loads = rep(.8, 10))
+lambda = rep(.8, N_items)
+N_items = length(lambda)
+r_congeneric = psych::sim.congeneric(loads = )
 # visibly::corr_heat(r_congeneric, pal = 'acton', dir = 1)
 d_congeneric = 
   mvtnorm::rmvnorm(N, sigma = r_congeneric) %>% 
@@ -52,10 +54,13 @@ psych::omega(d_congeneric, nfactors = 1)$omega.lim
 
 
 # Unequal items with at least one poor loading ----------------------------------------------------------
+
 set.seed(1234)
 N = 1000
+lambda = c(rep(.8, 5), .7,.7,.6,.2,.2)
+N_items = length(lambda)
 
-r_congeneric = psych::sim.congeneric(loads = c(rep(.8, 5), .7,.7,.6,.2,.2))
+r_congeneric = psych::sim.congeneric(loads = lambda)
 # visibly::corr_heat(r_congeneric, pal = 'acton', dir = 1)
 d_congeneric = 
   mvtnorm::rmvnorm(N, sigma = r_congeneric) %>% 
@@ -64,8 +69,6 @@ d_congeneric =
 
 
 # glimpse(d_congeneric)
-
-
 
 
 fa_congeneric = psych::fa(d_congeneric)
@@ -78,12 +81,11 @@ library(tidyverse)
 set.seed(1234)
 N = 1000
 N_items = 10
-r_congeneric = psych::sim.congeneric(loads = rep(.8, 10))
+r_congeneric = psych::sim.congeneric(loads = rep(.8, N_items))
 d_congeneric = 
   mvtnorm::rmvnorm(N, sigma = r_congeneric) %>% 
   as_data_frame() %>% 
   rename_all(function(x) str_replace(x, 'V', 'item_'))
-
 
 
 # ke-hai 2003 using cor
@@ -95,8 +97,8 @@ init_mat[lower.tri(init_mat, diag = T)]
 a = c(init_mat[lower.tri(init_mat, diag = T)])
 b = a
 b[b==0] = 2
-g = crossprod(a,s)/crossprod(b,s)
-alpha = (1-g) * N_items/(N_items-1)
+g = crossprod(a, s) / crossprod(b, s)
+alpha = (1 - g) * N_items / (N_items - 1)
 alpha
 psych::alpha(d_congeneric)$total$std
 
@@ -132,7 +134,7 @@ model {
   matrix[p, p] sigma_chol;
 
   // r_chol ~ lkj_corr_cholesky(.5);  // less prob at identity matrix
-  r_chol ~ lkj_corr_cholesky(.5);  // agnostic
+  r_chol ~ lkj_corr_cholesky(1);  // agnostic
 
   sigma_chol = diag_pre_multiply(L_sigma, r_chol);
 
@@ -150,8 +152,8 @@ generated quantities {
   r = tcrossprod(r_chol);
   ev = eigenvalues_sym(r);
 
-  alpha = (1 - sum(diagonal(r))/sum(r)) * 1.0 * p/(p - 1);  # 1.0 to avoid integer division
-  theta = (1 - 1/max(ev)) * 1.0 * p/(p - 1);   # does not rely on normal, Armor 1973
+  alpha = (1 - sum(diagonal(r))/sum(r)) * 1.0 * p/(p - 1);  // 1.0 to avoid integer division
+  theta = (1 - 1/max(ev)) * 1.0 * p/(p - 1);   // does not rely on normal, Armor 1973
 }
 "
 
@@ -209,18 +211,29 @@ alpha_boot = psych::alpha(d_congeneric, n.iter = 1000)$boot %>%
          .draw = .iter,
          Group = 'alpha_boot')
 
-# interesting!
-alpha_draws_for_plot = alpha_draws %>% mutate(Group = 'alpha_bayes_r') %>% select(-theta) 
-theta_draws_for_plot = alpha_draws %>% mutate(Group = 'theta_bayes_r') %>% select(-alpha) %>% rename(alpha = theta)
 
-var_comp_draws %>% 
+alpha_draws_for_plot = alpha_draws %>% 
+  mutate(Group = 'alpha_bayes_r') %>% 
+  select(-theta) 
+theta_draws_for_plot = alpha_draws %>% 
+  mutate(Group = 'theta_bayes_r') %>% 
+  select(-alpha) %>% 
+  rename(alpha = theta)
+
+# interesting, is pp_alpha bias or regularization? With only four items, all had same mean, but pp_alpha was still sharper
+dist_dat = var_comp_draws %>% 
   ungroup() %>% 
   select(.chain, .iteration, .draw, alpha) %>% 
   mutate(Group = 'alpha_bayes_icc') %>% 
   bind_rows(alpha_draws_for_plot, theta_draws_for_plot) %>% 
-  bind_rows(alpha_boot) %>% 
-  ggplot(aes(x=alpha, color=Group, fill=Group)) +
+  bind_rows(alpha_boot)
+
+dist_means = dist_dat %>% tidyext::num_by(alpha, Group, digits=5)
+
+ggplot(dist_dat, aes(x=alpha, color=Group, fill=Group)) +
+  geom_point(x = alpha(d_congeneric)$total$std, y=0, size=10, color='gray50', alpha=.25) +
   geom_density(alpha = .25) +
+  geom_point(aes(x = Mean, y = 0), data = dist_means) +
   scico::scale_color_scico_d() +
   scico::scale_fill_scico_d() +
   visibly::theme_trueMinimal()
