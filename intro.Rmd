@@ -8,3 +8,15 @@ To examine reliability from different perspectives, and the uncertainty in the m
 Applied practitioners of statistics in fields where the reporting of reliability of measurement is commonplace (e.g. psychology, education, biomedical sciences).  Supplemental material may go deeper and be of interest to methodologists.
 
 ## Introduction
+
+### What do we talk about when we talk about reliability?
+
+When used in everyday discourse, no on really wonders what we mean when we say something is reliable.  If we are talking about a car and we say it's reliable, it means it won't break down on you.  If we talk about a person being reliable, it means we can depend on them to provide consistent behavior, e.g. regarding a specific task.  The everyday notion of reliability is closely related to the notion of dependability as well.  We can depend on the person, car, or whatever, to do what we need.
+
+The concept of reliability has also been carried over to the realm of scientific analysis of data as well.  And while the concept may be applied, it must become more precise, as scientific endeavor dictates.
+
+### Correlation
+
+### Consistency
+
+### Measurement
