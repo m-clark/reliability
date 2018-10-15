@@ -45,7 +45,8 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r intro, child='intro.Rmd'}
 ```
 
-```{r intro, child='meaning.Rmd'}
+
+```{r intro, child='definitions.Rmd'}
 ```
 
 ```{r intro, child='demo.Rmd'}
