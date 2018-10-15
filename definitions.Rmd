@@ -1,0 +1,51 @@
+## Statistical Reliability
+
+### Classical Test Theory
+
+The foundation for understanding reliability from a statistical standpoint resides with Classical Test Theory.  The title may be offputting at first blush, but it is conceptually straightforward.  Even then, as McDonald @mcdonald_test_1999 put it-  
+
+> The mathematics of the theory is extremely simple. The application of the theory can be problematic.
+
+So what are the mathematics?  Simple arithmetic.
+
+
+$$\mathrm{Observed\  Score = True\  Score + Error}$$
+
+But what does this mean?  Any measurement we take of something provides us an observed score.  For example, we step on a scale and note our weight.  A perfect measurement would provide the right score every time, and thus our observed score would equal the true score.  But no measurement is perfect[^noperfect], i.e. everything is measured with some amount of error, however small.  The error can be random, variability caused by unknown sources, but which will not affect our average account of a thing.  Our weight from the scale goes up and down but on average it is correct.  Error can also be systematic, where the measurement is always off by some amount, and our observed score is always too high or too low.  In this scenario, our scale may always be displaying a greater weight than it should. Unfortunately, it is very difficult to distinguish the two in usual circumstances, impossible in many others.  
+
+So conceptually we can simply think of an observation of any measure being composed of whatever the true score would be plus some associated error.  The key idea is that the assessment of the error will allows us to understand how reliable our measure is.
+
+
+### Correlation
+<!-- rstudio has some major bug where the editor does not allow proper editing around this point; the solution was to add space from header-->
+
+Let's start with correlation. If two things are correlated, they move in tandem, either they go up and down together, or as one goes up the other goes down and vice versa. At the very least of our understanding of reliability is that similar measurements of the same thing should be correlated.  But this correlation might be assessed by different means.
+
+
+#### Test-retest
+
+Let's say we now take the weights of one hundred people.  Then we do so again six months later.  We should expect that heavier people at the first measurement will likely be heavier the second time as well.  Same for lighter people.
+
+That correlation of the two measurments can provide us our first stab at measuring reliability. Typically referred to as test-retest reliability, this notion gives us some understanding of the stability or consistency of measurement *across time*. While this is useful and straightforward, many situations will not allow for multiple testing occasions, so we'll need other alternatives.
+
+
+#### Parallel Forms
+
+One method instructors used to use to thwart cheating was to provide half of the class one version of the test, and the other half a different version, that covered the same content, but which had slightly different questions/answers.  When passed out randomly, students couldn't peek at their neighbor's test and gain any advantage.  In terms of classical test theory, if we gave these parallel/alternate forms to each student, the *true score* for any student would be the same, regardless of what form they took, and any observed score differences would be error.
+
+In the more common applied research setting, the question then is how do we know if we are dealing with parallel tests?  Unless they are derived as such, we cannot say for certain, and this usually only happens in educational settings, such as with the SAT or GRE. Beyond that it is probably rare that resources allow for parallel forms of measurement, or if they do, enough forms to test the assumption of parallelism.
+
+
+#### Split-half
+
+A notion of reliability not too far removed from the previous is that of split-half reliability. If our measure is made up of multiple observations, say, survey questions, scale items, or whatever, we can just take a random half of them, get a total score for an individual, and do the same with the other half.  The correlation thus gives us a glimpse of the reliability of the measure.  Consider it a poor man's alternate forms approach.
+
+### Consistency
+
+
+
+### Measurement of a Construct
+
+
+
+[^noperfect]: Despite what those in so-called 'hard' sciences think.  Unfortunately, ignoring it doesn't mean it disappears.
