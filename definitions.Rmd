@@ -2,16 +2,20 @@
 
 ### Classical Test Theory
 
-The foundation for understanding reliability from a statistical standpoint resides with Classical Test Theory.  The title may be offputting at first blush, but it is conceptually straightforward.  Even then, as McDonald @mcdonald_test_1999 put it-  
+
+The foundation for understanding reliability from a statistical standpoint resides with <span class="emph">Classical Test Theory</span>.  The title may be offputting at first blush, but it is conceptually straightforward.  Even then, as McDonald @mcdonald_test_1999 put it-  
 
 > The mathematics of the theory is extremely simple. The application of the theory can be problematic.
+
 
 So what are the mathematics?  Simple arithmetic.
 
 
 $$\mathrm{Observed\  Score = True\  Score + Error}$$
 
-But what does this mean?  Any measurement we take of something provides us an observed score.  For example, we step on a scale and note our weight.  A perfect measurement would provide the right score every time, and thus our observed score would equal the true score.  But no measurement is perfect[^noperfect], i.e. everything is measured with some amount of error, however small.  The error can be random, variability caused by unknown sources, but which will not affect our average account of a thing.  Our weight from the scale goes up and down but on average it is correct.  Error can also be systematic, where the measurement is always off by some amount, and our observed score is always too high or too low.  In this scenario, our scale may always be displaying a greater weight than it should. Unfortunately, it is very difficult to distinguish the two in usual circumstances, impossible in many others.  
+But what does this mean?  Any measurement we take of something provides us an observed score.  For example, we step on a scale and note our weight.  A perfect measurement would provide the right score every time, and thus our observed score would equal the <span class="emph">true score</span>.  But no measurement is perfect[^noperfect], i.e. everything is measured with some amount of error, however small.  The error can be random, variability caused by unknown sources, but which will not affect our average account of a thing.  Our weight from the scale goes up and down but on average it is correct.  Error can also be systematic, where the measurement is always off by some amount, and our observed score is always too high or too low.  In this scenario, our scale may always be displaying a greater weight than it should. Unfortunately, it is very difficult, if not impossible, to distinguish the two in many typical circumstances.  
+
+<aside>Note that by <span class="emph">test</span>, we mean any thing we might want to measure. The study of measurement was, after (psycho-)physics, largely dominated by education and psychology for decades, but needn't be restricted to those domains.</aside> 
 
 So conceptually we can simply think of an observation of any measure being composed of whatever the true score would be plus some associated error.  The key idea is that the assessment of the error will allows us to understand how reliable our measure is.
 
@@ -31,21 +35,24 @@ That correlation of the two measurments can provide us our first stab at measuri
 
 #### Parallel Forms
 
-One method instructors used to use to thwart cheating was to provide half of the class one version of the test, and the other half a different version, that covered the same content, but which had slightly different questions/answers.  When passed out randomly, students couldn't peek at their neighbor's test and gain any advantage.  In terms of classical test theory, if we gave these parallel/alternate forms to each student, the *true score* for any student would be the same, regardless of what form they took, and any observed score differences would be error.
+One method instructors used to use to thwart cheating was to provide half of the class one version of the test, and the other half a different version, that covered the same content, but which had slightly different questions/answers.  When passed out randomly, students couldn't peek at their neighbor's test and gain any advantage.  In terms of classical test theory, if we gave these parallel/alternate forms to each student, the true score for any student would be the same, regardless of what form they took, and any observed score differences would be error.
 
 In the more common applied research setting, the question then is how do we know if we are dealing with parallel tests?  Unless they are derived as such, we cannot say for certain, and this usually only happens in educational settings, such as with the SAT or GRE. Beyond that it is probably rare that resources allow for parallel forms of measurement, or if they do, enough forms to test the assumption of parallelism.
 
 
 #### Split-half
 
-A notion of reliability not too far removed from the previous is that of split-half reliability. If our measure is made up of multiple observations, say, survey questions, scale items, or whatever, we can just take a random half of them, get a total score for an individual, and do the same with the other half.  The correlation thus gives us a glimpse of the reliability of the measure.  Consider it a poor man's alternate forms approach.
+A notion of reliability not too far removed from the previous is that of split-half reliability. If our measure is made up of multiple observations, say, survey questions, scale items, or whatever, we can just take a random half of them, get a total score for each individual, and do the same with the other half.  Now each person has two scores, and their correlation gives us a glimpse of the reliability of the measure.  Consider it a poor man's alternate forms approach.
+
+
 
 ### Consistency
 
+Split-half reliability allows us to estimate reliability with only one test.  This is important, as many times we can only measure something in one setting, even if multiple times within that setting.  For example, there may be only one qualifying exam, one survey administered, and so forth.  As such we need some way to assess the <span class="emph">internal structure</span> of the measure.  Some of the most commonly used statistics, such as Cronbach's $\alpha$, offer such a measure.
 
 
 ### Measurement of a Construct
 
 
 
-[^noperfect]: Despite what those in so-called 'hard' sciences think.  Unfortunately, ignoring it doesn't mean it disappears.
+[^noperfect]: Despite the overconfidence shown in some disciplines of their measures.  Unfortunately, ignoring it doesn't mean it disappears.
