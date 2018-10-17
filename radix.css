@@ -52,3 +52,7 @@ pre.text-output {
 blockquote {
   font-size: 80%;
 }
+
+.emph {
+  color: #0077d6;
+}
