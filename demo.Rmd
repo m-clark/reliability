@@ -2,10 +2,14 @@
 
 ### Cronbach's $\alpha$
 
+$$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
 
 #### The Uncertainty of $\alpha$
 
-### G-theory
+### Generalizability theory
+
+$$\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}$$
+
 
 #### The Uncertainty of Generalizability
 

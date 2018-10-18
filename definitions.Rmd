@@ -1,5 +1,13 @@
 ## Statistical Reliability
 
+```{r def_setup, include=F}
+library(tidyverse)
+library(visibly)
+
+
+```
+
+
 ### Classical Test Theory
 
 
@@ -13,17 +21,32 @@ So what are the mathematics?  Simple arithmetic.
 
 $$\mathrm{Observed\  Score = True\  Score + Error}$$
 
-But what does this mean?  Any measurement we take of something provides us an observed score.  For example, we step on a scale and note our weight.  A perfect measurement would provide the right score every time, and thus our observed score would equal the <span class="emph">true score</span>.  But no measurement is perfect[^noperfect], i.e. everything is measured with some amount of error, however small.  The error can be random, variability caused by unknown sources, but which will not affect our average account of a thing.  Our weight from the scale goes up and down but on average it is correct.  Error can also be systematic, where the measurement is always off by some amount, and our observed score is always too high or too low.  In this scenario, our scale may always be displaying a greater weight than it should. Unfortunately, it is very difficult, if not impossible, to distinguish the two in many typical circumstances.  
+But what does this mean?  Any measurement we take of something provides us an observed score.  For example, we step on a scale and note our weight.  A perfect measurement would provide the right score every time, and thus our observed score would equal the <span class="emph">true score</span>.  But no measurement is perfect[^noperfect], i.e. everything is measured with some amount of <span class="emph">error</span>, however small.  The error can be random, variability caused by unknown sources, but which will not affect our average account of a thing.  Our weight from the scale goes up and down but on average it is correct.  Error can also be systematic, where the measurement is always off by some amount, and our observed score is always too high or too low.  In this scenario, our scale may always be displaying a greater weight than it should. Unfortunately, it is very difficult, if not impossible, to distinguish the two in many typical circumstances.  
 
 <aside>Note that by <span class="emph">test</span>, we mean any thing we might want to measure. The study of measurement was, after (psycho-)physics, largely dominated by education and psychology for decades, but needn't be restricted to those domains.</aside> 
 
-So conceptually we can simply think of an observation of any measure being composed of whatever the true score would be plus some associated error.  The key idea is that the assessment of the error will allows us to understand how reliable our measure is.
+So conceptually we can simply think of an observation of any measure being composed of whatever the true score would be plus some associated error.  The key idea is that the assessment of the error will allow us to understand how reliable our measure is.
 
 
 ### Correlation
 <!-- rstudio has some major bug where the editor does not allow proper editing around this point; the solution was to add space from header-->
 
 Let's start with correlation. If two things are correlated, they move in tandem, either they go up and down together, or as one goes up the other goes down and vice versa. At the very least of our understanding of reliability is that similar measurements of the same thing should be correlated.  But this correlation might be assessed by different means.
+
+```{r corplot, fig.asp=.33}
+x1 = rnorm(500)
+y = .5*x1 + rnorm(500, sd=.25)
+x2 = -x1
+
+p1 = qplot(x1, y, size=I(1), color=I('#ff5500'), alpha=I(.15)) + 
+  theme_trueMinimal() +
+  theme_void()
+p2 = qplot(x2, y, size=I(1), color=I('#ff5500'), alpha=I(.15)) + 
+  theme_trueMinimal() + 
+  theme_void()
+
+gridExtra::grid.arrange(p1, p2, nrow=1)
+```
 
 
 #### Test-retest
@@ -48,7 +71,7 @@ A notion of reliability not too far removed from the previous is that of split-h
 
 ### Consistency
 
-Split-half reliability allows us to estimate reliability with only one test.  This is important, as many times we can only measure something in one setting, even if multiple times within that setting.  For example, there may be only one qualifying exam, one survey administered, and so forth.  As such we need some way to assess the <span class="emph">internal structure</span> of the measure.  Some of the most commonly used statistics, such as Cronbach's $\alpha$, offer such a measure.
+Split-half reliability allows us to estimate reliability with only one test.  This is important, as many times we can only measure something in one setting, even if multiple times within that setting.  For example, there may be only one qualifying exam, one survey administered, and so forth.  As such we need some way to assess the <span class="emph">internal structure</span> of the measure.  Some of the most commonly used statistics, such as Cronbach's $\alpha$, offer such a measure.  For that, it will still be based on simple correlations, but as we don't have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur.  The average correlation across all items will serve as the basis for an assessment of reliability, but 
 
 
 ### Measurement of a Construct
