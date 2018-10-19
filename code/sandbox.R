@@ -6,7 +6,7 @@ set.seed(1234)
 N = 1000
 lambda = rep(.8, N_items)
 N_items = length(lambda)
-r_congeneric = psych::sim.congeneric(loads = )
+r_congeneric = psych::sim.congeneric(loads = lambda)
 # visibly::corr_heat(r_congeneric, pal = 'acton', dir = 1)
 d_congeneric = 
   mvtnorm::rmvnorm(N, sigma = r_congeneric) %>% 
