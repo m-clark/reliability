@@ -53,7 +53,7 @@ gridExtra::grid.arrange(p1, p2, nrow=1)
 
 Let's say we now take the weights of one hundred people.  Then we do so again six months later.  We should expect that heavier people at the first measurement will likely be heavier the second time as well.  Same for lighter people.
 
-That correlation of the two measurments can provide us our first stab at measuring reliability. Typically referred to as test-retest reliability, this notion gives us some understanding of the stability or consistency of measurement *across time*. While this is useful and straightforward, many situations will not allow for multiple testing occasions, so we'll need other alternatives.
+That correlation of the two measurments can provide us our first attempt at measuring reliability. Typically referred to as test-retest reliability, this notion gives us some understanding of the stability or consistency of measurement *across time*. While this is useful and straightforward, many situations will not allow for multiple testing occasions, so we'll need other alternatives.
 
 
 #### Parallel Forms
@@ -71,7 +71,7 @@ A notion of reliability not too far removed from the previous is that of split-h
 
 ### Consistency
 
-Split-half reliability allows us to estimate reliability with only one test.  This is important, as many times we can only measure something in one setting, even if multiple times within that setting.  For example, there may be only one qualifying exam, one survey administered, and so forth.  As such we need some way to assess the <span class="emph">internal structure</span> of the measure.  Some of the most commonly used statistics, such as Cronbach's $\alpha$, offer such a measure.  For that, it will still be based on simple correlations, but as we don't have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur.  The average correlation across all items will serve as the basis for an assessment of reliability, but 
+Split-half reliability allows us to estimate reliability with only one test.  This is important, as many times we can only measure something in one setting, even if multiple times within that setting.  For example, there may be only one qualifying exam, one survey administered, and so forth.  As such we need some way to assess the <span class="emph">internal structure</span> of the measure.  Some of the most commonly used statistics, such as Cronbach's $\alpha$, offer such a measure.  For that, it will still be based on simple correlations, but as we don't have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur.  The average correlation across all items will serve as the basis for an assessment of reliability, but the number of items will have a say as well.
 
 
 ### Measurement of a Construct
