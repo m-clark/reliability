@@ -128,19 +128,35 @@ $(document).ready(function () {
 <h2>Statistical Reliability</h2>
 <div id="classical-test-theory" class="section level3">
 <h3>Classical Test Theory</h3>
-<p>The foundation for understanding reliability from a statistical standpoint resides with Classical Test Theory. The title may be offputting at first blush, but it is conceptually straightforward. Even then, as McDonald <span class="citation">@mcdonald_test_1999</span> put it-</p>
+<p>The foundation for understanding reliability from a statistical standpoint resides with <span class="emph">Classical Test Theory</span>. The title may be offputting at first blush, but it is conceptually straightforward. Even then, as McDonald <span class="citation">@mcdonald_test_1999</span> put it-</p>
 <blockquote>
 <p>The mathematics of the theory is extremely simple. The application of the theory can be problematic.</p>
 </blockquote>
 <p>So what are the mathematics? Simple arithmetic.</p>
 <p><span class="math display">\[\mathrm{Observed\  Score = True\  Score + Error}\]</span></p>
-<p>But what does this mean? Any measurement we take of something provides us an observed score. For example, we step on a scale and note our weight. A perfect measurement would provide the right score every time, and thus our observed score would equal the true score. But no measurement is perfect<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, i.e. everything is measured with some amount of error, however small. The error can be random, variability caused by unknown sources, but which will not affect our average account of a thing. Our weight from the scale goes up and down but on average it is correct. Error can also be systematic, where the measurement is always off by some amount, and our observed score is always too high or too low. In this scenario, our scale may always be displaying a greater weight than it should. Unfortunately, it is very difficult to distinguish the two in usual circumstances, impossible in many others.</p>
-<p>So conceptually we can simply think of an observation of any measure being composed of whatever the true score would be plus some associated error. The key idea is that the assessment of the error will allows us to understand how reliable our measure is.</p>
+<p>But what does this mean? Any measurement we take of something provides us an observed score. For example, we step on a scale and note our weight. A perfect measurement would provide the right score every time, and thus our observed score would equal the <span class="emph">true score</span>. But no measurement is perfect<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, i.e. everything is measured with some amount of <span class="emph">error</span>, however small. The error can be random, variability caused by unknown sources, but which will not affect our average account of a thing. Our weight from the scale goes up and down but on average it is correct. Error can also be systematic, where the measurement is always off by some amount, and our observed score is always too high or too low. In this scenario, our scale may always be displaying a greater weight than it should. Unfortunately, it is very difficult, if not impossible, to distinguish the two in many typical circumstances.</p>
+<aside>
+Note that by <span class="emph">test</span>, we mean any thing we might want to measure. The study of measurement was, after (psycho-)physics, largely dominated by education and psychology for decades, but needn’t be restricted to those domains.
+</aside>
+<p>So conceptually we can simply think of an observation of any measure being composed of whatever the true score would be plus some associated error. The key idea is that the assessment of the error will allow us to understand how reliable our measure is.</p>
 </div>
 <div id="correlation" class="section level3">
 <h3>Correlation</h3>
 <!-- rstudio has some major bug where the editor does not allow proper editing around this point; the solution was to add space from header-->
 <p>Let’s start with correlation. If two things are correlated, they move in tandem, either they go up and down together, or as one goes up the other goes down and vice versa. At the very least of our understanding of reliability is that similar measurements of the same thing should be correlated. But this correlation might be assessed by different means.</p>
+<pre class="r"><code>x1 = rnorm(500)
+y = .5*x1 + rnorm(500, sd=.25)
+x2 = -x1
+
+p1 = qplot(x1, y, size=I(1), color=I(&#39;#ff5500&#39;), alpha=I(.15)) + 
+  theme_trueMinimal() +
+  theme_void()
+p2 = qplot(x2, y, size=I(1), color=I(&#39;#ff5500&#39;), alpha=I(.15)) + 
+  theme_trueMinimal() + 
+  theme_void()
+
+gridExtra::grid.arrange(p1, p2, nrow=1)</code></pre>
+<p><img src="definitions_files/figure-html/corplot-1.png" width="672" /></p>
 <div id="test-retest" class="section level4">
 <h4>Test-retest</h4>
 <p>Let’s say we now take the weights of one hundred people. Then we do so again six months later. We should expect that heavier people at the first measurement will likely be heavier the second time as well. Same for lighter people.</p>
@@ -148,16 +164,17 @@ $(document).ready(function () {
 </div>
 <div id="parallel-forms" class="section level4">
 <h4>Parallel Forms</h4>
-<p>One method instructors used to use to thwart cheating was to provide half of the class one version of the test, and the other half a different version, that covered the same content, but which had slightly different questions/answers. When passed out randomly, students couldn’t peek at their neighbor’s test and gain any advantage. In terms of classical test theory, if we gave these parallel/alternate forms to each student, the <em>true score</em> for any student would be the same, regardless of what form they took, and any observed score differences would be error.</p>
+<p>One method instructors used to use to thwart cheating was to provide half of the class one version of the test, and the other half a different version, that covered the same content, but which had slightly different questions/answers. When passed out randomly, students couldn’t peek at their neighbor’s test and gain any advantage. In terms of classical test theory, if we gave these parallel/alternate forms to each student, the true score for any student would be the same, regardless of what form they took, and any observed score differences would be error.</p>
 <p>In the more common applied research setting, the question then is how do we know if we are dealing with parallel tests? Unless they are derived as such, we cannot say for certain, and this usually only happens in educational settings, such as with the SAT or GRE. Beyond that it is probably rare that resources allow for parallel forms of measurement, or if they do, enough forms to test the assumption of parallelism.</p>
 </div>
 <div id="split-half" class="section level4">
 <h4>Split-half</h4>
-<p>A notion of reliability not too far removed from the previous is that of split-half reliability. If our measure is made up of multiple observations, say, survey questions, scale items, or whatever, we can just take a random half of them, get a total score for an individual, and do the same with the other half. The correlation thus gives us a glimpse of the reliability of the measure. Consider it a poor man’s alternate forms approach.</p>
+<p>A notion of reliability not too far removed from the previous is that of split-half reliability. If our measure is made up of multiple observations, say, survey questions, scale items, or whatever, we can just take a random half of them, get a total score for each individual, and do the same with the other half. Now each person has two scores, and their correlation gives us a glimpse of the reliability of the measure. Consider it a poor man’s alternate forms approach.</p>
 </div>
 </div>
 <div id="consistency" class="section level3">
 <h3>Consistency</h3>
+<p>Split-half reliability allows us to estimate reliability with only one test. This is important, as many times we can only measure something in one setting, even if multiple times within that setting. For example, there may be only one qualifying exam, one survey administered, and so forth. As such we need some way to assess the <span class="emph">internal structure</span> of the measure. Some of the most commonly used statistics, such as Cronbach’s <span class="math inline">\(\alpha\)</span>, offer such a measure. For that, it will still be based on simple correlations, but as we don’t have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur. The average correlation across all items will serve as the basis for an assessment of reliability, but</p>
 </div>
 <div id="measurement-of-a-construct" class="section level3">
 <h3>Measurement of a Construct</h3>
@@ -166,7 +183,7 @@ $(document).ready(function () {
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Despite what those in so-called ‘hard’ sciences think. Unfortunately, ignoring it doesn’t mean it disappears.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>Despite the overconfidence shown in some disciplines of their measures. Unfortunately, ignoring it doesn’t mean it disappears.<a href="#fnref1" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
 

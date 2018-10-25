@@ -4,9 +4,9 @@
 library(tidyverse)
 set.seed(1234)
 N = 1000
+N_items = 10
 lambda = rep(.8, N_items)
-N_items = length(lambda)
-r_congeneric = psych::sim.congeneric(loads = )
+r_congeneric = psych::sim.congeneric(loads = lambda)
 # visibly::corr_heat(r_congeneric, pal = 'acton', dir = 1)
 d_congeneric = 
   mvtnorm::rmvnorm(N, sigma = r_congeneric) %>% 
@@ -37,12 +37,12 @@ g_mod = gtheory::gstudy(value ~ (1|subject), data=d_congeneric_long)
 gtheory::dstudy(g_mod, colname.objects = 'subject')$generalizability  # same as ICC
 
 
-# generalizability results for 10 items; compare to alpha
+# generalizability results for 10 items; compare to alpha; note also average r vs. ICC
 gtheory::dstudy(g_mod, 
                 colname.objects = 'subject', 
                 colname.scores = 'value', 
                 data=data.frame(d_congeneric_long))$generalizability
-psych::alpha(d_congeneric)$total  # compare alpha and average r to previous
+psych::alpha(d_congeneric)$total  # compare alpha and average r to previous; https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4138888/ alpha = p*ICC/(1 + (p-1)*ICC)
 psych::omega(d_congeneric, nfactors = 1)$omega.tot  # omega total
 
 mean(fa_congeneric$loadings^2)  # compare to icc
