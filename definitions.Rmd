@@ -76,6 +76,8 @@ Split-half reliability allows us to estimate reliability with only one test.  Th
 
 ### Measurement of a Construct
 
+Finally, we can think about reliability in terms of how well the tests measure the construct.  Some would call this validity, though the distinction is muddier in practice.  The observed measurements we have are imperfect measurements of the thing they are purported to measure.  Estimation of that imperfection is the whole of reliability analysis.  We can get at this notion more intently with tools from <span class="emph">factor analysis</span>, and can begin to think about reliability in terms of how much of the *latent* constuct is actually in the observed measures.
+
 
 
 [^noperfect]: Despite the overconfidence shown in some disciplines of their measures.  Unfortunately, ignoring it doesn't mean it disappears.
