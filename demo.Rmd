@@ -1,5 +1,62 @@
 ## Demonstrations
 
+```{r demo_req, include=FALSE}
+# possible radix bug where previous rmd output is not carrying over.
+library(tidyverse)
+library(visibly)
+library(kableExtra)
+kable_df <- function(..., digits=3) {
+  kable(..., digits=digits) %>% 
+    kable_styling(full_width = F)
+}
+```
+
+### Preliminaries
+
+#### Data Description
+
+##### Observed Data
+
+The Big Five Inventory is a popular personality scale use in a wide variety of applications. It is 25 items with five subscales of five items each.  For our purposes, we will concern ourselves with the Neurtocism subscale.  This particular data is available in the R pacakge <span class="pack">psych</span> and regards 2800 subjects as part of the Synthetic Aperture Personality Assessment (SAPA) web based personality assessment project.  The items are six-point scales ranging from 1 Very Inaccurate to six 6 Very Accurate, and are statements that may reflect the person's assessment of themselves.  The neuroticism items in particular are:
+
+- N1: Get angry easily.
+- N2: Get irritated easily.
+- N3: Have frequent mood swings.
+- N4: Often feel blue.
+- N5: Panic easily.
+
+More details can be found with the data object's (<span class="objclass">bfi</span>) associated helpfile.  The following shows how the data is obtained.
+
+```{r bfi_neurot, echo=TRUE}
+library(tidyverse)
+library(psych)
+neuroticism = select(bfi, N1:N5)
+```
+
+Basic descriptives and correlations are shown next. While there is some missingness, some reliability statistics will be based on pairwise correlations, and thus use all available information.  Some of the item correlations are not that strong, but this is a realistic situation for many data in social and related sciences.
+
+```{r bfi_descriptive}
+neuroticism %>% 
+  tidyext::describe_all_num() %>% 
+  select(-Min, -Max, -Q1, -Q3) %>% 
+  kable_df()
+```
+
+
+```{r bfi_corr}
+# visibly::corr_heat(cor(neuroticism, use = 'pair'), pal = 'bilbao', dir=1)
+
+cor(neuroticism, use = 'pair') %>% 
+  kable_df(digits=2)
+```
+
+
+##### Simulated/Ideal data
+
+The psych package provides an easy means to simulate data with known factor structure.  We can specify the loadings and number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration.
+
+#### Analytical Approach
+
 ### Cronbach's $\alpha$
 
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$

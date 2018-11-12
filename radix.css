@@ -22,9 +22,9 @@ d-title p {
 }
 
 d-byline .authors-affiliations {
-    grid-column-end: span 2;
-    grid-template-columns: 1.2fr 2fr;
-    margin-bottom: 1em;
+  grid-column-end: span 2;
+  grid-template-columns: 1.2fr 2fr;
+  margin-bottom: 1em;
 }
 
 body {
@@ -36,14 +36,15 @@ p {
   font-weight: 300;
 }
 
-d-article h1, h2, h3, h4 {
+d-article h1, h2, h3, h4, h5 {
   font-family: 'Open Sans Condensed', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
   color: #990024;
 }
 
 .d-code {
-  font-family: 'Fira Code', 'Roboto Mono', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', 'Courier New', monospace;
+  font-family: 'Roboto Mono', 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', 'Courier New', monospace;
 }
+
 
 pre.text-output {
   color: #404040FF;

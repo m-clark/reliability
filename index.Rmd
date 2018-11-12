@@ -9,7 +9,7 @@ author:
     affiliation_url: https://cscar.research.umich.edu/
   - name: Xilin Chen
     url: https://www.procedurallearning.org/
-    affiliation: University of Michigan, PLSC
+    affiliation: University of Michigan, C-STAR
     affiliation_url: https://www.procedurallearning.org/
   - name: Seth Berry
     url: https://mendoza.nd.edu/research-and-faculty/directory/seth-berry/
@@ -48,10 +48,7 @@ library(tidyverse)
 library(visibly)
 library(kableExtra)
 
-kable_df <- function(..., digits=3) {
-  kable(..., digits=digits) %>% 
-    kable_styling(full_width = F)
-}
+
 ```
 
 ```{r intro, child='intro.Rmd'}
