@@ -53,13 +53,54 @@ cor(neuroticism, use = 'pair') %>%
 
 ##### Simulated/Ideal data
 
-The psych package provides an easy means to simulate data with known factor structure.  We can specify the loadings and number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration.
+The psych package provides an easy means to simulate data with known factor structure.  We can specify the loadings and number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration.  As a starting point, we will simulate a <span class="emph">congeneric</span> data set, one in which the factor structure has one latent variable underlying the items.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
+
+```{r sim_congeneric_create_data, echo=TRUE}
+set.seed(123)
+N = 1000
+n_items = 6
+loadings_congeneric = c(.4,.4,.5,.5,.6,.7)
+cor_congeneric = sim.congeneric(loadings_congeneric, N = N)
+data_congeneric = mvtnorm::rmvnorm(n = N, 
+                                   mean = rep(0, n_items), 
+                                   sigma = cor_congeneric) %>% 
+  as_data_frame() %>% 
+  rename_all(str_replace, pattern = 'V', replacement = 'item_')
+```
+
+```{r inspect_data_congeneric}
+data_congeneric %>% 
+  kable_df()
+```
+
+
 
 #### Analytical Approach
 
 ### Cronbach's $\alpha$
 
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
+
+```{r cronbach_base}
+psych::alpha(neuroticism) %>% print(digits=3)
+
+```
+
+```{r neuroticism_gender_diff, eval=FALSE}
+neuro_fem = neuroticism %>% filter(bfi$gender==1)
+neuro_male = neuroticism %>% filter(bfi$gender==2)
+neuro_fem_alpha = psych::alpha(neuro_fem)$total$std.alpha
+neuro_male_alpha = psych::alpha(neuro_male)$total$std.alpha
+
+alpha.ci(neuro_fem_alpha,
+         n.obs = nrow(neuro_fem),
+         n.var = ncol(neuro_fem)) %>% 
+  rbind(alpha.ci(neuro_male_alpha,
+         n.obs = nrow(neuro_male),
+         n.var = ncol(neuro_male)) )
+```
+
+
 
 #### The Uncertainty of $\alpha$
 
