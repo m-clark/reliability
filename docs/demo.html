@@ -416,7 +416,167 @@ N5
 </div>
 <div id="simulatedideal-data" class="section level5">
 <h5>Simulated/Ideal data</h5>
-<p>The psych package provides an easy means to simulate data with known factor structure. We can specify the loadings and number of items among other things. Doing so will allow us to know what to expect from the factor analysis portion of the exploration.</p>
+<p>The psych package provides an easy means to simulate data with known factor structure. We can specify the loadings and number of items among other things. Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure. As a starting point, we will simulate a <span class="emph">congeneric</span> data set, one in which the factor structure has one latent variable underlying the items. We will have six items for this data, with moderate to strong loadings between .4 and .7.</p>
+<pre class="r"><code>set.seed(123)
+N = 1000
+n_items = 6
+loadings_congeneric = c(.4,.4,.5,.5,.6,.7)
+cor_congeneric = sim.congeneric(loadings_congeneric, N = N)
+data_congeneric = mvtnorm::rmvnorm(n = N, 
+                                   mean = rep(0, n_items), 
+                                   sigma = cor_congeneric) %&gt;% 
+  as_data_frame() %&gt;% 
+  rename_all(str_replace, pattern = &#39;V&#39;, replacement = &#39;item_&#39;)</code></pre>
+<pre class="r"><code>data_congeneric %&gt;% 
+  as_data_frame() %&gt;% 
+  head() %&gt;% 
+  kable_df()</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+item_1
+</th>
+<th style="text-align:right;">
+item_2
+</th>
+<th style="text-align:right;">
+item_3
+</th>
+<th style="text-align:right;">
+item_4
+</th>
+<th style="text-align:right;">
+item_5
+</th>
+<th style="text-align:right;">
+item_6
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+-1.158
+</td>
+<td style="text-align:right;">
+0.592
+</td>
+<td style="text-align:right;">
+2.019
+</td>
+<td style="text-align:right;">
+0.797
+</td>
+<td style="text-align:right;">
+1.869
+</td>
+<td style="text-align:right;">
+0.329
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+-0.038
+</td>
+<td style="text-align:right;">
+1.193
+</td>
+<td style="text-align:right;">
+0.635
+</td>
+<td style="text-align:right;">
+0.845
+</td>
+<td style="text-align:right;">
+0.108
+</td>
+<td style="text-align:right;">
+0.213
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.398
+</td>
+<td style="text-align:right;">
+0.211
+</td>
+<td style="text-align:right;">
+0.828
+</td>
+<td style="text-align:right;">
+-0.138
+</td>
+<td style="text-align:right;">
+-0.534
+</td>
+<td style="text-align:right;">
+1.333
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+-0.712
+</td>
+<td style="text-align:right;">
+0.194
+</td>
+<td style="text-align:right;">
+-1.546
+</td>
+<td style="text-align:right;">
+-0.551
+</td>
+<td style="text-align:right;">
+1.944
+</td>
+<td style="text-align:right;">
+0.084
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.839
+</td>
+<td style="text-align:right;">
+0.521
+</td>
+<td style="text-align:right;">
+-1.203
+</td>
+<td style="text-align:right;">
+0.798
+</td>
+<td style="text-align:right;">
+-0.822
+</td>
+<td style="text-align:right;">
+0.606
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+-1.098
+</td>
+<td style="text-align:right;">
+-0.047
+</td>
+<td style="text-align:right;">
+0.429
+</td>
+<td style="text-align:right;">
+-0.356
+</td>
+<td style="text-align:right;">
+-0.116
+</td>
+<td style="text-align:right;">
+0.364
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="analytical-approach" class="section level4">
@@ -425,9 +585,315 @@ N5
 </div>
 <div id="cronbachs-alpha" class="section level3">
 <h3>Cronbach’s <span class="math inline">\(\alpha\)</span></h3>
+<p>Cron</p>
 <p><span class="math display">\[\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}\]</span></p>
+<pre class="r"><code># psych::alpha(neuroticism) %&gt;% print(digits=3)
+alpha_results = psych::alpha(neuroticism)
+
+
+alpha_results %&gt;% 
+  magrittr::extract2(&#39;total&#39;) %&gt;% 
+  as_data_frame() %&gt;% 
+  kable_df(digits = 2)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+raw_alpha
+</th>
+<th style="text-align:right;">
+std.alpha
+</th>
+<th style="text-align:right;">
+G6(smc)
+</th>
+<th style="text-align:right;">
+average_r
+</th>
+<th style="text-align:right;">
+S/N
+</th>
+<th style="text-align:right;">
+ase
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+median_r
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.8
+</td>
+<td style="text-align:right;">
+0.47
+</td>
+<td style="text-align:right;">
+4.4
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+3.16
+</td>
+<td style="text-align:right;">
+1.2
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>alpha_results %&gt;% 
+  magrittr::extract2(&#39;alpha.drop&#39;) %&gt;% 
+  as_data_frame() %&gt;% 
+  kable_df(digits = 2)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+raw_alpha
+</th>
+<th style="text-align:right;">
+std.alpha
+</th>
+<th style="text-align:right;">
+G6(smc)
+</th>
+<th style="text-align:right;">
+average_r
+</th>
+<th style="text-align:right;">
+S/N
+</th>
+<th style="text-align:right;">
+alpha se
+</th>
+<th style="text-align:right;">
+var.r
+</th>
+<th style="text-align:right;">
+med.r
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+N1
+</td>
+<td style="text-align:right;">
+0.76
+</td>
+<td style="text-align:right;">
+0.76
+</td>
+<td style="text-align:right;">
+0.71
+</td>
+<td style="text-align:right;">
+0.44
+</td>
+<td style="text-align:right;">
+3.14
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N2
+</td>
+<td style="text-align:right;">
+0.76
+</td>
+<td style="text-align:right;">
+0.76
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+<td style="text-align:right;">
+0.45
+</td>
+<td style="text-align:right;">
+3.23
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N3
+</td>
+<td style="text-align:right;">
+0.76
+</td>
+<td style="text-align:right;">
+0.76
+</td>
+<td style="text-align:right;">
+0.73
+</td>
+<td style="text-align:right;">
+0.44
+</td>
+<td style="text-align:right;">
+3.11
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+0.39
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N4
+</td>
+<td style="text-align:right;">
+0.80
+</td>
+<td style="text-align:right;">
+0.80
+</td>
+<td style="text-align:right;">
+0.77
+</td>
+<td style="text-align:right;">
+0.50
+</td>
+<td style="text-align:right;">
+3.92
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+0.49
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N5
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:right;">
+0.52
+</td>
+<td style="text-align:right;">
+4.34
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.53
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>neuro_fem = neuroticism %&gt;% filter(bfi$gender==1)
+neuro_male = neuroticism %&gt;% filter(bfi$gender==2)
+neuro_fem_alpha = psych::alpha(neuro_fem)$total$std.alpha
+neuro_male_alpha = psych::alpha(neuro_male)$total$std.alpha
+
+alpha.ci(neuro_fem_alpha,
+         n.obs = nrow(neuro_fem),
+         n.var = ncol(neuro_fem)) %&gt;% 
+  rbind(alpha.ci(neuro_male_alpha,
+         n.obs = nrow(neuro_male),
+         n.var = ncol(neuro_male)) )</code></pre>
 <div id="the-uncertainty-of-alpha" class="section level4">
 <h4>The Uncertainty of <span class="math inline">\(\alpha\)</span></h4>
+<pre class="r"><code># note that the non-boot ci output is only generated as part of the print method
+# for generic psych, and then cat(!), so there is no actual access to it.
+alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
+                      alpha = alpha_results$total$raw_alpha, 
+                      UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
+
+kable_df(alpha_ci)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+LL
+</th>
+<th style="text-align:right;">
+alpha
+</th>
+<th style="text-align:right;">
+UL
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.803
+</td>
+<td style="text-align:right;">
+0.814
+</td>
+<td style="text-align:right;">
+0.825
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="generalizability-theory" class="section level3">

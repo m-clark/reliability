@@ -53,7 +53,7 @@ cor(neuroticism, use = 'pair') %>%
 
 ##### Simulated/Ideal data
 
-The psych package provides an easy means to simulate data with known factor structure.  We can specify the loadings and number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration.  As a starting point, we will simulate a <span class="emph">congeneric</span> data set, one in which the factor structure has one latent variable underlying the items.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
+The psych package provides an easy means to simulate data with known factor structure.  We can specify the loadings and number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure.  As a starting point, we will simulate a <span class="emph">congeneric</span> data set, one in which the factor structure has one latent variable underlying the items.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
 
 ```{r sim_congeneric_create_data, echo=TRUE}
 set.seed(123)
@@ -70,6 +70,8 @@ data_congeneric = mvtnorm::rmvnorm(n = N,
 
 ```{r inspect_data_congeneric}
 data_congeneric %>% 
+  as_data_frame() %>% 
+  head() %>% 
   kable_df()
 ```
 
@@ -79,11 +81,25 @@ data_congeneric %>%
 
 ### Cronbach's $\alpha$
 
+Cron
+
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
 
 ```{r cronbach_base}
-psych::alpha(neuroticism) %>% print(digits=3)
+# psych::alpha(neuroticism) %>% print(digits=3)
+alpha_results = psych::alpha(neuroticism)
 
+
+alpha_results %>% 
+  magrittr::extract2('total') %>% 
+  as_data_frame() %>% 
+  kable_df(digits = 2)
+
+
+alpha_results %>% 
+  magrittr::extract2('alpha.drop') %>% 
+  as_data_frame() %>% 
+  kable_df(digits = 2)
 ```
 
 ```{r neuroticism_gender_diff, eval=FALSE}
@@ -103,6 +119,17 @@ alpha.ci(neuro_fem_alpha,
 
 
 #### The Uncertainty of $\alpha$
+
+```{r alpha_ci}
+# note that the non-boot ci output is only generated as part of the print method
+# for generic psych, and then cat(!), so there is no actual access to it.
+alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
+                      alpha = alpha_results$total$raw_alpha, 
+                      UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
+
+kable_df(alpha_ci)
+```
+
 
 ### Generalizability theory
 
