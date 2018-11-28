@@ -41,6 +41,10 @@ d-article h1, h2, h3, h4, h5 {
   color: #990024;
 }
 
+d-article {
+  color: #585858;
+}
+
 .d-code {
   font-family: 'Roboto Mono', 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', 'Courier New', monospace;
 }

@@ -17,7 +17,7 @@ kable_df <- function(..., digits=3) {
 
 ##### Observed Data
 
-The Big Five Inventory is a popular personality scale use in a wide variety of applications. It is 25 items with five subscales of five items each.  For our purposes, we will concern ourselves with the Neurtocism subscale.  This particular data is available in the R pacakge <span class="pack">psych</span> and regards 2800 subjects as part of the Synthetic Aperture Personality Assessment (SAPA) web based personality assessment project.  The items are six-point scales ranging from 1 Very Inaccurate to six 6 Very Accurate, and are statements that may reflect the person's assessment of themselves.  The neuroticism items in particular are:
+The Big Five Inventory is a popular personality scale use in a wide variety of applications. For our example, we will have at our disposal 25 items corresponding to the five subscales- Agreeableness, Openness, Extroversion, Conscientiousness, and Neuroticism.  However, we will concern ourselves with the Neurtocism subscale specifically.  This particular data is available in the R package <span class="pack">psych</span>, and regards 2800 subjects as part of the Synthetic Aperture Personality Assessment (SAPA) web based personality assessment project.  The items are six-point scales ranging from 1 Very Inaccurate to six 6 Very Accurate, and are statements that may reflect the person's assessment of themselves.  The neuroticism items in particular are:
 
 - N1: Get angry easily.
 - N2: Get irritated easily.
@@ -25,7 +25,7 @@ The Big Five Inventory is a popular personality scale use in a wide variety of a
 - N4: Often feel blue.
 - N5: Panic easily.
 
-More details can be found with the data object's (<span class="objclass">bfi</span>) associated helpfile.  The following shows how the data is obtained.
+More details can be found with the data object's (<span class="objclass">bfi</span>) associated helpfile.  The following shows how the data may be obtained.
 
 ```{r bfi_neurot, echo=TRUE}
 library(tidyverse)
@@ -33,7 +33,7 @@ library(psych)
 neuroticism = select(bfi, N1:N5)
 ```
 
-Basic descriptives and correlations are shown next. While there is some missingness, some reliability statistics will be based on pairwise correlations, and thus use all available information.  Some of the item correlations are not that strong, but this is a realistic situation for many data in social and related sciences.
+Basic descriptives and correlations are shown next. While there is some missing data, some reliability statistics will be based on pairwise correlations, and thus use all available information.  Some of the item correlations are not that strong, but this is a realistic situation for many data in social and related sciences.
 
 ```{r bfi_descriptive}
 neuroticism %>% 
@@ -53,17 +53,20 @@ cor(neuroticism, use = 'pair') %>%
 
 ##### Simulated/Ideal data
 
-The psych package provides an easy means to simulate data with known factor structure.  We can specify the loadings and number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure.  As a starting point, we will simulate a <span class="emph">congeneric</span> data set, one in which the factor structure has one latent variable underlying the items.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
+One of our investigations into reliability will involve what is commonly referred to as factor analysis.  Along with the observed data just described, the <span class="pack">psych</span> package additionally provides an easy means to simulate data with known factor structure.  We can specify the number of factors, loadings, number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure if desired.  As a starting point, we will simulate a <span class="emph">congeneric</span> data set, one in which the factor structure regards just one latent variable underlying the items.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
 
 ```{r sim_congeneric_create_data, echo=TRUE}
 set.seed(123)
 N = 1000
 n_items = 6
-loadings_congeneric = c(.4,.4,.5,.5,.6,.7)
+loadings_congeneric = c(.4, .4, .5, .5, .6, .7)
+
 cor_congeneric = sim.congeneric(loadings_congeneric, N = N)
-data_congeneric = mvtnorm::rmvnorm(n = N, 
-                                   mean = rep(0, n_items), 
-                                   sigma = cor_congeneric) %>% 
+
+data_congeneric = 
+  mvtnorm::rmvnorm(n = N, 
+                   mean = rep(0, n_items), 
+                   sigma = cor_congeneric) %>% 
   as_data_frame() %>% 
   rename_all(str_replace, pattern = 'V', replacement = 'item_')
 ```
@@ -79,11 +82,18 @@ data_congeneric %>%
 
 #### Analytical Approach
 
+The analysis of the data will be conducted on both the observed and simulated data sets.  We will show three conceptual estimates of reliability, but, in addition, we will focus on the estimated uncertainty in those estimates.  Far too often reliability statistics are reported without any thought of the underlying models, or that there is possibly notable uncertainty in the estimate.  The three conceptual estimates include the most popular estimate of reliability, Cronbach's $\alpha$, followed by two model-based approaches - generalizability theory and latent variable/factor analysis.
+
+
+
 ### Cronbach's $\alpha$
 
-Cron
+Cronbach's $\alpha$ is a measurement of reliability that is a function of the average correlation among the items as well as the number of items.  While it is descriptive in nature, it assumes a unidimensional factor structure, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$.
 
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
+
+All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, but in others it does not.
+
 
 ```{r cronbach_base}
 # psych::alpha(neuroticism) %>% print(digits=3)
@@ -99,7 +109,7 @@ alpha_results %>%
 alpha_results %>% 
   magrittr::extract2('alpha.drop') %>% 
   as_data_frame() %>% 
-  kable_df(digits = 2)
+  kable_df(digits = 2, caption = 'Reliability if the item is dropped.')
 ```
 
 ```{r neuroticism_gender_diff, eval=FALSE}
@@ -143,3 +153,5 @@ $$\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}$$
 omega, ave
 
 #### The Uncertainty of Factor Loadings
+
+[^chron_app]: Despite this, you will see it frequently reported in cases of multidimensional factor structure.
