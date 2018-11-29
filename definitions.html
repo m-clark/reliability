@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>definitions.utf8.md</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="statistical-reliability" class="section level2">
+<h2>Statistical Reliability</h2>
+<div id="classical-test-theory" class="section level3">
+<h3>Classical Test Theory</h3>
+<p>The foundation for understanding reliability from a statistical standpoint resides with <span class="emph">Classical Test Theory</span>. The title may be offputting at first blush, but it is conceptually straightforward. Even then, as McDonald <span class="citation">@mcdonald_test_1999</span> put it-</p>
+<blockquote>
+<p>The mathematics of the theory is extremely simple. The application of the theory can be problematic.</p>
+</blockquote>
+<p>So what are the mathematics? Simple arithmetic.</p>
+<p><span class="math display">\[\mathrm{Observed\  Score = True\  Score + Error}\]</span></p>
+<p>But what does this mean? Any measurement we take of something provides us an observed score. For example, we step on a scale and note our weight. A perfect measurement would provide the right score every time, and thus our observed score would equal the <span class="emph">true score</span>. But no measurement is perfect<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, i.e. everything is measured with some amount of <span class="emph">error</span>, however small. The error can be random, variability caused by unknown sources, but which will not affect our average account of a thing. Our weight from the scale goes up and down but on average it is correct. Error can also be systematic, where the measurement is always off by some amount, and our observed score is always too high or too low. In this scenario, our scale may always be displaying a greater weight than it should. Unfortunately, it is very difficult, if not impossible, to distinguish the two in many typical circumstances.</p>
+<aside>
+Note that by <span class="emph">test</span>, we mean any thing we might want to measure. The study of measurement was, after (psycho-)physics, largely dominated by education and psychology for decades, but needn’t be restricted to those domains.
+</aside>
+<p>So conceptually we can simply think of an observation of any measure being composed of whatever the true score would be plus some associated error. The key idea is that the assessment of the error will allow us to understand how reliable our measure is.</p>
+</div>
+<div id="correlation" class="section level3">
+<h3>Correlation</h3>
+<!-- rstudio has some major bug where the editor does not allow proper editing around this point; the solution was to add space from header-->
+<p>Let’s start with correlation. If two things are correlated, they move in tandem, either they go up and down together, or as one goes up the other goes down and vice versa. At the very least of our understanding of reliability is that similar measurements of the same thing should be correlated. But this correlation might be assessed by different means.</p>
+<pre class="r"><code>x1 = rnorm(500)
+y = .5*x1 + rnorm(500, sd=.25)
+x2 = -x1
+
+p1 = qplot(x1, y, size=I(1), color=I(&#39;#ff5500&#39;), alpha=I(.15)) + 
+  theme_trueMinimal() +
+  theme_void()
+p2 = qplot(x2, y, size=I(1), color=I(&#39;#ff5500&#39;), alpha=I(.15)) + 
+  theme_trueMinimal() + 
+  theme_void()
+
+gridExtra::grid.arrange(p1, p2, nrow=1)</code></pre>
+<p><img src="definitions_files/figure-html/corplot-1.png" width="672" /></p>
+<div id="test-retest" class="section level4">
+<h4>Test-retest</h4>
+<p>Let’s say we now take the weights of one hundred people. Then we do so again six months later. We should expect that heavier people at the first measurement will likely be heavier the second time as well. Same for lighter people.</p>
+<p>That correlation of the two measurments can provide us our first attempt at measuring reliability. Typically referred to as test-retest reliability, this notion gives us some understanding of the stability or consistency of measurement <em>across time</em>. While this is useful and straightforward, many situations will not allow for multiple testing occasions, so we’ll need other alternatives.</p>
+</div>
+<div id="parallel-forms" class="section level4">
+<h4>Parallel Forms</h4>
+<p>One method instructors used to use to thwart cheating was to provide half of the class one version of the test, and the other half a different version, that covered the same content, but which had slightly different questions/answers. When passed out randomly, students couldn’t peek at their neighbor’s test and gain any advantage. In terms of classical test theory, if we gave these parallel/alternate forms to each student, the true score for any student would be the same, regardless of what form they took, and any observed score differences would be error.</p>
+<p>In the more common applied research setting, the question then is how do we know if we are dealing with parallel tests? Unless they are derived as such, we cannot say for certain, and this usually only happens in educational settings, such as with the SAT or GRE. Beyond that it is probably rare that resources allow for parallel forms of measurement, or if they do, enough forms to test the assumption of parallelism.</p>
+</div>
+<div id="split-half" class="section level4">
+<h4>Split-half</h4>
+<p>A notion of reliability not too far removed from the previous is that of split-half reliability. If our measure is made up of multiple observations, say, survey questions, scale items, or whatever, we can just take a random half of them, get a total score for each individual, and do the same with the other half. Now each person has two scores, and their correlation gives us a glimpse of the reliability of the measure. Consider it a poor man’s alternate forms approach.</p>
+</div>
+</div>
+<div id="consistency" class="section level3">
+<h3>Consistency</h3>
+<p>Split-half reliability allows us to estimate reliability with only one test. This is important, as many times we can only measure something in one setting, even if multiple times within that setting. For example, there may be only one qualifying exam, one survey administered, and so forth. As such we need some way to assess the <span class="emph">internal structure</span> of the measure. Some of the most commonly used statistics, such as Cronbach’s <span class="math inline">\(\alpha\)</span>, offer such a measure. For that, it will still be based on simple correlations, but as we don’t have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur. The average correlation across all items will serve as the basis for an assessment of reliability, but the number of items will have a say as well.</p>
+</div>
+<div id="measurement-of-a-construct" class="section level3">
+<h3>Measurement of a Construct</h3>
+<p>Finally, we can think about reliability in terms of how well the tests measure the construct. Some would call this validity, though the distinction is muddier in practice. The observed measurements we have are imperfect measurements of the thing they are purported to measure. Estimation of that imperfection is the whole of reliability analysis. We can get at this notion more intently with tools from <span class="emph">factor analysis</span>, and can begin to think about reliability in terms of how much of the <em>latent</em> constuct is actually in the observed measures.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Despite the overconfidence shown in some disciplines of their measures. Unfortunately, ignoring it doesn’t mean it disappears.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

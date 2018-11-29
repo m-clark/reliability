@@ -13,6 +13,8 @@ kable_df <- function(..., digits=3) {
 
 ### Preliminaries
 
+Before diving into demonstration we will first describe the data and analytical approach.  Both observed and simulated data will be presented, followed by discussion of the analysis.
+
 #### Data Description
 
 ##### Observed Data
