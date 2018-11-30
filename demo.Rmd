@@ -90,11 +90,11 @@ The analysis of the data will be conducted on both the observed and simulated da
 
 ### Cronbach's $\alpha$
 
-Cronbach's $\alpha$ is a measurement of reliability that is a function of the average correlation among the items as well as the number of items.  While it is descriptive in nature, it assumes a unidimensional factor structure, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$.
+Cronbach's $\alpha$ is a measurement of reliability that is a function of the average covariance/correlation among the items, the total variance of the test, as well as the number of items.  While it is descriptive in nature, it assumes a unidimensional factor structure, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$.<aside>The raw score formula for $\alpha$ in terms of the average variance of the items and average covariance is: $$\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}$$</aside>
 
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
 
-All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, but in others it does not.
+All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, as the goal is to use an average score, but in others it does not.
 
 
 ```{r cronbach_base}
