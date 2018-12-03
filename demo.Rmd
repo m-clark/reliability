@@ -90,11 +90,16 @@ The analysis of the data will be conducted on both the observed and simulated da
 
 ### Cronbach's $\alpha$
 
-Cronbach's $\alpha$ is a measurement of reliability that is a function of the average covariance/correlation among the items, the total variance of the test, as well as the number of items.  While it is descriptive in nature, it assumes a unidimensional factor structure, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$.<aside>The raw score formula for $\alpha$ in terms of the average variance of the items and average covariance is: $$\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}$$</aside>
+Cronbach's $\alpha$ is one of the most popular measures of reliability.  Sometimes considered an measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items.  It is also interpreted as the mean of all possible spit-half reliabilities. While it is descriptive in nature, it assumes a unidimensional factor structure model representation, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$. 
+
 
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
 
-All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, as the goal is to use an average score, but in others it does not.
+<aside>The raw score formula for $\alpha$ in terms of the average variance of the items $\bar{v}$ and average covariance $\bar{c}$ is: $$\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}$$</aside>
+
+All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, as the goal is to use an average score, but in others it may not.
+
+The following shows the results from the <span class="pack">psych</span> package.  In addition to both raw and standardized $\alpha$ measures, it also offers Guttman's lambda 6, a 'signal-to-noise' ratio and tohre info.  Shown are the alphas, absolute standard error, and average/median inter-item correlation.
 
 
 ```{r cronbach_base}
@@ -105,14 +110,33 @@ alpha_results = psych::alpha(neuroticism)
 alpha_results %>% 
   magrittr::extract2('total') %>% 
   as_data_frame() %>% 
+  rename(`Raw` = raw_alpha,
+         Standardized = std.alpha,
+         G6 = `G6(smc)`,
+         `Avg. Inter-item cor` = average_r,
+         ASE = ase,
+         `Median r` = median_r) %>% 
+  select(Raw, Standardized, `Avg. Inter-item cor`, `Median r`, ASE) %>% 
   kable_df(digits = 2)
+```
 
 
+These statistics show how $\alpha$ changes when the item is dropped.  We can see that items N1 through N3 are more useful measures, as dropping them would result in a significant drop in $\alpha$.
+
+```{r cronbach_drop}
 alpha_results %>% 
   magrittr::extract2('alpha.drop') %>% 
   as_data_frame() %>% 
+  rename(`Raw` = raw_alpha,
+         Standardized = std.alpha,
+         G6 = `G6(smc)`,
+         `Avg. Inter-item cor` = average_r,
+         `Median r` = med.r,
+         `Variance r` = var.r) %>% 
+  select(Raw, Standardized, `Avg. Inter-item cor`, `Median r`) %>% 
   kable_df(digits = 2, caption = 'Reliability if the item is dropped.')
 ```
+
 
 ```{r neuroticism_gender_diff, eval=FALSE}
 neuro_fem = neuroticism %>% filter(bfi$gender==1)
@@ -132,23 +156,92 @@ alpha.ci(neuro_fem_alpha,
 
 #### The Uncertainty of $\alpha$
 
+One issue with Cronbach's $\alpha$ is that the uncertainty in the estimate is almost never reported, even though it has been known for decades how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack"></span> package does this in two ways.  One uses an approach noted in @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. The other method is via the bootstrap, calculating $\alpha$ for $R$ number of bootstrap resamples of the data. Both results are shown below, with the bootstrapped value based on 1000 iterations.
+
+```{r, eval=FALSE}
+test = neuroticism %>% 
+  rownames_to_column(var='id') %>% 
+  gather(key=item, value=score, -id) %>% 
+  mutate(id = factor(id),
+         item = factor(item))
+
+library(lme4)
+lmer(score ~ 1 + (1|id), data=test)
+```
+
 ```{r alpha_ci}
+set.seed(123)
+
 # note that the non-boot ci output is only generated as part of the print method
 # for generic psych, and then cat(!), so there is no actual access to it.
 alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
                       alpha = alpha_results$total$raw_alpha, 
                       UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
 
-kable_df(alpha_ci)
+alpha_boot_ci = alpha(neuroticism, n.iter = 1000)$boot.ci %>% 
+  t() %>% 
+  data.frame() %>% 
+  rename(LL = X2.5.,
+         alpha = X50.,
+         UL = X97.5.) 
+
+alpha_ci %>% 
+  bind_rows(alpha_boot_ci) %>% 
+  kable_df(digits = 4)
 ```
 
+We can see that the bootstrapped interval is perhaps slightly wider, but in either case we can see that our estimate of $\alpha$ would best be summarized as some value between .80 and .83.
+
+##### A Bayesian Approach
+
+An alternative approach to estimating the uncertainty in $\alpha$ would be a Bayesian estimate.  We could estimate the value by first estimating the correlation matrix underlying the multivariate distribution of the observations/items.  Thus the Bayesian $\alpha$ would be based on the posterior predictive distribution given the estimate of the correlation matrix.  Another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory.
+
+```{r alpha_bayes_rstan, cache=TRUE, eval=FALSE}
+library(rstan); library(tidybayes)
+neuroticism_no_na = na.omit(scale(neuroticism))
+data_list = list(X=neuroticism_no_na, 
+                 N=nrow(neuroticism_no_na), 
+                 p=ncol(neuroticism_no_na),
+                 scale_flag = 0)
+alpha_bayes = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin = 4)
+
+alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
+
+alpha_draws %>% 
+  gather(key=alpha, value=value, -.chain, -.iteration, -.draw) %>% 
+  qplot(x=value, geom = 'density', color = alpha, data=.)
+alpha_draws %>% mean_qi()
+
+```
+
+
+```{r alpha_bayes_rstanarm, cache=TRUE, eval=FALSE}
+# alpha as icc/generalizability statistic from g-theory
+
+library(rstanarm)
+mixed_congeneric_bayes = stan_lmer(value ~ (1|subject), d_congeneric_long_std, cores=4, thin=4)
+VarCorr(mixed_congeneric_bayes)
+
+# note that Sigma is var intercept, while sigma is residual sd
+var_comp_draws = spread_draws(mixed_congeneric_bayes, Sigma[subject:(Intercept),(Intercept)], sigma) %>% 
+  mutate(sigma = sigma^2,
+         alpha = Sigma/(Sigma + sigma/N_items))
+
+# var_comp_draws %>% mean_qi(alpha)
+print(alpha_bayes, par='alpha', digits=4)
+```
+
+#### Simulated Data
 
 ### Generalizability theory
 
 $$\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}$$
 
 
+
 #### The Uncertainty of Generalizability
+
+#### Simulated Data
 
 ### Factor Analysis
 

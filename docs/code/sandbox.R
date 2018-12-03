@@ -193,7 +193,7 @@ library(rstan)
 
 
 data_list = list(X=d_congeneric_std, N=nrow(d_congeneric_std), p=ncol(d_congeneric_std))
-alpha_bayes = stan(model_code = alpha_stan, data = data_list, cores = 4, thin = 4)
+alpha_bayes = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin = 4)
 print(alpha_bayes, par=c('alpha', 'alpha2', 'omega', 'omega_sq'), digits=4)
 # launch_shinystan(alpha_bayes)
 

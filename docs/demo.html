@@ -590,9 +590,13 @@ item_6
 </div>
 <div id="cronbachs-alpha" class="section level3">
 <h3>Cronbach’s <span class="math inline">\(\alpha\)</span></h3>
-<p>Cronbach’s <span class="math inline">\(\alpha\)</span> is a measurement of reliability that is a function of the average correlation among the items as well as the number of items. While it is descriptive in nature, it assumes a unidimensional factor structure, or in other words, that all the items correspond to the same underlying construct<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The formula only requires the two values of the number of items <span class="math inline">\(k\)</span> and average inter-item correlation <span class="math inline">\(\bar{r}\)</span>.</p>
+<p>Cronbach’s <span class="math inline">\(\alpha\)</span> is one of the most popular measures of reliability. Sometimes considered an measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items. It is also interpreted as the mean of all possible spit-half reliabilities. While it is descriptive in nature, it assumes a unidimensional factor structure model representation, or in other words, that all the items correspond to the same underlying construct<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The standardized formula only requires the two values of the number of items <span class="math inline">\(k\)</span> and average inter-item correlation <span class="math inline">\(\bar{r}\)</span>.</p>
 <p><span class="math display">\[\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}\]</span></p>
-<p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, but in others it does not.</p>
+<aside>
+The raw score formula for <span class="math inline">\(\alpha\)</span> in terms of the average variance of the items <span class="math inline">\(\bar{v}\)</span> and average covariance <span class="math inline">\(\bar{c}\)</span> is: <span class="math display">\[\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}\]</span>
+</aside>
+<p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, as the goal is to use an average score, but in others it may not.</p>
+<p>The following shows the results from the <span class="pack">psych</span> package. In addition to both raw and standardized <span class="math inline">\(\alpha\)</span> measures, it also offers Guttman’s lambda 6, a ‘signal-to-noise’ ratio and tohre info. Shown are the alphas, absolute standard error, and average/median inter-item correlation.</p>
 <pre class="r"><code># psych::alpha(neuroticism) %&gt;% print(digits=3)
 alpha_results = psych::alpha(neuroticism)
 
@@ -600,6 +604,13 @@ alpha_results = psych::alpha(neuroticism)
 alpha_results %&gt;% 
   magrittr::extract2(&#39;total&#39;) %&gt;% 
   as_data_frame() %&gt;% 
+  rename(`Raw` = raw_alpha,
+         Standardized = std.alpha,
+         G6 = `G6(smc)`,
+         `Avg. Inter-item cor` = average_r,
+         ASE = ase,
+         `Median r` = median_r) %&gt;% 
+  select(Raw, Standardized, `Avg. Inter-item cor`, `Median r`, ASE) %&gt;% 
   kable_df(digits = 2)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -607,31 +618,19 @@ alpha_results %&gt;%
 <th style="text-align:left;">
 </th>
 <th style="text-align:right;">
-raw_alpha
+Raw
 </th>
 <th style="text-align:right;">
-std.alpha
+Standardized
 </th>
 <th style="text-align:right;">
-G6(smc)
+Avg. Inter-item cor
 </th>
 <th style="text-align:right;">
-average_r
+Median r
 </th>
 <th style="text-align:right;">
-S/N
-</th>
-<th style="text-align:right;">
-ase
-</th>
-<th style="text-align:right;">
-mean
-</th>
-<th style="text-align:right;">
-sd
-</th>
-<th style="text-align:right;">
-median_r
+ASE
 </th>
 </tr>
 </thead>
@@ -646,32 +645,28 @@ median_r
 0.81
 </td>
 <td style="text-align:right;">
-0.8
-</td>
-<td style="text-align:right;">
 0.47
-</td>
-<td style="text-align:right;">
-4.4
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-3.16
-</td>
-<td style="text-align:right;">
-1.2
 </td>
 <td style="text-align:right;">
 0.41
 </td>
+<td style="text-align:right;">
+0.01
+</td>
 </tr>
 </tbody>
 </table>
+<p>These statistics show how <span class="math inline">\(\alpha\)</span> changes when the item is dropped. We can see that items N1 through N3 are more useful measures, as dropping them would result in a significant drop in <span class="math inline">\(\alpha\)</span>.</p>
 <pre class="r"><code>alpha_results %&gt;% 
   magrittr::extract2(&#39;alpha.drop&#39;) %&gt;% 
   as_data_frame() %&gt;% 
+  rename(`Raw` = raw_alpha,
+         Standardized = std.alpha,
+         G6 = `G6(smc)`,
+         `Avg. Inter-item cor` = average_r,
+         `Median r` = med.r,
+         `Variance r` = var.r) %&gt;% 
+  select(Raw, Standardized, `Avg. Inter-item cor`, `Median r`) %&gt;% 
   kable_df(digits = 2, caption = &#39;Reliability if the item is dropped.&#39;)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -682,28 +677,16 @@ Reliability if the item is dropped.
 <th style="text-align:left;">
 </th>
 <th style="text-align:right;">
-raw_alpha
+Raw
 </th>
 <th style="text-align:right;">
-std.alpha
+Standardized
 </th>
 <th style="text-align:right;">
-G6(smc)
+Avg. Inter-item cor
 </th>
 <th style="text-align:right;">
-average_r
-</th>
-<th style="text-align:right;">
-S/N
-</th>
-<th style="text-align:right;">
-alpha se
-</th>
-<th style="text-align:right;">
-var.r
-</th>
-<th style="text-align:right;">
-med.r
+Median r
 </th>
 </tr>
 </thead>
@@ -719,19 +702,7 @@ N1
 0.76
 </td>
 <td style="text-align:right;">
-0.71
-</td>
-<td style="text-align:right;">
 0.44
-</td>
-<td style="text-align:right;">
-3.14
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-0.01
 </td>
 <td style="text-align:right;">
 0.41
@@ -748,19 +719,7 @@ N2
 0.76
 </td>
 <td style="text-align:right;">
-0.72
-</td>
-<td style="text-align:right;">
 0.45
-</td>
-<td style="text-align:right;">
-3.23
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-0.01
 </td>
 <td style="text-align:right;">
 0.41
@@ -777,19 +736,7 @@ N3
 0.76
 </td>
 <td style="text-align:right;">
-0.73
-</td>
-<td style="text-align:right;">
 0.44
-</td>
-<td style="text-align:right;">
-3.11
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-0.02
 </td>
 <td style="text-align:right;">
 0.39
@@ -806,19 +753,7 @@ N4
 0.80
 </td>
 <td style="text-align:right;">
-0.77
-</td>
-<td style="text-align:right;">
 0.50
-</td>
-<td style="text-align:right;">
-3.92
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-0.02
 </td>
 <td style="text-align:right;">
 0.49
@@ -835,19 +770,7 @@ N5
 0.81
 </td>
 <td style="text-align:right;">
-0.79
-</td>
-<td style="text-align:right;">
 0.52
-</td>
-<td style="text-align:right;">
-4.34
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-0.01
 </td>
 <td style="text-align:right;">
 0.53
@@ -868,13 +791,33 @@ alpha.ci(neuro_fem_alpha,
          n.var = ncol(neuro_male)) )</code></pre>
 <div id="the-uncertainty-of-alpha" class="section level4">
 <h4>The Uncertainty of <span class="math inline">\(\alpha\)</span></h4>
-<pre class="r"><code># note that the non-boot ci output is only generated as part of the print method
+<p>One issue with Cronbach’s <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is almost never reported, even though it has been known for decades how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack"></span> package does this in two ways. One uses an approach noted in <span class="citation">@feldt_statistical_1987</span>, and which assumes fixed, rather than random, items and subjects. The other method is via the bootstrap, calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. Both results are shown below, with the bootstrapped value based on 1000 iterations.</p>
+<pre class="r"><code>test = neuroticism %&gt;% 
+  rownames_to_column(var=&#39;id&#39;) %&gt;% 
+  gather(key=item, value=score, -id) %&gt;% 
+  mutate(id = factor(id),
+         item = factor(item))
+
+library(lme4)
+lmer(score ~ 1 + (1|id), data=test)</code></pre>
+<pre class="r"><code>set.seed(123)
+
+# note that the non-boot ci output is only generated as part of the print method
 # for generic psych, and then cat(!), so there is no actual access to it.
 alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
                       alpha = alpha_results$total$raw_alpha, 
                       UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
 
-kable_df(alpha_ci)</code></pre>
+alpha_boot_ci = alpha(neuroticism, n.iter = 1000)$boot.ci %&gt;% 
+  t() %&gt;% 
+  data.frame() %&gt;% 
+  rename(LL = X2.5.,
+         alpha = X50.,
+         UL = X97.5.) 
+
+alpha_ci %&gt;% 
+  bind_rows(alpha_boot_ci) %&gt;% 
+  kable_df(digits = 4)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -892,17 +835,63 @@ UL
 <tbody>
 <tr>
 <td style="text-align:right;">
-0.803
+0.8030
 </td>
 <td style="text-align:right;">
-0.814
+0.8140
 </td>
 <td style="text-align:right;">
-0.825
+0.8250
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.8021
+</td>
+<td style="text-align:right;">
+0.8139
+</td>
+<td style="text-align:right;">
+0.8251
 </td>
 </tr>
 </tbody>
 </table>
+<p>We can see that the bootstrapped interval is perhaps slightly wider, but in either case we can see that our estimate of <span class="math inline">\(\alpha\)</span> would best be summarized as some value between .80 and .83.</p>
+<div id="a-bayesian-approach" class="section level5">
+<h5>A Bayesian Approach</h5>
+<p>An alternative approach to estimating the uncertainty in <span class="math inline">\(\alpha\)</span> would be a Bayesian estimate. We could estimate the value by first estimating the correlation matrix underlying the multivariate distribution of the observations/items. Thus the Bayesian <span class="math inline">\(\alpha\)</span> would be based on the posterior predictive distribution given the estimate of the correlation matrix. Another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory.</p>
+<pre class="r"><code>library(rstan); library(tidybayes)
+neuroticism_no_na = na.omit(scale(neuroticism))
+data_list = list(X=neuroticism_no_na, 
+                 N=nrow(neuroticism_no_na), 
+                 p=ncol(neuroticism_no_na),
+                 scale_flag = 0)
+alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)
+
+alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
+
+alpha_draws %&gt;% 
+  gather(key=alpha, value=value, -.chain, -.iteration, -.draw) %&gt;% 
+  qplot(x=value, geom = &#39;density&#39;, color = alpha, data=.)
+alpha_draws %&gt;% mean_qi()</code></pre>
+<pre class="r"><code># alpha as icc/generalizability statistic from g-theory
+
+library(rstanarm)
+mixed_congeneric_bayes = stan_lmer(value ~ (1|subject), d_congeneric_long_std, cores=4, thin=4)
+VarCorr(mixed_congeneric_bayes)
+
+# note that Sigma is var intercept, while sigma is residual sd
+var_comp_draws = spread_draws(mixed_congeneric_bayes, Sigma[subject:(Intercept),(Intercept)], sigma) %&gt;% 
+  mutate(sigma = sigma^2,
+         alpha = Sigma/(Sigma + sigma/N_items))
+
+# var_comp_draws %&gt;% mean_qi(alpha)
+print(alpha_bayes, par=&#39;alpha&#39;, digits=4)</code></pre>
+</div>
+</div>
+<div id="simulated-data" class="section level4">
+<h4>Simulated Data</h4>
 </div>
 </div>
 <div id="generalizability-theory" class="section level3">
@@ -910,6 +899,9 @@ UL
 <p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}\]</span></p>
 <div id="the-uncertainty-of-generalizability" class="section level4">
 <h4>The Uncertainty of Generalizability</h4>
+</div>
+<div id="simulated-data-1" class="section level4">
+<h4>Simulated Data</h4>
 </div>
 </div>
 <div id="factor-analysis" class="section level3">
