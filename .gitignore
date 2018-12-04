@@ -22,3 +22,5 @@ articles_drm/
 
 # because mac
 .DS_Store
+
+*_cache/

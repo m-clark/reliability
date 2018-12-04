@@ -64,7 +64,6 @@ generated quantities {
   
   if (scale_flag) {
     r_std = tcrossprod(r_chol);
-    r_cov = r_std;
     r = r_std;
   } else {
     r_std = tcrossprod(r_chol);

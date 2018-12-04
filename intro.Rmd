@@ -15,7 +15,7 @@ When used in everyday discourse, no one really wonders what we mean when we say 
 
 While we can talk about reliability from an everyday standpoint, the concept has been carried over to the realm of scientific analysis of data as well. And while the concept may be applied, it must of course become more precise, as scientific endeavor dictates.  It may surprise some that reliability has been studied scientifically for over a century.  With that knowledge however, it should not be too surprising that numerous statistical techniques have been advanced over that time, and the varieties will often align with different notions of reliability.
 
-<aside>Charles Spearman (1904) examined the attenuation of correlation due to measurement error, but there were still earlier investigations. See Revelle chapter 7 for a brief history[@revelle_psycho_text].</aside>
+<aside>Charles Spearman (1904) examined the attenuation of correlation due to measurement error, but there were still earlier investigations. See Revelle chapter 7 for a brief history[@revelle_introduction_nodate].</aside>
 
 Even when positing a specific statistic for reliability, our investigation should not end there.  As with the everyday notion of reliablity, there is <span class="emph">uncertainty</span> in the scientific measurement of it, and we should have some grasp of the nature of that uncertainty, else we risk becoming overly confident in our understanding of a measure.  Thus what holds for other statistical measures - means, regression coefficients, and so on - will apply to any measurment of reliability as well.
 

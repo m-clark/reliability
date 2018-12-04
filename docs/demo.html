@@ -835,7 +835,7 @@ UL
 <tbody>
 <tr>
 <td style="text-align:right;">
-0.8030
+0.803
 </td>
 <td style="text-align:right;">
 0.8140
@@ -846,13 +846,13 @@ UL
 </tr>
 <tr>
 <td style="text-align:right;">
-0.8021
+0.802
 </td>
 <td style="text-align:right;">
-0.8139
+0.8138
 </td>
 <td style="text-align:right;">
-0.8251
+0.8253
 </td>
 </tr>
 </tbody>
@@ -860,21 +860,102 @@ UL
 <p>We can see that the bootstrapped interval is perhaps slightly wider, but in either case we can see that our estimate of <span class="math inline">\(\alpha\)</span> would best be summarized as some value between .80 and .83.</p>
 <div id="a-bayesian-approach" class="section level5">
 <h5>A Bayesian Approach</h5>
-<p>An alternative approach to estimating the uncertainty in <span class="math inline">\(\alpha\)</span> would be a Bayesian estimate. We could estimate the value by first estimating the correlation matrix underlying the multivariate distribution of the observations/items. Thus the Bayesian <span class="math inline">\(\alpha\)</span> would be based on the posterior predictive distribution given the estimate of the correlation matrix. Another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory.</p>
+<p>An alternative approach to estimating the uncertainty in <span class="math inline">\(\alpha\)</span> would be a Bayesian estimate. We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items. Thus the Bayesian <span class="math inline">\(\alpha\)</span> would be based on the posterior predictive distribution given the estimate of the correlation matrix <span class="citation">@padilla_estimating_2011</span>. Alternatively, we could use a normal approximation for the distribution of the <span class="math inline">\(\alpha\)</span> itself, based on the estimated correlation matrix <span class="citation">@van_zyl_distribution_2000</span>. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section.</p>
 <pre class="r"><code>library(rstan); library(tidybayes)
+
 neuroticism_no_na = na.omit(scale(neuroticism))
+
 data_list = list(X=neuroticism_no_na, 
                  N=nrow(neuroticism_no_na), 
                  p=ncol(neuroticism_no_na),
                  scale_flag = 0)
+
 alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)
 
 alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
 
-alpha_draws %&gt;% 
-  gather(key=alpha, value=value, -.chain, -.iteration, -.draw) %&gt;% 
-  qplot(x=value, geom = &#39;density&#39;, color = alpha, data=.)
-alpha_draws %&gt;% mean_qi()</code></pre>
+# alpha_draws %&gt;% 
+#   gather(key=alpha, value=value, -.chain, -.iteration, -.draw) %&gt;% 
+#   qplot(x=value, geom = &#39;density&#39;, color = alpha, data=.)</code></pre>
+<pre class="r"><code>alpha_draws %&gt;% 
+  mean_qi() %&gt;% 
+  select(-.width, -.point, -.interval) %&gt;% 
+  tidyext::gather_multi(key     = value, 
+                        values  = vars(`Normal approx.`, `Post. Pred`, `Post. Pred. Non-normal`),
+                        varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with(&#39;alpha2&#39;), starts_with(&#39;theta&#39;))) %&gt;% 
+  kable_df()</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+value
+</th>
+<th style="text-align:right;">
+Normal approx.
+</th>
+<th style="text-align:right;">
+Post. Pred
+</th>
+<th style="text-align:right;">
+Post. Pred. Non-normal
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+alpha
+</td>
+<td style="text-align:right;">
+0.814
+</td>
+<td style="text-align:right;">
+0.814
+</td>
+<td style="text-align:right;">
+0.817
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+alpha.lower
+</td>
+<td style="text-align:right;">
+0.789
+</td>
+<td style="text-align:right;">
+0.805
+</td>
+<td style="text-align:right;">
+0.809
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+alpha.upper
+</td>
+<td style="text-align:right;">
+0.838
+</td>
+<td style="text-align:right;">
+0.822
+</td>
+<td style="text-align:right;">
+0.825
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="simulated-data" class="section level4">
+<h4>Simulated Data</h4>
+<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. We’ll skip the formality and cut right to the chase. Here are all the previous estimates for this data set.</p>
+</div>
+</div>
+<div id="generalizability-theory" class="section level3">
+<h3>Generalizability theory</h3>
+<p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}\]</span></p>
 <pre class="r"><code># alpha as icc/generalizability statistic from g-theory
 
 library(rstanarm)
@@ -888,15 +969,6 @@ var_comp_draws = spread_draws(mixed_congeneric_bayes, Sigma[subject:(Intercept),
 
 # var_comp_draws %&gt;% mean_qi(alpha)
 print(alpha_bayes, par=&#39;alpha&#39;, digits=4)</code></pre>
-</div>
-</div>
-<div id="simulated-data" class="section level4">
-<h4>Simulated Data</h4>
-</div>
-</div>
-<div id="generalizability-theory" class="section level3">
-<h3>Generalizability theory</h3>
-<p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}\]</span></p>
 <div id="the-uncertainty-of-generalizability" class="section level4">
 <h4>The Uncertainty of Generalizability</h4>
 </div>
