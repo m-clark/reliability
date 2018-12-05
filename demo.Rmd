@@ -158,17 +158,6 @@ alpha.ci(neuro_fem_alpha,
 
 One issue with Cronbach's $\alpha$ is that the uncertainty in the estimate is almost never reported, even though it has been known for decades how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack"></span> package does this in two ways.  One uses an approach noted in @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. The other method is via the bootstrap, calculating $\alpha$ for $R$ number of bootstrap resamples of the data. Both results are shown below, with the bootstrapped value based on 1000 iterations.
 
-```{r, eval=FALSE}
-test = neuroticism %>% 
-  rownames_to_column(var='id') %>% 
-  gather(key=item, value=score, -id) %>% 
-  mutate(id = factor(id),
-         item = factor(item))
-
-library(lme4)
-lmer(score ~ 1 + (1|id), data=test)
-```
-
 ```{r alpha_ci}
 set.seed(123)
 
@@ -187,14 +176,16 @@ alpha_boot_ci = alpha(neuroticism, n.iter = 1000)$boot.ci %>%
 
 alpha_ci %>% 
   bind_rows(alpha_boot_ci) %>% 
+  mutate(` ` = c('alpha raw', 'alpha boot')) %>% 
+  select(` `, LL, alpha, UL) %>% 
   kable_df(digits = 4)
 ```
 
-We can see that the bootstrapped interval is perhaps slightly wider, but in either case we can see that our estimate of $\alpha$ would best be summarized as some value between .80 and .83.
+We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of $\alpha$ would best be summarized as some value between .80 and .83.
 
 ##### A Bayesian Approach
 
-An alternative approach to estimating the uncertainty in $\alpha$ would be a Bayesian estimate.  We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items.  Thus the Bayesian $\alpha$ would be based on the posterior predictive distribution given the estimate of the correlation matrix @padilla_estimating_2011.  Alternatively, we could use a normal approximation for the distribution of the $\alpha$ itself, based on the estimated correlation matrix -@van_zyl_distribution_2000. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section.
+An alternative approach to estimating the uncertainty in $\alpha$ would be a Bayesian estimate.  We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items.  Thus the Bayesian $\alpha$ would be based on the posterior predictive distribution given the estimate of the correlation matrix @padilla_estimating_2011.  Alternatively, we could use a normal approximation for the distribution of the $\alpha$ itself, based on the estimated correlation matrix -@van_zyl_distribution_2000. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section.  More detail can be found in the supplemental materials.
 
 ```{r alpha_bayes_rstan, cache=TRUE, eval=T}
 library(rstan); library(tidybayes)
@@ -209,22 +200,54 @@ data_list = list(X=neuroticism_no_na,
 alpha_bayes = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin = 4)
 
 alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
-
-# alpha_draws %>% 
-#   gather(key=alpha, value=value, -.chain, -.iteration, -.draw) %>% 
-#   qplot(x=value, geom = 'density', color = alpha, data=.)
 ```
 
 
 ```{r alpha_bayes_rstan_present}
-alpha_draws %>% 
-  mean_qi() %>% 
+alpha_bayes_ci = 
+  alpha_draws %>% 
+  tidybayes::mean_qi() %>% 
   select(-.width, -.point, -.interval) %>% 
   tidyext::gather_multi(key     = value, 
                         values  = vars(`Normal approx.`, `Post. Pred`, `Post. Pred. Non-normal`),
-                        varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with('alpha2'), starts_with('theta'))) %>% 
+                        varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with('alpha2'), starts_with('theta'))) 
+
+alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %>% 
+  mutate(` ` = c('Normal approx.', 'Post. Pred', 'Post. Pred. Non-normal')) %>% 
+  select(` `, everything()) %>% 
+  rename(alpha = V1,
+         LL = V2,
+         UL = V3) %>% 
+  select(` `, LL, alpha, UL)
+
+alpha_bayes_ci %>% 
   kable_df()
 ```
+
+We can also view these estimates directly.  The normal approximation is wider than the other two.
+
+```{r vis_alpha_bayes}
+alpha_draws %>%
+  gather(key=alpha, value=value, -.chain, -.iteration, -.draw) %>%
+  qplot(x=value, geom = 'density', data=., 
+        fill = alpha,
+        color = alpha) +
+  scico::scale_fill_scico_d(alpha = .5) +
+  scico::scale_color_scico_d(alpha = .75) +
+  theme_trueMinimal()
+```
+
+Here are all the estimates of uncertainty calculated.
+
+```{r alpha_all}
+alpha_ci %>% 
+  bind_rows(alpha_boot_ci) %>% 
+  mutate(` ` = c('alpha raw', 'alpha boot')) %>% 
+  select(` `, LL, alpha, UL) %>% 
+  bind_rows(alpha_bayes_ci) %>% 
+  kable_df(digits = 2)
+```
+
 
 
 #### Simulated Data

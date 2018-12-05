@@ -2,8 +2,3 @@ title: 'reliability'
 output_dir: "docs"
 
 
-rmd: [
-  'index.Rmd',
-  'intro.Rmd',
-  'meaning.Rmd'
-]

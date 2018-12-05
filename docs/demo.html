@@ -792,14 +792,6 @@ alpha.ci(neuro_fem_alpha,
 <div id="the-uncertainty-of-alpha" class="section level4">
 <h4>The Uncertainty of <span class="math inline">\(\alpha\)</span></h4>
 <p>One issue with Cronbach’s <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is almost never reported, even though it has been known for decades how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack"></span> package does this in two ways. One uses an approach noted in <span class="citation">@feldt_statistical_1987</span>, and which assumes fixed, rather than random, items and subjects. The other method is via the bootstrap, calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. Both results are shown below, with the bootstrapped value based on 1000 iterations.</p>
-<pre class="r"><code>test = neuroticism %&gt;% 
-  rownames_to_column(var=&#39;id&#39;) %&gt;% 
-  gather(key=item, value=score, -id) %&gt;% 
-  mutate(id = factor(id),
-         item = factor(item))
-
-library(lme4)
-lmer(score ~ 1 + (1|id), data=test)</code></pre>
 <pre class="r"><code>set.seed(123)
 
 # note that the non-boot ci output is only generated as part of the print method
@@ -817,10 +809,14 @@ alpha_boot_ci = alpha(neuroticism, n.iter = 1000)$boot.ci %&gt;%
 
 alpha_ci %&gt;% 
   bind_rows(alpha_boot_ci) %&gt;% 
+  mutate(` ` = c(&#39;alpha raw&#39;, &#39;alpha boot&#39;)) %&gt;% 
+  select(` `, LL, alpha, UL) %&gt;% 
   kable_df(digits = 4)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
+<th style="text-align:left;">
+</th>
 <th style="text-align:right;">
 LL
 </th>
@@ -834,8 +830,11 @@ UL
 </thead>
 <tbody>
 <tr>
+<td style="text-align:left;">
+alpha raw
+</td>
 <td style="text-align:right;">
-0.803
+0.8030
 </td>
 <td style="text-align:right;">
 0.8140
@@ -845,25 +844,44 @@ UL
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
-0.802
+<td style="text-align:left;">
+alpha boot
 </td>
 <td style="text-align:right;">
-0.8138
+0.8005
 </td>
 <td style="text-align:right;">
-0.8253
+0.8139
+</td>
+<td style="text-align:right;">
+0.8255
 </td>
 </tr>
 </tbody>
 </table>
-<p>We can see that the bootstrapped interval is perhaps slightly wider, but in either case we can see that our estimate of <span class="math inline">\(\alpha\)</span> would best be summarized as some value between .80 and .83.</p>
+<p>We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of <span class="math inline">\(\alpha\)</span> would best be summarized as some value between .80 and .83.</p>
 <div id="a-bayesian-approach" class="section level5">
 <h5>A Bayesian Approach</h5>
-<p>An alternative approach to estimating the uncertainty in <span class="math inline">\(\alpha\)</span> would be a Bayesian estimate. We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items. Thus the Bayesian <span class="math inline">\(\alpha\)</span> would be based on the posterior predictive distribution given the estimate of the correlation matrix <span class="citation">@padilla_estimating_2011</span>. Alternatively, we could use a normal approximation for the distribution of the <span class="math inline">\(\alpha\)</span> itself, based on the estimated correlation matrix <span class="citation">@van_zyl_distribution_2000</span>. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section.</p>
-<pre class="r"><code>library(rstan); library(tidybayes)
-
-neuroticism_no_na = na.omit(scale(neuroticism))
+<p>An alternative approach to estimating the uncertainty in <span class="math inline">\(\alpha\)</span> would be a Bayesian estimate. We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items. Thus the Bayesian <span class="math inline">\(\alpha\)</span> would be based on the posterior predictive distribution given the estimate of the correlation matrix <span class="citation">@padilla_estimating_2011</span>. Alternatively, we could use a normal approximation for the distribution of the <span class="math inline">\(\alpha\)</span> itself, based on the estimated correlation matrix <span class="citation">@van_zyl_distribution_2000</span>. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section. More detail can be found in the supplemental materials.</p>
+<pre class="r"><code>library(rstan); library(tidybayes)</code></pre>
+<pre><code>## Loading required package: StanHeaders</code></pre>
+<pre><code>## rstan (Version 2.18.2, GitRev: 2e1f913d3ca3)</code></pre>
+<pre><code>## For execution on a local, multicore CPU with excess RAM we recommend calling
+## options(mc.cores = parallel::detectCores()).
+## To avoid recompilation of unchanged Stan programs, we recommend calling
+## rstan_options(auto_write = TRUE)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rstan&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:psych&#39;:
+## 
+##     lookup</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     extract</code></pre>
+<pre><code>## NOTE: As of tidybayes version 1.0, several functions, arguments, and output column names
+##       have undergone significant name changes in order to adopt a unified naming scheme.
+##       See help(&#39;tidybayes-deprecated&#39;) for more information.</code></pre>
+<pre class="r"><code>neuroticism_no_na = na.omit(scale(neuroticism))
 
 data_list = list(X=neuroticism_no_na, 
                  N=nrow(neuroticism_no_na), 
@@ -872,76 +890,188 @@ data_list = list(X=neuroticism_no_na,
 
 alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)
 
-alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
-
-# alpha_draws %&gt;% 
-#   gather(key=alpha, value=value, -.chain, -.iteration, -.draw) %&gt;% 
-#   qplot(x=value, geom = &#39;density&#39;, color = alpha, data=.)</code></pre>
-<pre class="r"><code>alpha_draws %&gt;% 
-  mean_qi() %&gt;% 
+alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)</code></pre>
+<pre class="r"><code>alpha_bayes_ci = 
+  alpha_draws %&gt;% 
+  tidybayes::mean_qi() %&gt;% 
   select(-.width, -.point, -.interval) %&gt;% 
   tidyext::gather_multi(key     = value, 
                         values  = vars(`Normal approx.`, `Post. Pred`, `Post. Pred. Non-normal`),
-                        varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with(&#39;alpha2&#39;), starts_with(&#39;theta&#39;))) %&gt;% 
+                        varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with(&#39;alpha2&#39;), starts_with(&#39;theta&#39;))) 
+
+alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %&gt;% 
+  mutate(` ` = c(&#39;Normal approx.&#39;, &#39;Post. Pred&#39;, &#39;Post. Pred. Non-normal&#39;)) %&gt;% 
+  select(` `, everything()) %&gt;% 
+  rename(alpha = V1,
+         LL = V2,
+         UL = V3) %&gt;% 
+  select(` `, LL, alpha, UL)
+
+alpha_bayes_ci %&gt;% 
   kable_df()</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
-value
 </th>
 <th style="text-align:right;">
-Normal approx.
+LL
 </th>
 <th style="text-align:right;">
-Post. Pred
+alpha
 </th>
 <th style="text-align:right;">
-Post. Pred. Non-normal
+UL
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:left;">
-alpha
-</td>
-<td style="text-align:right;">
-0.814
-</td>
-<td style="text-align:right;">
-0.814
-</td>
-<td style="text-align:right;">
-0.817
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-alpha.lower
+Normal approx.
 </td>
 <td style="text-align:right;">
 0.789
 </td>
 <td style="text-align:right;">
-0.805
-</td>
-<td style="text-align:right;">
-0.809
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-alpha.upper
+0.814
 </td>
 <td style="text-align:right;">
 0.838
 </td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Post. Pred
+</td>
+<td style="text-align:right;">
+0.805
+</td>
+<td style="text-align:right;">
+0.814
+</td>
 <td style="text-align:right;">
 0.822
 </td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Post. Pred. Non-normal
+</td>
+<td style="text-align:right;">
+0.809
+</td>
+<td style="text-align:right;">
+0.817
+</td>
 <td style="text-align:right;">
 0.825
+</td>
+</tr>
+</tbody>
+</table>
+<p>We can also view these estimates directly. The normal approximation is wider than the other two.</p>
+<pre class="r"><code>alpha_draws %&gt;%
+  gather(key=alpha, value=value, -.chain, -.iteration, -.draw) %&gt;%
+  qplot(x=value, geom = &#39;density&#39;, data=., 
+        fill = alpha,
+        color = alpha) +
+  scico::scale_fill_scico_d(alpha = .5) +
+  scico::scale_color_scico_d(alpha = .75) +
+  theme_trueMinimal()</code></pre>
+<p><img src="demo_files/figure-html/vis_alpha_bayes-1.png" width="672" /></p>
+<p>Here are all the estimates of uncertainty calculated.</p>
+<pre class="r"><code>alpha_ci %&gt;% 
+  bind_rows(alpha_boot_ci) %&gt;% 
+  mutate(` ` = c(&#39;alpha raw&#39;, &#39;alpha boot&#39;)) %&gt;% 
+  select(` `, LL, alpha, UL) %&gt;% 
+  bind_rows(alpha_bayes_ci) %&gt;% 
+  kable_df(digits = 2)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+LL
+</th>
+<th style="text-align:right;">
+alpha
+</th>
+<th style="text-align:right;">
+UL
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+alpha raw
+</td>
+<td style="text-align:right;">
+0.80
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.82
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+alpha boot
+</td>
+<td style="text-align:right;">
+0.80
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.83
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Normal approx.
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Post. Pred
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.82
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Post. Pred. Non-normal
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.82
+</td>
+<td style="text-align:right;">
+0.82
 </td>
 </tr>
 </tbody>
