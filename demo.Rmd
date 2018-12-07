@@ -187,9 +187,12 @@ We can see that the bootstrapped interval is essentially the same, but in either
 
 An alternative approach to estimating the uncertainty in $\alpha$ would be a Bayesian estimate.  We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items.  Thus the Bayesian $\alpha$ would be based on the posterior predictive distribution given the estimate of the correlation matrix @padilla_estimating_2011.  Alternatively, we could use a normal approximation for the distribution of the $\alpha$ itself, based on the estimated correlation matrix -@van_zyl_distribution_2000. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section.  More detail can be found in the supplemental materials.
 
-```{r alpha_bayes_rstan, cache=TRUE, eval=T}
+```{r load_bayes_packages}
 library(rstan); library(tidybayes)
+```
 
+
+```{r alpha_bayes_rstan, cache=TRUE, eval=T}
 neuroticism_no_na = na.omit(scale(neuroticism))
 
 data_list = list(X=neuroticism_no_na, 
@@ -237,7 +240,7 @@ alpha_draws %>%
   theme_trueMinimal()
 ```
 
-Here are all the estimates of uncertainty calculated.
+Here are all the estimates of uncertainty calculated.  For this amount of data it is not surprising that they are mostly in agreement, though the normal approximation may be a little wider.
 
 ```{r alpha_all}
 alpha_ci %>% 
@@ -253,6 +256,54 @@ alpha_ci %>%
 #### Simulated Data
 
 The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  We'll skip the formality and cut right to the chase.  Here are all the previous estimates for this data set.
+
+```{r alpha_congeneric, cache=TRUE}
+alpha_results = psych::alpha(data_congeneric)
+alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
+                      alpha = alpha_results$total$raw_alpha, 
+                      UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
+
+alpha_boot_ci = alpha(data_congeneric, n.iter = 1000)$boot.ci %>% 
+  t() %>% 
+  data.frame() %>% 
+  rename(LL = X2.5.,
+         alpha = X50.,
+         UL = X97.5.) 
+
+data_list = list(X=data_congeneric, 
+                 N=nrow(data_congeneric), 
+                 p=ncol(data_congeneric),
+                 scale_flag = 0)
+
+alpha_bayes = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin = 4)
+
+alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
+
+alpha_bayes_ci = 
+  alpha_draws %>% 
+  tidybayes::mean_qi() %>% 
+  select(-.width, -.point, -.interval) %>% 
+  tidyext::gather_multi(key     = value, 
+                        values  = vars(`Normal approx.`, `Post. Pred`, `Post. Pred. Non-normal`),
+                        varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with('alpha2'), starts_with('theta'))) 
+
+alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %>% 
+  mutate(` ` = c('Normal approx.', 'Post. Pred', 'Post. Pred. Non-normal')) %>% 
+  select(` `, everything()) %>% 
+  rename(alpha = V1,
+         LL = V2,
+         UL = V3) %>% 
+  select(` `, LL, alpha, UL)
+
+alpha_ci %>% 
+  bind_rows(alpha_boot_ci) %>% 
+  mutate(` ` = c('alpha raw', 'alpha boot')) %>% 
+  select(` `, LL, alpha, UL) %>% 
+  bind_rows(alpha_bayes_ci) %>% 
+  kable_df(digits = 2)
+
+```
+
 
 
 ### Generalizability theory
