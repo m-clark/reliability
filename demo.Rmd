@@ -46,7 +46,7 @@ neuroticism %>%
 
 
 ```{r bfi_corr}
-# visibly::corr_heat(cor(neuroticism, use = 'pair'), pal = 'bilbao', dir=1)
+# visibly::corr_heat(cor(neuroticism, use = 'pair'), pal = 'acton', dir=1)
 
 cor(neuroticism, use = 'pair') %>% 
   kable_df(digits=2)
@@ -201,12 +201,12 @@ data_list = list(X=neuroticism_no_na,
                  scale_flag = 0)
 
 alpha_bayes = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin = 4)
-
-alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
 ```
 
 
 ```{r alpha_bayes_rstan_present}
+alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
+
 alpha_bayes_ci = 
   alpha_draws %>% 
   tidybayes::mean_qi() %>% 
@@ -249,13 +249,29 @@ alpha_ci %>%
   select(` `, LL, alpha, UL) %>% 
   bind_rows(alpha_bayes_ci) %>% 
   kable_df(digits = 2)
+
+res = alpha_ci %>% 
+  bind_rows(alpha_boot_ci) %>% 
+  mutate(` ` = c('raw', 'boot')) %>% 
+  select(` `, LL, alpha, UL) %>% 
+  bind_rows(alpha_bayes_ci) %>% 
+  rename(Coefficient = ` `,
+         value = alpha,
+         ui_l = LL,
+         ui_u = UL) 
+
+visibly:::plot_coefs(res,
+                     palette = 'acton',
+                     ref_line = alpha_ci$alpha,
+                     trans = NULL) +
+  labs(y='')
 ```
 
 
 
 #### Simulated Data
 
-The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  We'll skip the formality and cut right to the chase.  Here are all the previous estimates for this data set.
+The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  We'll skip the formality and cut right to the chase.  Here are all the previous estimates for this data set.  The $\alpha$ is 
 
 ```{r alpha_congeneric, cache=TRUE}
 alpha_results = psych::alpha(data_congeneric)
@@ -276,7 +292,9 @@ data_list = list(X=data_congeneric,
                  scale_flag = 0)
 
 alpha_bayes = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin = 4)
+```
 
+```{r alpha_congeneric_compare}
 alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
 
 alpha_bayes_ci = 
@@ -295,13 +313,24 @@ alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %>%
          UL = V3) %>% 
   select(` `, LL, alpha, UL)
 
-alpha_ci %>% 
+alpha_compare = alpha_ci %>% 
   bind_rows(alpha_boot_ci) %>% 
   mutate(` ` = c('alpha raw', 'alpha boot')) %>% 
   select(` `, LL, alpha, UL) %>% 
-  bind_rows(alpha_bayes_ci) %>% 
-  kable_df(digits = 2)
+  bind_rows(alpha_bayes_ci)
 
+alpha_compare %>% kable_df(digits = 2)
+
+res = alpha_compare %>% 
+  rename(Coefficient = ` `,
+         value = alpha,
+         ui_l = LL,
+         ui_u = UL) 
+visibly:::plot_coefs(res,
+                     palette = 'bilbao',
+                     ref_line = alpha_ci$alpha,
+                     trans = NULL) +
+  labs(y='')
 ```
 
 

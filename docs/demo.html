@@ -285,7 +285,7 @@ N5
 </tr>
 </tbody>
 </table>
-<pre class="r"><code># visibly::corr_heat(cor(neuroticism, use = &#39;pair&#39;), pal = &#39;bilbao&#39;, dir=1)
+<pre class="r"><code># visibly::corr_heat(cor(neuroticism, use = &#39;pair&#39;), pal = &#39;acton&#39;, dir=1)
 
 cor(neuroticism, use = &#39;pair&#39;) %&gt;% 
   kable_df(digits=2)</code></pre>
@@ -848,13 +848,13 @@ alpha raw
 alpha boot
 </td>
 <td style="text-align:right;">
-0.8015
+0.8022
 </td>
 <td style="text-align:right;">
-0.8144
+0.8139
 </td>
 <td style="text-align:right;">
-0.8258
+0.8255
 </td>
 </tr>
 </tbody>
@@ -888,10 +888,10 @@ data_list = list(X=neuroticism_no_na,
                  p=ncol(neuroticism_no_na),
                  scale_flag = 0)
 
-alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)
+alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)</code></pre>
+<pre class="r"><code>alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
 
-alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)</code></pre>
-<pre class="r"><code>alpha_bayes_ci = 
+alpha_bayes_ci = 
   alpha_draws %&gt;% 
   tidybayes::mean_qi() %&gt;% 
   select(-.width, -.point, -.interval) %&gt;% 
@@ -1076,11 +1076,27 @@ Post. Pred. Non-normal
 </tr>
 </tbody>
 </table>
+<pre class="r"><code>res = alpha_ci %&gt;% 
+  bind_rows(alpha_boot_ci) %&gt;% 
+  mutate(` ` = c(&#39;raw&#39;, &#39;boot&#39;)) %&gt;% 
+  select(` `, LL, alpha, UL) %&gt;% 
+  bind_rows(alpha_bayes_ci) %&gt;% 
+  rename(Coefficient = ` `,
+         value = alpha,
+         ui_l = LL,
+         ui_u = UL) 
+
+visibly:::plot_coefs(res,
+                     palette = &#39;acton&#39;,
+                     ref_line = alpha_ci$alpha,
+                     trans = NULL) +
+  labs(y=&#39;&#39;)</code></pre>
+<p><img src="demo_files/figure-html/alpha_all-1.png" width="672" /></p>
 </div>
 </div>
 <div id="simulated-data" class="section level4">
 <h4>Simulated Data</h4>
-<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. We’ll skip the formality and cut right to the chase. Here are all the previous estimates for this data set.</p>
+<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. We’ll skip the formality and cut right to the chase. Here are all the previous estimates for this data set. The <span class="math inline">\(\alpha\)</span> is</p>
 <pre class="r"><code>alpha_results = psych::alpha(data_congeneric)
 alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
                       alpha = alpha_results$total$raw_alpha, 
@@ -1098,9 +1114,8 @@ data_list = list(X=data_congeneric,
                  p=ncol(data_congeneric),
                  scale_flag = 0)
 
-alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)
-
-alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
+alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)</code></pre>
+<pre class="r"><code>alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
 
 alpha_bayes_ci = 
   alpha_draws %&gt;% 
@@ -1118,12 +1133,13 @@ alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %&gt;%
          UL = V3) %&gt;% 
   select(` `, LL, alpha, UL)
 
-alpha_ci %&gt;% 
+alpha_compare = alpha_ci %&gt;% 
   bind_rows(alpha_boot_ci) %&gt;% 
   mutate(` ` = c(&#39;alpha raw&#39;, &#39;alpha boot&#39;)) %&gt;% 
   select(` `, LL, alpha, UL) %&gt;% 
-  bind_rows(alpha_bayes_ci) %&gt;% 
-  kable_df(digits = 2)</code></pre>
+  bind_rows(alpha_bayes_ci)
+
+alpha_compare %&gt;% kable_df(digits = 2)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1213,6 +1229,17 @@ Post. Pred. Non-normal
 </tr>
 </tbody>
 </table>
+<pre class="r"><code>res = alpha_compare %&gt;% 
+  rename(Coefficient = ` `,
+         value = alpha,
+         ui_l = LL,
+         ui_u = UL) 
+visibly:::plot_coefs(res,
+                     palette = &#39;bilbao&#39;,
+                     ref_line = alpha_ci$alpha,
+                     trans = NULL) +
+  labs(y=&#39;&#39;)</code></pre>
+<p><img src="demo_files/figure-html/alpha_congeneric_compare-1.png" width="672" /></p>
 </div>
 </div>
 <div id="generalizability-theory" class="section level3">
