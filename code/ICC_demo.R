@@ -14,7 +14,7 @@ n_judges = n_subjects = 6
 
 Ratings_long = Ratings %>% 
   gather(key = 'Judge', value = Rating) %>% 
-  mutate(Subject = sapply(1:n_subjects, paste0, 'S'))
+  mutate(Subject = rep(sapply(1:n_subjects, paste0, 'S'), n_judges))
 
 cor(Ratings) # check
 
