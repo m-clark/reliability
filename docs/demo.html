@@ -97,6 +97,9 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
@@ -104,14 +107,74 @@ button.code-folding-btn:focus {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -834,10 +897,10 @@ UL
 alpha raw
 </td>
 <td style="text-align:right;">
-0.8030
+0.803
 </td>
 <td style="text-align:right;">
-0.8140
+0.814
 </td>
 <td style="text-align:right;">
 0.8250
@@ -848,10 +911,10 @@ alpha raw
 alpha boot
 </td>
 <td style="text-align:right;">
-0.8022
+0.802
 </td>
 <td style="text-align:right;">
-0.8139
+0.814
 </td>
 <td style="text-align:right;">
 0.8255
@@ -1096,7 +1159,7 @@ visibly:::plot_coefs(res,
 </div>
 <div id="simulated-data" class="section level4">
 <h4>Simulated Data</h4>
-<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. We’ll skip the formality and cut right to the chase. Here are all the previous estimates for this data set. The <span class="math inline">\(\alpha\)</span> is</p>
+<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. We’ll skip the formality and cut right to the chase. Here are all the previous estimates shown for this data set. The <span class="math inline">\(\alpha\)</span> is lower for this particular data, but in general we’re seeing the same thing.</p>
 <pre class="r"><code>alpha_results = psych::alpha(data_congeneric)
 alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
                       alpha = alpha_results$total$raw_alpha, 
@@ -1135,7 +1198,7 @@ alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %&gt;%
 
 alpha_compare = alpha_ci %&gt;% 
   bind_rows(alpha_boot_ci) %&gt;% 
-  mutate(` ` = c(&#39;alpha raw&#39;, &#39;alpha boot&#39;)) %&gt;% 
+  mutate(` ` = c(&#39;raw&#39;, &#39;boot&#39;)) %&gt;% 
   select(` `, LL, alpha, UL) %&gt;% 
   bind_rows(alpha_bayes_ci)
 
@@ -1159,7 +1222,7 @@ UL
 <tbody>
 <tr>
 <td style="text-align:left;">
-alpha raw
+raw
 </td>
 <td style="text-align:right;">
 0.69
@@ -1173,7 +1236,7 @@ alpha raw
 </tr>
 <tr>
 <td style="text-align:left;">
-alpha boot
+boot
 </td>
 <td style="text-align:right;">
 0.69

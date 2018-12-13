@@ -271,7 +271,7 @@ visibly:::plot_coefs(res,
 
 #### Simulated Data
 
-The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  We'll skip the formality and cut right to the chase.  Here are all the previous estimates for this data set.  The $\alpha$ is 
+The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  We'll skip the formality and cut right to the chase.  Here are all the previous estimates shown for this data set.  The $\alpha$ is lower for this particular data, but in general we're seeing the same thing.
 
 ```{r alpha_congeneric, cache=TRUE}
 alpha_results = psych::alpha(data_congeneric)
@@ -315,7 +315,7 @@ alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %>%
 
 alpha_compare = alpha_ci %>% 
   bind_rows(alpha_boot_ci) %>% 
-  mutate(` ` = c('alpha raw', 'alpha boot')) %>% 
+  mutate(` ` = c('raw', 'boot')) %>% 
   select(` `, LL, alpha, UL) %>% 
   bind_rows(alpha_bayes_ci)
 
