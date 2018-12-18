@@ -897,10 +897,10 @@ UL
 alpha raw
 </td>
 <td style="text-align:right;">
-0.803
+0.8030
 </td>
 <td style="text-align:right;">
-0.814
+0.8140
 </td>
 <td style="text-align:right;">
 0.8250
@@ -911,13 +911,13 @@ alpha raw
 alpha boot
 </td>
 <td style="text-align:right;">
-0.802
+0.8016
 </td>
 <td style="text-align:right;">
-0.814
+0.8139
 </td>
 <td style="text-align:right;">
-0.8255
+0.8248
 </td>
 </tr>
 </tbody>
@@ -1092,7 +1092,7 @@ alpha boot
 0.81
 </td>
 <td style="text-align:right;">
-0.83
+0.82
 </td>
 </tr>
 <tr>
@@ -1307,6 +1307,10 @@ visibly:::plot_coefs(res,
 </div>
 <div id="generalizability-theory" class="section level3">
 <h3>Generalizability theory</h3>
+<blockquote>
+<p>So called mixed effects models are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region). This clustering can be hierarchical in nature or not. While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.</p>
+</blockquote>
+<p>Mixed models estimate the variance attributable to various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, schools, surgical procedure or whatever our grouping</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}\]</span></p>
 <pre class="r"><code># alpha as icc/generalizability statistic from g-theory
 
