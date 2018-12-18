@@ -337,6 +337,13 @@ visibly:::plot_coefs(res,
 
 ### Generalizability theory
 
+So called 'mixed effects' models are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region).  This clustering can be hierarchical in nature or not. While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.
+
+Mixed models estimate the variance attributable to various sources of dependency in the data.  Thus, aside from the usual regression output, we get a sense of variability due to individuals, schools, surgical procedure or whatever our grouping structure is.  In addition, we may estimate cluster-specific effects, which allow for increased predictive capability.   Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.  These effects
+
+<span class="emph">Generalizability Theory</span> focuses on the variance.
+
+
 $$\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}$$
 
 
