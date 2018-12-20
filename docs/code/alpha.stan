@@ -43,7 +43,7 @@ model {
   r = tcrossprod(r_chol);    
   
   // note that p^2/(p-1)^2 in some depictions is already in the calculation here
-  omega_sq = 2 * p^2 / ((p - 1)^2 * sum(r)^3) * 
+  omega_sq = (2 * p^2 / ((p - 1)^2 * sum(r)^3)) * 
     (sum(r) * trace(r .* r) + sum(r) * trace(r)^2 - 2 * trace(r) * sum(r .* r)) ;  
   omega = sqrt(omega_sq); 
   

@@ -103,9 +103,7 @@ The following shows the results from the <span class="pack">psych</span> package
 
 
 ```{r cronbach_base}
-# psych::alpha(neuroticism) %>% print(digits=3)
 alpha_results = psych::alpha(neuroticism)
-
 
 alpha_results %>% 
   magrittr::extract2('total') %>% 
@@ -156,30 +154,35 @@ alpha.ci(neuro_fem_alpha,
 
 #### The Uncertainty of $\alpha$
 
-One issue with Cronbach's $\alpha$ is that the uncertainty in the estimate is almost never reported, even though it has been known for decades how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack"></span> package does this in two ways.  One uses an approach noted in @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. The other method is via the bootstrap, calculating $\alpha$ for $R$ number of bootstrap resamples of the data. Both results are shown below, with the bootstrapped value based on 1000 iterations.
+One issue with Cronbach's $\alpha$ is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack">MBESS</span> package does this in a variety ways.  One uses an approach noted in @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. One is a normal based approximation (see @van_zyl_distribution_2000). The other method is via the bootstrap (@kelley_confidence_2016), calculating $\alpha$ for $R$ number of bootstrap resamples of the data. Results are shown below, with the bootstrapped value based on 1000 iterations.
 
-```{r alpha_ci}
+```{r alpha_ci_boot, cache=TRUE}
+library(MBESS)
+
 set.seed(123)
 
-# note that the non-boot ci output is only generated as part of the print method
-# for generic psych, and then cat(!), so there is no actual access to it.
-alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
-                      alpha = alpha_results$total$raw_alpha, 
-                      UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
+alpha_ci_boot   = ci.reliability(neuroticism, type = 'alpha', interval.type = 'perc', B = 1000)
+alpha_ci_feldt  = ci.reliability(neuroticism, type = 'alpha', interval.type = 'feldt')
+alpha_ci_normal = ci.reliability(neuroticism, type = 'alpha', interval.type = 'ml')
+```
 
-alpha_boot_ci = alpha(neuroticism, n.iter = 1000)$boot.ci %>% 
-  t() %>% 
-  data.frame() %>% 
-  rename(LL = X2.5.,
-         alpha = X50.,
-         UL = X97.5.) 
+```{r alpha_ci_results}
+alpha_ci_results = list(alpha_ci_boot, alpha_ci_feldt, alpha_ci_normal) %>% 
+  map_df(as_tibble)
 
-alpha_ci %>% 
-  bind_rows(alpha_boot_ci) %>% 
-  mutate(` ` = c('alpha raw', 'alpha boot')) %>% 
-  select(` `, LL, alpha, UL) %>% 
+
+alpha_ci_results = alpha_ci_results %>% 
+  select(interval.type, ci.lower, est, ci.upper) %>% 
+  mutate(interval.type = c('boot', 'feldt', 'normal')) %>% 
+  rename(` ` = interval.type,
+         LL  = ci.lower,
+         alpha = est,
+         UL = ci.upper) 
+
+alpha_ci_results  %>% 
   kable_df(digits = 4)
 ```
+
 
 We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of $\alpha$ would best be summarized as some value between .80 and .83.
 
@@ -243,17 +246,11 @@ alpha_draws %>%
 Here are all the estimates of uncertainty calculated.  For this amount of data it is not surprising that they are mostly in agreement, though the normal approximation may be a little wider.
 
 ```{r alpha_all}
-alpha_ci %>% 
-  bind_rows(alpha_boot_ci) %>% 
-  mutate(` ` = c('alpha raw', 'alpha boot')) %>% 
-  select(` `, LL, alpha, UL) %>% 
+alpha_ci_results %>% 
   bind_rows(alpha_bayes_ci) %>% 
   kable_df(digits = 2)
 
-res = alpha_ci %>% 
-  bind_rows(alpha_boot_ci) %>% 
-  mutate(` ` = c('raw', 'boot')) %>% 
-  select(` `, LL, alpha, UL) %>% 
+res = alpha_ci_results %>% 
   bind_rows(alpha_bayes_ci) %>% 
   rename(Coefficient = ` `,
          value = alpha,
@@ -262,7 +259,7 @@ res = alpha_ci %>%
 
 visibly:::plot_coefs(res,
                      palette = 'acton',
-                     ref_line = alpha_ci$alpha,
+                     ref_line = alpha_results$total$raw_alpha,
                      trans = NULL) +
   labs(y='')
 ```
@@ -273,31 +270,45 @@ visibly:::plot_coefs(res,
 
 The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  We'll skip the formality and cut right to the chase.  Here are all the previous estimates shown for this data set.  The $\alpha$ is lower for this particular data, but in general we're seeing the same thing.
 
-```{r alpha_congeneric, cache=TRUE}
-alpha_results = psych::alpha(data_congeneric)
-alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
-                      alpha = alpha_results$total$raw_alpha, 
-                      UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
+```{r alpha_congeneric}
+alpha_results_con = psych::alpha(data_congeneric)
+```
 
-alpha_boot_ci = alpha(data_congeneric, n.iter = 1000)$boot.ci %>% 
-  t() %>% 
-  data.frame() %>% 
-  rename(LL = X2.5.,
-         alpha = X50.,
-         UL = X97.5.) 
+```{r alpha_ci_boot_congeneric, cache=TRUE}
+library(MBESS)
 
+set.seed(123)
+
+alpha_ci_boot_con   = ci.reliability(data_congeneric, type = 'alpha', interval.type = 'perc', B = 1000)
+alpha_ci_feldt_con  = ci.reliability(data_congeneric, type = 'alpha', interval.type = 'feldt')
+alpha_ci_normal_con = ci.reliability(data_congeneric, type = 'alpha', interval.type = 'ml')
+```
+
+```{r alpha_bayes_congeneric, cache=TRUE}
 data_list = list(X=data_congeneric, 
                  N=nrow(data_congeneric), 
                  p=ncol(data_congeneric),
                  scale_flag = 0)
 
-alpha_bayes = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin = 4)
+alpha_bayes_con = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin = 4)
 ```
 
-```{r alpha_congeneric_compare}
-alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
+```{r alpha_compare_congeneric}
+alpha_ci_results_con = list(alpha_ci_boot_con, alpha_ci_feldt_con, alpha_ci_normal_con) %>% 
+  map_df(as_tibble)
 
-alpha_bayes_ci = 
+
+alpha_ci_results_con = alpha_ci_results_con %>% 
+  select(interval.type, ci.lower, est, ci.upper) %>% 
+  mutate(interval.type = c('boot', 'feldt', 'normal')) %>% 
+  rename(` ` = interval.type,
+         LL  = ci.lower,
+         alpha = est,
+         UL = ci.upper) 
+
+alpha_draws = spread_draws(alpha_bayes_con, alpha, alpha2, theta)
+
+alpha_bayes_ci_con = 
   alpha_draws %>% 
   tidybayes::mean_qi() %>% 
   select(-.width, -.point, -.interval) %>% 
@@ -305,7 +316,7 @@ alpha_bayes_ci =
                         values  = vars(`Normal approx.`, `Post. Pred`, `Post. Pred. Non-normal`),
                         varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with('alpha2'), starts_with('theta'))) 
 
-alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %>% 
+alpha_bayes_ci_con = as_data_frame(t(alpha_bayes_ci_con[,-1])) %>% 
   mutate(` ` = c('Normal approx.', 'Post. Pred', 'Post. Pred. Non-normal')) %>% 
   select(` `, everything()) %>% 
   rename(alpha = V1,
@@ -313,11 +324,8 @@ alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %>%
          UL = V3) %>% 
   select(` `, LL, alpha, UL)
 
-alpha_compare = alpha_ci %>% 
-  bind_rows(alpha_boot_ci) %>% 
-  mutate(` ` = c('raw', 'boot')) %>% 
-  select(` `, LL, alpha, UL) %>% 
-  bind_rows(alpha_bayes_ci)
+alpha_compare = alpha_ci_results_con %>% 
+  bind_rows(alpha_bayes_ci_con)
 
 alpha_compare %>% kable_df(digits = 2)
 
@@ -326,9 +334,10 @@ res = alpha_compare %>%
          value = alpha,
          ui_l = LL,
          ui_u = UL) 
+
 visibly:::plot_coefs(res,
                      palette = 'bilbao',
-                     ref_line = alpha_ci$alpha,
+                     ref_line = alpha_results_con$total$raw_alpha,
                      trans = NULL) +
   labs(y='')
 ```

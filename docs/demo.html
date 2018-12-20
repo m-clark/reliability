@@ -660,9 +660,7 @@ The raw score formula for <span class="math inline">\(\alpha\)</span> in terms o
 </aside>
 <p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, as the goal is to use an average score, but in others it may not.</p>
 <p>The following shows the results from the <span class="pack">psych</span> package. In addition to both raw and standardized <span class="math inline">\(\alpha\)</span> measures, it also offers Guttman’s lambda 6, a ‘signal-to-noise’ ratio and tohre info. Shown are the alphas, absolute standard error, and average/median inter-item correlation.</p>
-<pre class="r"><code># psych::alpha(neuroticism) %&gt;% print(digits=3)
-alpha_results = psych::alpha(neuroticism)
-
+<pre class="r"><code>alpha_results = psych::alpha(neuroticism)
 
 alpha_results %&gt;% 
   magrittr::extract2(&#39;total&#39;) %&gt;% 
@@ -854,26 +852,31 @@ alpha.ci(neuro_fem_alpha,
          n.var = ncol(neuro_male)) )</code></pre>
 <div id="the-uncertainty-of-alpha" class="section level4">
 <h4>The Uncertainty of <span class="math inline">\(\alpha\)</span></h4>
-<p>One issue with Cronbach’s <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is almost never reported, even though it has been known for decades how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack"></span> package does this in two ways. One uses an approach noted in <span class="citation">@feldt_statistical_1987</span>, and which assumes fixed, rather than random, items and subjects. The other method is via the bootstrap, calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. Both results are shown below, with the bootstrapped value based on 1000 iterations.</p>
+<p>One issue with Cronbach’s <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack">MBESS</span> package does this in a variety ways. One uses an approach noted in <span class="citation">@feldt_statistical_1987</span>, and which assumes fixed, rather than random, items and subjects. One is a normal based approximation (see <span class="citation">@van_zyl_distribution_2000</span>). The other method is via the bootstrap (<span class="citation">@kelley_confidence_2016</span>), calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. Results are shown below, with the bootstrapped value based on 1000 iterations.</p>
+<pre class="r"><code>library(MBESS)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MBESS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:psych&#39;:
+## 
+##     cor2cov</code></pre>
 <pre class="r"><code>set.seed(123)
 
-# note that the non-boot ci output is only generated as part of the print method
-# for generic psych, and then cat(!), so there is no actual access to it.
-alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
-                      alpha = alpha_results$total$raw_alpha, 
-                      UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
+alpha_ci_boot   = ci.reliability(neuroticism, type = &#39;alpha&#39;, interval.type = &#39;perc&#39;, B = 1000)
+alpha_ci_feldt  = ci.reliability(neuroticism, type = &#39;alpha&#39;, interval.type = &#39;feldt&#39;)
+alpha_ci_normal = ci.reliability(neuroticism, type = &#39;alpha&#39;, interval.type = &#39;ml&#39;)</code></pre>
+<pre class="r"><code>alpha_ci_results = list(alpha_ci_boot, alpha_ci_feldt, alpha_ci_normal) %&gt;% 
+  map_df(as_tibble)
 
-alpha_boot_ci = alpha(neuroticism, n.iter = 1000)$boot.ci %&gt;% 
-  t() %&gt;% 
-  data.frame() %&gt;% 
-  rename(LL = X2.5.,
-         alpha = X50.,
-         UL = X97.5.) 
 
-alpha_ci %&gt;% 
-  bind_rows(alpha_boot_ci) %&gt;% 
-  mutate(` ` = c(&#39;alpha raw&#39;, &#39;alpha boot&#39;)) %&gt;% 
-  select(` `, LL, alpha, UL) %&gt;% 
+alpha_ci_results = alpha_ci_results %&gt;% 
+  select(interval.type, ci.lower, est, ci.upper) %&gt;% 
+  mutate(interval.type = c(&#39;boot&#39;, &#39;feldt&#39;, &#39;normal&#39;)) %&gt;% 
+  rename(` ` = interval.type,
+         LL  = ci.lower,
+         alpha = est,
+         UL = ci.upper) 
+
+alpha_ci_results  %&gt;% 
   kable_df(digits = 4)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -894,27 +897,41 @@ UL
 <tbody>
 <tr>
 <td style="text-align:left;">
-alpha raw
+boot
 </td>
 <td style="text-align:right;">
-0.8030
+0.8019
 </td>
 <td style="text-align:right;">
-0.8140
+0.8138
 </td>
 <td style="text-align:right;">
-0.8250
+0.8246
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-alpha boot
+feldt
 </td>
 <td style="text-align:right;">
-0.8016
+0.8027
 </td>
 <td style="text-align:right;">
-0.8139
+0.8138
+</td>
+<td style="text-align:right;">
+0.8245
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:right;">
+0.8029
+</td>
+<td style="text-align:right;">
+0.8138
 </td>
 <td style="text-align:right;">
 0.8248
@@ -997,10 +1014,10 @@ Normal approx.
 0.789
 </td>
 <td style="text-align:right;">
-0.814
+0.813
 </td>
 <td style="text-align:right;">
-0.838
+0.839
 </td>
 </tr>
 <tr>
@@ -1011,10 +1028,10 @@ Post. Pred
 0.805
 </td>
 <td style="text-align:right;">
-0.814
+0.813
 </td>
 <td style="text-align:right;">
-0.822
+0.821
 </td>
 </tr>
 <tr>
@@ -1028,7 +1045,7 @@ Post. Pred. Non-normal
 0.817
 </td>
 <td style="text-align:right;">
-0.825
+0.824
 </td>
 </tr>
 </tbody>
@@ -1044,10 +1061,7 @@ Post. Pred. Non-normal
   theme_trueMinimal()</code></pre>
 <p><img src="demo_files/figure-html/vis_alpha_bayes-1.png" width="672" /></p>
 <p>Here are all the estimates of uncertainty calculated. For this amount of data it is not surprising that they are mostly in agreement, though the normal approximation may be a little wider.</p>
-<pre class="r"><code>alpha_ci %&gt;% 
-  bind_rows(alpha_boot_ci) %&gt;% 
-  mutate(` ` = c(&#39;alpha raw&#39;, &#39;alpha boot&#39;)) %&gt;% 
-  select(` `, LL, alpha, UL) %&gt;% 
+<pre class="r"><code>alpha_ci_results %&gt;% 
   bind_rows(alpha_bayes_ci) %&gt;% 
   kable_df(digits = 2)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -1069,7 +1083,7 @@ UL
 <tbody>
 <tr>
 <td style="text-align:left;">
-alpha raw
+boot
 </td>
 <td style="text-align:right;">
 0.80
@@ -1083,7 +1097,21 @@ alpha raw
 </tr>
 <tr>
 <td style="text-align:left;">
-alpha boot
+feldt
+</td>
+<td style="text-align:right;">
+0.80
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.82
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+normal
 </td>
 <td style="text-align:right;">
 0.80
@@ -1114,7 +1142,7 @@ Normal approx.
 Post. Pred
 </td>
 <td style="text-align:right;">
-0.81
+0.80
 </td>
 <td style="text-align:right;">
 0.81
@@ -1139,10 +1167,7 @@ Post. Pred. Non-normal
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>res = alpha_ci %&gt;% 
-  bind_rows(alpha_boot_ci) %&gt;% 
-  mutate(` ` = c(&#39;raw&#39;, &#39;boot&#39;)) %&gt;% 
-  select(` `, LL, alpha, UL) %&gt;% 
+<pre class="r"><code>res = alpha_ci_results %&gt;% 
   bind_rows(alpha_bayes_ci) %&gt;% 
   rename(Coefficient = ` `,
          value = alpha,
@@ -1151,7 +1176,7 @@ Post. Pred. Non-normal
 
 visibly:::plot_coefs(res,
                      palette = &#39;acton&#39;,
-                     ref_line = alpha_ci$alpha,
+                     ref_line = alpha_results$total$raw_alpha,
                      trans = NULL) +
   labs(y=&#39;&#39;)</code></pre>
 <p><img src="demo_files/figure-html/alpha_all-1.png" width="672" /></p>
@@ -1160,27 +1185,35 @@ visibly:::plot_coefs(res,
 <div id="simulated-data" class="section level4">
 <h4>Simulated Data</h4>
 <p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. We’ll skip the formality and cut right to the chase. Here are all the previous estimates shown for this data set. The <span class="math inline">\(\alpha\)</span> is lower for this particular data, but in general we’re seeing the same thing.</p>
-<pre class="r"><code>alpha_results = psych::alpha(data_congeneric)
-alpha_ci = data_frame(LL = alpha_results$total$raw_alpha - 1.96 * alpha_results$total$ase, 
-                      alpha = alpha_results$total$raw_alpha, 
-                      UL = alpha_results$total$raw_alpha + 1.96 * alpha_results$total$ase)
+<pre class="r"><code>alpha_results_con = psych::alpha(data_congeneric)</code></pre>
+<pre class="r"><code>library(MBESS)
 
-alpha_boot_ci = alpha(data_congeneric, n.iter = 1000)$boot.ci %&gt;% 
-  t() %&gt;% 
-  data.frame() %&gt;% 
-  rename(LL = X2.5.,
-         alpha = X50.,
-         UL = X97.5.) 
+set.seed(123)
 
-data_list = list(X=data_congeneric, 
+alpha_ci_boot_con   = ci.reliability(data_congeneric, type = &#39;alpha&#39;, interval.type = &#39;perc&#39;, B = 1000)
+alpha_ci_feldt_con  = ci.reliability(data_congeneric, type = &#39;alpha&#39;, interval.type = &#39;feldt&#39;)
+alpha_ci_normal_con = ci.reliability(data_congeneric, type = &#39;alpha&#39;, interval.type = &#39;ml&#39;)</code></pre>
+<pre class="r"><code>data_list = list(X=data_congeneric, 
                  N=nrow(data_congeneric), 
                  p=ncol(data_congeneric),
                  scale_flag = 0)
 
-alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)</code></pre>
-<pre class="r"><code>alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
+alpha_bayes_con = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)</code></pre>
+<pre class="r"><code>alpha_ci_results_con = list(alpha_ci_boot_con, alpha_ci_feldt_con, alpha_ci_normal_con) %&gt;% 
+  map_df(as_tibble)
 
-alpha_bayes_ci = 
+
+alpha_ci_results_con = alpha_ci_results_con %&gt;% 
+  select(interval.type, ci.lower, est, ci.upper) %&gt;% 
+  mutate(interval.type = c(&#39;boot&#39;, &#39;feldt&#39;, &#39;normal&#39;)) %&gt;% 
+  rename(` ` = interval.type,
+         LL  = ci.lower,
+         alpha = est,
+         UL = ci.upper) 
+
+alpha_draws = spread_draws(alpha_bayes_con, alpha, alpha2, theta)
+
+alpha_bayes_ci_con = 
   alpha_draws %&gt;% 
   tidybayes::mean_qi() %&gt;% 
   select(-.width, -.point, -.interval) %&gt;% 
@@ -1188,7 +1221,7 @@ alpha_bayes_ci =
                         values  = vars(`Normal approx.`, `Post. Pred`, `Post. Pred. Non-normal`),
                         varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with(&#39;alpha2&#39;), starts_with(&#39;theta&#39;))) 
 
-alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %&gt;% 
+alpha_bayes_ci_con = as_data_frame(t(alpha_bayes_ci_con[,-1])) %&gt;% 
   mutate(` ` = c(&#39;Normal approx.&#39;, &#39;Post. Pred&#39;, &#39;Post. Pred. Non-normal&#39;)) %&gt;% 
   select(` `, everything()) %&gt;% 
   rename(alpha = V1,
@@ -1196,11 +1229,8 @@ alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %&gt;%
          UL = V3) %&gt;% 
   select(` `, LL, alpha, UL)
 
-alpha_compare = alpha_ci %&gt;% 
-  bind_rows(alpha_boot_ci) %&gt;% 
-  mutate(` ` = c(&#39;raw&#39;, &#39;boot&#39;)) %&gt;% 
-  select(` `, LL, alpha, UL) %&gt;% 
-  bind_rows(alpha_bayes_ci)
+alpha_compare = alpha_ci_results_con %&gt;% 
+  bind_rows(alpha_bayes_ci_con)
 
 alpha_compare %&gt;% kable_df(digits = 2)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -1222,7 +1252,7 @@ UL
 <tbody>
 <tr>
 <td style="text-align:left;">
-raw
+boot
 </td>
 <td style="text-align:right;">
 0.69
@@ -1236,7 +1266,7 @@ raw
 </tr>
 <tr>
 <td style="text-align:left;">
-boot
+feldt
 </td>
 <td style="text-align:right;">
 0.69
@@ -1245,7 +1275,21 @@ boot
 0.72
 </td>
 <td style="text-align:right;">
-0.74
+0.75
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:right;">
+0.69
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+<td style="text-align:right;">
+0.75
 </td>
 </tr>
 <tr>
@@ -1259,7 +1303,7 @@ Normal approx.
 0.72
 </td>
 <td style="text-align:right;">
-0.77
+0.76
 </td>
 </tr>
 <tr>
@@ -1297,20 +1341,20 @@ Post. Pred. Non-normal
          value = alpha,
          ui_l = LL,
          ui_u = UL) 
+
 visibly:::plot_coefs(res,
                      palette = &#39;bilbao&#39;,
-                     ref_line = alpha_ci$alpha,
+                     ref_line = alpha_results_con$total$raw_alpha,
                      trans = NULL) +
   labs(y=&#39;&#39;)</code></pre>
-<p><img src="demo_files/figure-html/alpha_congeneric_compare-1.png" width="672" /></p>
+<p><img src="demo_files/figure-html/alpha_compare_congeneric-1.png" width="672" /></p>
 </div>
 </div>
 <div id="generalizability-theory" class="section level3">
 <h3>Generalizability theory</h3>
-<blockquote>
-<p>So called mixed effects models are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region). This clustering can be hierarchical in nature or not. While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.</p>
-</blockquote>
-<p>Mixed models estimate the variance attributable to various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, schools, surgical procedure or whatever our grouping</p>
+<p>So called ‘mixed effects’ models are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region). This clustering can be hierarchical in nature or not. While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.</p>
+<p>Mixed models estimate the variance attributable to various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, schools, surgical procedure or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends. These effects</p>
+<p><span class="emph">Generalizability Theory</span> focuses on the variance.</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}\]</span></p>
 <pre class="r"><code># alpha as icc/generalizability statistic from g-theory
 
