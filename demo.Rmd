@@ -90,14 +90,14 @@ The analysis of the data will be conducted on both the observed and simulated da
 
 ### Cronbach's $\alpha$
 
-Cronbach's $\alpha$ is one of the most popular measures of reliability.  Sometimes considered an measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items.  It is also interpreted as the mean of all possible spit-half reliabilities. While it is descriptive in nature, it assumes a unidimensional factor structure model representation, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$. 
+Cronbach's $\alpha$ is one of the most popular measures of reliability.  Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items.  It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$. 
 
 
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
 
 <aside>The raw score formula for $\alpha$ in terms of the average variance of the items $\bar{v}$ and average covariance $\bar{c}$ is: $$\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}$$</aside>
 
-All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, as the goal is to use an average score, but in others it may not.
+All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, as the goal is to use an average or sum score, and we are interested in the reliability of that instead of any particular item. In other contexts such an estimate may overestimate the type of reliability we care about.
 
 The following shows the results from the <span class="pack">psych</span> package.  In addition to both raw and standardized $\alpha$ measures, it also offers Guttman's lambda 6, a 'signal-to-noise' ratio and tohre info.  Shown are the alphas, absolute standard error, and average/median inter-item correlation.
 
@@ -156,9 +156,12 @@ alpha.ci(neuro_fem_alpha,
 
 One issue with Cronbach's $\alpha$ is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack">MBESS</span> package does this in a variety ways.  One uses an approach noted in @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. One is a normal based approximation (see @van_zyl_distribution_2000). The other method is via the bootstrap (@kelley_confidence_2016), calculating $\alpha$ for $R$ number of bootstrap resamples of the data. Results are shown below, with the bootstrapped value based on 1000 iterations.
 
-```{r alpha_ci_boot, cache=TRUE}
-library(MBESS)
 
+```{r load_MBESS}
+library(MBESS)
+```
+
+```{r alpha_ci_boot, cache=TRUE}
 set.seed(123)
 
 alpha_ci_boot   = ci.reliability(neuroticism, type = 'alpha', interval.type = 'perc', B = 1000)
@@ -185,6 +188,30 @@ alpha_ci_results  %>%
 
 
 We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of $\alpha$ would best be summarized as some value between .80 and .83.
+
+##### Comparison to small sample
+
+
+```{r alpha_small_sample}
+alpha_ci_boot_small  = ci.reliability(neuroticism %>% sample_frac(.1), type = 'alpha', interval.type = 'perc', B = 1000)
+
+alpha_ci_boot_smaller  = ci.reliability(neuroticism %>% sample_frac(.1), type = 'alpha', interval.type = 'perc', B = 1000)
+
+
+alpha_ci_boot_small %>% 
+  bind_rows(alpha_ci_boot_smaller) %>% 
+  as_data_frame() %>% 
+  select(interval.type, ci.lower, est, ci.upper) %>% 
+  rename(
+    Size = interval.type,
+    LL  = ci.lower,
+    alpha = est,
+    UL = ci.upper)  %>% 
+  mutate(Size = c('10%', '5%')) %>% 
+  kable_df()
+```
+
+
 
 ##### A Bayesian Approach
 
@@ -215,11 +242,11 @@ alpha_bayes_ci =
   tidybayes::mean_qi() %>% 
   select(-.width, -.point, -.interval) %>% 
   tidyext::gather_multi(key     = value, 
-                        values  = vars(`Normal approx.`, `Post. Pred`, `Post. Pred. Non-normal`),
+                        values  = vars(`normal bayes`, `post. pred.`, `post. pred. non-normal`),
                         varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with('alpha2'), starts_with('theta'))) 
 
 alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %>% 
-  mutate(` ` = c('Normal approx.', 'Post. Pred', 'Post. Pred. Non-normal')) %>% 
+  mutate(` ` = c('normal bayes', 'post. pred.', 'post. pred. non-normal')) %>% 
   select(` `, everything()) %>% 
   rename(alpha = V1,
          LL = V2,
@@ -317,7 +344,7 @@ alpha_bayes_ci_con =
                         varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with('alpha2'), starts_with('theta'))) 
 
 alpha_bayes_ci_con = as_data_frame(t(alpha_bayes_ci_con[,-1])) %>% 
-  mutate(` ` = c('Normal approx.', 'Post. Pred', 'Post. Pred. Non-normal')) %>% 
+  mutate(` ` = c('normal bayes', 'post. pred.', 'post. pred. non-normal')) %>% 
   select(` `, everything()) %>% 
   rename(alpha = V1,
          LL = V2,
@@ -343,6 +370,56 @@ visibly:::plot_coefs(res,
 ```
 
 
+#### Multidimensional Scale
+
+Notes: can't generalize from subscale to whole or vice versa, alpha < reliability in this setting @zinbarg_cronbachs_2005
+
+```{r alpha_multi}
+bfi_items_only = visibly::bfi
+alpha_bfi_whole_scale = psych::alpha(bfi_items_only)
+
+alpha_neuro = psych::alpha(neuroticism)
+alpha_extra = psych::alpha(select(bfi_items_only, 
+                                  starts_with('E', ignore.case = F)))
+alpha_open  = psych::alpha(select(bfi_items_only, 
+                                  starts_with('O', ignore.case = F)))
+alpha_agree = psych::alpha(select(bfi_items_only, 
+                                  starts_with('A', ignore.case = F)))
+alpha_consc = psych::alpha(select(bfi_items_only, 
+                                  starts_with('C', ignore.case = F)))
+
+alpha_bfi_list = list(alpha_neuro, 
+                      alpha_extra, 
+                      alpha_open, 
+                      alpha_agree, 
+                      alpha_consc)
+
+alpha_bfi_indiv_scale = alpha_bfi_list %>% 
+  map(function(x) x$total$raw[1]) %>% 
+  cbind() %>% 
+  as.data.frame() %>% 
+  mutate(Scale = c('Neuro', 'Extra', 'Open', 'Agree', 'Consc')) %>% 
+  rename(Alpha = '.') %>% 
+  select(Scale, Alpha) %>% 
+  unnest()
+
+alpha_bfi_whole_scale$total %>% 
+  as_data_frame() %>% 
+  rename(`Raw` = raw_alpha,
+         Standardized = std.alpha,
+         G6 = `G6(smc)`,
+         `Avg. Inter-item cor` = average_r,
+         ASE = ase,
+         `Median r` = median_r) %>% 
+  select(Raw, Standardized, `Avg. Inter-item cor`, `Median r`, ASE) %>% 
+  kable_df(digits = 2)
+
+alpha_bfi_indiv_scale %>% 
+  kable_df()
+```
+
+
+#### Limitations of Cronbach's $\alpha$
 
 ### Generalizability theory
 
@@ -355,6 +432,11 @@ Mixed models estimate the variance attributable to various sources of dependency
 
 $$\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}$$
 
+```{r bfi_long_form}
+bfi_long = bfi_items_only %>% 
+  gather(key = item, value = score) %>% 
+  mutate(scale = str_sub(item, end=1))
+```
 
 ```{r alpha_bayes_rstanarm, cache=TRUE, eval=FALSE}
 # alpha as icc/generalizability statistic from g-theory
@@ -376,11 +458,19 @@ print(alpha_bayes, par='alpha', digits=4)
 #### The Uncertainty of Generalizability
 
 #### Simulated Data
+#### Multidimensional Scale
+#### Limitations of G-theory
+
+
 
 ### Factor Analysis
 
 omega, ave
 
 #### The Uncertainty of Factor Loadings
+
+#### Simulated Data
+#### Multidimensional Scale
+#### Limitations of Factor Analytic Approach
 
 [^chron_app]: Despite this, you will see it frequently reported in cases of multidimensional factor structure.

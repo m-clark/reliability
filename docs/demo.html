@@ -653,12 +653,12 @@ item_6
 </div>
 <div id="cronbachs-alpha" class="section level3">
 <h3>Cronbach’s <span class="math inline">\(\alpha\)</span></h3>
-<p>Cronbach’s <span class="math inline">\(\alpha\)</span> is one of the most popular measures of reliability. Sometimes considered an measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items. It is also interpreted as the mean of all possible spit-half reliabilities. While it is descriptive in nature, it assumes a unidimensional factor structure model representation, or in other words, that all the items correspond to the same underlying construct<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The standardized formula only requires the two values of the number of items <span class="math inline">\(k\)</span> and average inter-item correlation <span class="math inline">\(\bar{r}\)</span>.</p>
+<p>Cronbach’s <span class="math inline">\(\alpha\)</span> is one of the most popular measures of reliability. Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items. It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The standardized formula only requires the two values of the number of items <span class="math inline">\(k\)</span> and average inter-item correlation <span class="math inline">\(\bar{r}\)</span>.</p>
 <p><span class="math display">\[\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}\]</span></p>
 <aside>
 The raw score formula for <span class="math inline">\(\alpha\)</span> in terms of the average variance of the items <span class="math inline">\(\bar{v}\)</span> and average covariance <span class="math inline">\(\bar{c}\)</span> is: <span class="math display">\[\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}\]</span>
 </aside>
-<p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, as the goal is to use an average score, but in others it may not.</p>
+<p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, as the goal is to use an average or sum score, and we are interested in the reliability of that instead of any particular item. In other contexts such an estimate may overestimate the type of reliability we care about.</p>
 <p>The following shows the results from the <span class="pack">psych</span> package. In addition to both raw and standardized <span class="math inline">\(\alpha\)</span> measures, it also offers Guttman’s lambda 6, a ‘signal-to-noise’ ratio and tohre info. Shown are the alphas, absolute standard error, and average/median inter-item correlation.</p>
 <pre class="r"><code>alpha_results = psych::alpha(neuroticism)
 
@@ -940,27 +940,77 @@ normal
 </tbody>
 </table>
 <p>We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of <span class="math inline">\(\alpha\)</span> would best be summarized as some value between .80 and .83.</p>
+<div id="comparison-to-small-sample" class="section level5">
+<h5>Comparison to small sample</h5>
+<pre class="r"><code>alpha_ci_boot_small  = ci.reliability(neuroticism %&gt;% sample_frac(.1), type = &#39;alpha&#39;, interval.type = &#39;perc&#39;, B = 1000)
+
+alpha_ci_boot_smaller  = ci.reliability(neuroticism %&gt;% sample_frac(.1), type = &#39;alpha&#39;, interval.type = &#39;perc&#39;, B = 1000)
+
+
+alpha_ci_boot_small %&gt;% 
+  bind_rows(alpha_ci_boot_smaller) %&gt;% 
+  as_data_frame() %&gt;% 
+  select(interval.type, ci.lower, est, ci.upper) %&gt;% 
+  rename(
+    Size = interval.type,
+    LL  = ci.lower,
+    alpha = est,
+    UL = ci.upper)  %&gt;% 
+  mutate(Size = c(&#39;10%&#39;, &#39;5%&#39;)) %&gt;% 
+  kable_df()</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Size
+</th>
+<th style="text-align:right;">
+LL
+</th>
+<th style="text-align:right;">
+alpha
+</th>
+<th style="text-align:right;">
+UL
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+10%
+</td>
+<td style="text-align:right;">
+0.779
+</td>
+<td style="text-align:right;">
+0.820
+</td>
+<td style="text-align:right;">
+0.853
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+5%
+</td>
+<td style="text-align:right;">
+0.734
+</td>
+<td style="text-align:right;">
+0.787
+</td>
+<td style="text-align:right;">
+0.829
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="a-bayesian-approach" class="section level5">
 <h5>A Bayesian Approach</h5>
 <p>An alternative approach to estimating the uncertainty in <span class="math inline">\(\alpha\)</span> would be a Bayesian estimate. We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items. Thus the Bayesian <span class="math inline">\(\alpha\)</span> would be based on the posterior predictive distribution given the estimate of the correlation matrix <span class="citation">@padilla_estimating_2011</span>. Alternatively, we could use a normal approximation for the distribution of the <span class="math inline">\(\alpha\)</span> itself, based on the estimated correlation matrix <span class="citation">@van_zyl_distribution_2000</span>. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section. More detail can be found in the supplemental materials.</p>
 <pre class="r"><code>library(rstan); library(tidybayes)</code></pre>
-<pre><code>## Loading required package: StanHeaders</code></pre>
-<pre><code>## rstan (Version 2.18.2, GitRev: 2e1f913d3ca3)</code></pre>
-<pre><code>## For execution on a local, multicore CPU with excess RAM we recommend calling
-## options(mc.cores = parallel::detectCores()).
-## To avoid recompilation of unchanged Stan programs, we recommend calling
-## rstan_options(auto_write = TRUE)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;rstan&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:psych&#39;:
-## 
-##     lookup</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     extract</code></pre>
-<pre><code>## NOTE: As of tidybayes version 1.0, several functions, arguments, and output column names
-##       have undergone significant name changes in order to adopt a unified naming scheme.
-##       See help(&#39;tidybayes-deprecated&#39;) for more information.</code></pre>
 <pre class="r"><code>neuroticism_no_na = na.omit(scale(neuroticism))
 
 data_list = list(X=neuroticism_no_na, 
@@ -976,11 +1026,11 @@ alpha_bayes_ci =
   tidybayes::mean_qi() %&gt;% 
   select(-.width, -.point, -.interval) %&gt;% 
   tidyext::gather_multi(key     = value, 
-                        values  = vars(`Normal approx.`, `Post. Pred`, `Post. Pred. Non-normal`),
+                        values  = vars(`normal bayes`, `post. pred.`, `post. pred. non-normal`),
                         varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with(&#39;alpha2&#39;), starts_with(&#39;theta&#39;))) 
 
 alpha_bayes_ci = as_data_frame(t(alpha_bayes_ci[,-1])) %&gt;% 
-  mutate(` ` = c(&#39;Normal approx.&#39;, &#39;Post. Pred&#39;, &#39;Post. Pred. Non-normal&#39;)) %&gt;% 
+  mutate(` ` = c(&#39;normal bayes&#39;, &#39;post. pred.&#39;, &#39;post. pred. non-normal&#39;)) %&gt;% 
   select(` `, everything()) %&gt;% 
   rename(alpha = V1,
          LL = V2,
@@ -1008,35 +1058,35 @@ UL
 <tbody>
 <tr>
 <td style="text-align:left;">
-Normal approx.
+normal bayes
 </td>
 <td style="text-align:right;">
 0.789
 </td>
 <td style="text-align:right;">
-0.813
+0.814
 </td>
 <td style="text-align:right;">
-0.839
+0.838
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-Post. Pred
+post. pred.
 </td>
 <td style="text-align:right;">
 0.805
 </td>
 <td style="text-align:right;">
-0.813
+0.814
 </td>
 <td style="text-align:right;">
-0.821
+0.822
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-Post. Pred. Non-normal
+post. pred. non-normal
 </td>
 <td style="text-align:right;">
 0.809
@@ -1045,7 +1095,7 @@ Post. Pred. Non-normal
 0.817
 </td>
 <td style="text-align:right;">
-0.824
+0.825
 </td>
 </tr>
 </tbody>
@@ -1125,7 +1175,7 @@ normal
 </tr>
 <tr>
 <td style="text-align:left;">
-Normal approx.
+normal bayes
 </td>
 <td style="text-align:right;">
 0.79
@@ -1139,10 +1189,10 @@ Normal approx.
 </tr>
 <tr>
 <td style="text-align:left;">
-Post. Pred
+post. pred.
 </td>
 <td style="text-align:right;">
-0.80
+0.81
 </td>
 <td style="text-align:right;">
 0.81
@@ -1153,7 +1203,7 @@ Post. Pred
 </tr>
 <tr>
 <td style="text-align:left;">
-Post. Pred. Non-normal
+post. pred. non-normal
 </td>
 <td style="text-align:right;">
 0.81
@@ -1222,7 +1272,7 @@ alpha_bayes_ci_con =
                         varlist = vars(c(alpha, alpha.lower, alpha.upper), starts_with(&#39;alpha2&#39;), starts_with(&#39;theta&#39;))) 
 
 alpha_bayes_ci_con = as_data_frame(t(alpha_bayes_ci_con[,-1])) %&gt;% 
-  mutate(` ` = c(&#39;Normal approx.&#39;, &#39;Post. Pred&#39;, &#39;Post. Pred. Non-normal&#39;)) %&gt;% 
+  mutate(` ` = c(&#39;normal bayes&#39;, &#39;post. pred.&#39;, &#39;post. pred. non-normal&#39;)) %&gt;% 
   select(` `, everything()) %&gt;% 
   rename(alpha = V1,
          LL = V2,
@@ -1294,13 +1344,13 @@ normal
 </tr>
 <tr>
 <td style="text-align:left;">
-Normal approx.
+normal bayes
 </td>
 <td style="text-align:right;">
-0.67
+0.66
 </td>
 <td style="text-align:right;">
-0.72
+0.71
 </td>
 <td style="text-align:right;">
 0.76
@@ -1308,7 +1358,7 @@ Normal approx.
 </tr>
 <tr>
 <td style="text-align:left;">
-Post. Pred
+post. pred.
 </td>
 <td style="text-align:right;">
 0.69
@@ -1322,7 +1372,7 @@ Post. Pred
 </tr>
 <tr>
 <td style="text-align:left;">
-Post. Pred. Non-normal
+post. pred. non-normal
 </td>
 <td style="text-align:right;">
 0.71
@@ -1349,6 +1399,151 @@ visibly:::plot_coefs(res,
   labs(y=&#39;&#39;)</code></pre>
 <p><img src="demo_files/figure-html/alpha_compare_congeneric-1.png" width="672" /></p>
 </div>
+<div id="multidimensional-scale" class="section level4">
+<h4>Multidimensional Scale</h4>
+<p>Notes: can’t generalize from subscale to whole or vice versa, alpha &lt; reliability in this setting <span class="citation">@zinbarg_cronbachs_2005</span></p>
+<pre class="r"><code>bfi_items_only = visibly::bfi
+alpha_bfi_whole_scale = psych::alpha(bfi_items_only)
+
+alpha_neuro = psych::alpha(neuroticism)
+alpha_extra = psych::alpha(select(bfi_items_only, 
+                                  starts_with(&#39;E&#39;, ignore.case = F)))
+alpha_open  = psych::alpha(select(bfi_items_only, 
+                                  starts_with(&#39;O&#39;, ignore.case = F)))
+alpha_agree = psych::alpha(select(bfi_items_only, 
+                                  starts_with(&#39;A&#39;, ignore.case = F)))
+alpha_consc = psych::alpha(select(bfi_items_only, 
+                                  starts_with(&#39;C&#39;, ignore.case = F)))
+
+alpha_bfi_list = list(alpha_neuro, 
+                      alpha_extra, 
+                      alpha_open, 
+                      alpha_agree, 
+                      alpha_consc)
+
+alpha_bfi_indiv_scale = alpha_bfi_list %&gt;% 
+  map(function(x) x$total$raw[1]) %&gt;% 
+  cbind() %&gt;% 
+  as.data.frame() %&gt;% 
+  mutate(Scale = c(&#39;Neuro&#39;, &#39;Extra&#39;, &#39;Open&#39;, &#39;Agree&#39;, &#39;Consc&#39;)) %&gt;% 
+  rename(Alpha = &#39;.&#39;) %&gt;% 
+  select(Scale, Alpha) %&gt;% 
+  unnest()
+
+alpha_bfi_whole_scale$total %&gt;% 
+  as_data_frame() %&gt;% 
+  rename(`Raw` = raw_alpha,
+         Standardized = std.alpha,
+         G6 = `G6(smc)`,
+         `Avg. Inter-item cor` = average_r,
+         ASE = ase,
+         `Median r` = median_r) %&gt;% 
+  select(Raw, Standardized, `Avg. Inter-item cor`, `Median r`, ASE) %&gt;% 
+  kable_df(digits = 2)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Raw
+</th>
+<th style="text-align:right;">
+Standardized
+</th>
+<th style="text-align:right;">
+Avg. Inter-item cor
+</th>
+<th style="text-align:right;">
+Median r
+</th>
+<th style="text-align:right;">
+ASE
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+0.69
+</td>
+<td style="text-align:right;">
+0.71
+</td>
+<td style="text-align:right;">
+0.09
+</td>
+<td style="text-align:right;">
+0.08
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>alpha_bfi_indiv_scale %&gt;% 
+  kable_df()</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Scale
+</th>
+<th style="text-align:right;">
+Alpha
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Neuro
+</td>
+<td style="text-align:right;">
+0.814
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Extra
+</td>
+<td style="text-align:right;">
+0.762
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Open
+</td>
+<td style="text-align:right;">
+0.600
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Agree
+</td>
+<td style="text-align:right;">
+0.703
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Consc
+</td>
+<td style="text-align:right;">
+0.727
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="limitations-of-cronbachs-alpha" class="section level4">
+<h4>Limitations of Cronbach’s <span class="math inline">\(\alpha\)</span></h4>
+</div>
 </div>
 <div id="generalizability-theory" class="section level3">
 <h3>Generalizability theory</h3>
@@ -1356,6 +1551,9 @@ visibly:::plot_coefs(res,
 <p>Mixed models estimate the variance attributable to various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, schools, surgical procedure or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends. These effects</p>
 <p><span class="emph">Generalizability Theory</span> focuses on the variance.</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}\]</span></p>
+<pre class="r"><code>bfi_long = bfi_items_only %&gt;% 
+  gather(key = item, value = score) %&gt;% 
+  mutate(scale = str_sub(item, end=1))</code></pre>
 <pre class="r"><code># alpha as icc/generalizability statistic from g-theory
 
 library(rstanarm)
@@ -1375,12 +1573,27 @@ print(alpha_bayes, par=&#39;alpha&#39;, digits=4)</code></pre>
 <div id="simulated-data-1" class="section level4">
 <h4>Simulated Data</h4>
 </div>
+<div id="multidimensional-scale-1" class="section level4">
+<h4>Multidimensional Scale</h4>
+</div>
+<div id="limitations-of-g-theory" class="section level4">
+<h4>Limitations of G-theory</h4>
+</div>
 </div>
 <div id="factor-analysis" class="section level3">
 <h3>Factor Analysis</h3>
 <p>omega, ave</p>
 <div id="the-uncertainty-of-factor-loadings" class="section level4">
 <h4>The Uncertainty of Factor Loadings</h4>
+</div>
+<div id="simulated-data-2" class="section level4">
+<h4>Simulated Data</h4>
+</div>
+<div id="multidimensional-scale-2" class="section level4">
+<h4>Multidimensional Scale</h4>
+</div>
+<div id="limitations-of-factor-analytic-approach" class="section level4">
+<h4>Limitations of Factor Analytic Approach</h4>
 </div>
 </div>
 </div>
