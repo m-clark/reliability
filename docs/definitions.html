@@ -205,7 +205,6 @@ Note that by <span class="emph">test</span>, we mean any thing we might want to 
 </div>
 <div id="correlation" class="section level3">
 <h3>Correlation</h3>
-<!-- rstudio has some major bug where the editor does not allow proper editing around this point; the solution was to add space from header-->
 <p>Let’s start with correlation. If two things are correlated, they move in tandem, either they go up and down together, or as one goes up the other goes down and vice versa. At the very least of our understanding of reliability is that similar measurements of the same thing should be correlated. But this correlation might be assessed by different means.</p>
 <pre class="r"><code>x1 = rnorm(500)
 y = .5*x1 + rnorm(500, sd=.25)
@@ -237,11 +236,16 @@ gridExtra::grid.arrange(p1, p2, nrow=1)</code></pre>
 </div>
 <div id="consistency" class="section level3">
 <h3>Consistency</h3>
-<p>Split-half reliability allows us to estimate reliability with only one test. This is important, as many times we can only measure something in one setting, even if multiple times within that setting. For example, there may be only one qualifying exam, one survey administered, and so forth. As such we need some way to assess the <span class="emph">internal structure</span> of the measure. Some of the most commonly used statistics, such as Cronbach’s <span class="math inline">\(\alpha\)</span>, offer such a measure. For that, it will still be based on simple correlations, but as we don’t have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur. The average correlation across all items will serve as the basis for an assessment of reliability, but the number of items will have a say as well.</p>
+<p>Split-half reliability allows us to estimate reliability with only one test. This is important, as many times we can only measure something in one setting, even if multiple times within that setting. For example, there may be only one qualifying exam, one survey administered, and so forth. As such we need some way to assess the <span class="emph">internal structure</span> of the measure. Some of the most commonly used statistics, such as coefficient <span class="math inline">\(\alpha\)</span>, offer such a measure. For that, it will still be based on simple correlations, but as we don’t have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur. The average correlation across all items will serve as the basis for an assessment of reliability, but the number of items will have a say as well.</p>
 </div>
 <div id="measurement-of-a-construct" class="section level3">
 <h3>Measurement of a Construct</h3>
 <p>Finally, we can think about reliability in terms of how well the tests measure the construct. Some would call this validity, though the distinction is muddier in practice. The observed measurements we have are imperfect measurements of the thing they are purported to measure. Estimation of that imperfection is the whole of reliability analysis. We can get at this notion more intently with tools from <span class="emph">factor analysis</span>, and can begin to think about reliability in terms of how much of the <em>latent</em> constuct is actually in the observed measures.</p>
+</div>
+<div id="the-psychometric-definition-of-reliability" class="section level3">
+<h3>The psychometric definition of reliability</h3>
+<p>We can summarize all of the previous by returning to the classical test theory notion of reliability. In general, the reliability of a measure <span class="math inline">\(\rho\)</span> is the proportion of true score variance to the total observed variance.</p>
+<p><span class="math display">\[\rho = \frac{\sigma^2_T}{\sigma^2_T + \sigma^2_e}\]</span></p>
 </div>
 </div>
 <div class="footnotes">

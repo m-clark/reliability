@@ -27,12 +27,14 @@ The Big Five Inventory is a popular personality scale use in a wide variety of a
 - N4: Often feel blue.
 - N5: Panic easily.
 
-More details can be found with the data object's (<span class="objclass">bfi</span>) associated helpfile.  The following shows how the data may be obtained.
+More details can be found with the data object's (<span class="objclass">bfi</span>) associated helpfile.  The following shows how the data may be obtained. To make comparisons across the different approaches more easily comparable, I go ahead and remove the rows with missing data.
 
 ```{r bfi_neurot, echo=TRUE}
 library(tidyverse)
 library(psych)
-neuroticism = select(bfi, N1:N5)
+neuroticism = bfi %>% 
+  select(N1:N5) %>% 
+  drop_na()
 ```
 
 Basic descriptives and correlations are shown next. While there is some missing data, some reliability statistics will be based on pairwise correlations, and thus use all available information.  Some of the item correlations are not that strong, but this is a realistic situation for many data in social and related sciences.
@@ -84,13 +86,15 @@ data_congeneric %>%
 
 #### Analytical Approach
 
-The analysis of the data will be conducted on both the observed and simulated data sets.  We will show three conceptual estimates of reliability, but, in addition, we will focus on the estimated uncertainty in those estimates.  Far too often reliability statistics are reported without any thought of the underlying models, or that there is possibly notable uncertainty in the estimate.  The three conceptual estimates include the most popular estimate of reliability, Cronbach's $\alpha$, followed by two model-based approaches - generalizability theory and latent variable/factor analysis.
+The analysis of the data will be conducted on both the observed and simulated data sets.  We will show three conceptual estimates of reliability, but, in addition, we will focus on the estimated uncertainty in those estimates.  Far too often reliability statistics are reported without any thought of the underlying models, or that there is possibly notable uncertainty in the estimate.  The three conceptual estimates include the most popular estimate of reliability, Coefficient $\alpha$, followed by two model-based approaches - generalizability theory and latent variable/factor analysis.
 
 
 
-### Cronbach's $\alpha$
+### Coefficient $\alpha$
 
-Cronbach's $\alpha$ is one of the most popular measures of reliability.  Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items.  It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$. 
+<aside>Though it was developed independently a few years earlier by Guttman 1945, coefficient $\alpha$ is often called Cronbach's $\alpha$. We prefer the more neutral terminology, in keeping with Cronbach's own wishes (Cronbach Shavelson 2004.</aside>
+
+Coefficient $\alpha$ is one of the most popular measures of reliability.  Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items.  It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$. 
 
 
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
@@ -154,7 +158,7 @@ alpha.ci(neuro_fem_alpha,
 
 #### The Uncertainty of $\alpha$
 
-One issue with Cronbach's $\alpha$ is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack">MBESS</span> package does this in a variety ways.  One uses an approach noted in @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. One is a normal based approximation (see @van_zyl_distribution_2000). The other method is via the bootstrap (@kelley_confidence_2016), calculating $\alpha$ for $R$ number of bootstrap resamples of the data. Results are shown below, with the bootstrapped value based on 1000 iterations.
+One issue with Coefficient $\alpha$ is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack">MBESS</span> package does this in a variety ways.  One uses an approach noted in @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. One is a normal based approximation (see @van_zyl_distribution_2000). The other method is via the bootstrap (@kelley_confidence_2016), calculating $\alpha$ for $R$ number of bootstrap resamples of the data. Results are shown below, with the bootstrapped value based on 1000 iterations.
 
 
 ```{r load_MBESS}
@@ -189,28 +193,7 @@ alpha_ci_results  %>%
 
 We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of $\alpha$ would best be summarized as some value between .80 and .83.
 
-##### Comparison to small sample
-
-
-```{r alpha_small_sample}
-alpha_ci_boot_small  = ci.reliability(neuroticism %>% sample_frac(.1), type = 'alpha', interval.type = 'perc', B = 1000)
-
-alpha_ci_boot_smaller  = ci.reliability(neuroticism %>% sample_frac(.1), type = 'alpha', interval.type = 'perc', B = 1000)
-
-
-alpha_ci_boot_small %>% 
-  bind_rows(alpha_ci_boot_smaller) %>% 
-  as_data_frame() %>% 
-  select(interval.type, ci.lower, est, ci.upper) %>% 
-  rename(
-    Size = interval.type,
-    LL  = ci.lower,
-    alpha = est,
-    UL = ci.upper)  %>% 
-  mutate(Size = c('10%', '5%')) %>% 
-  kable_df()
-```
-
+#
 
 
 ##### A Bayesian Approach
@@ -295,7 +278,7 @@ visibly:::plot_coefs(res,
 
 #### Simulated Data
 
-The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  We'll skip the formality and cut right to the chase.  Here are all the previous estimates shown for this data set.  The $\alpha$ is lower for this particular data, but in general we're seeing the same thing.
+The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  However, one assumption with coefficient $\alpha$ is that the loadings for such a model are equivalent, and we know they aren't in this case.  This will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later.  For now, we'll skip the formality and cut right to the chase.  Here are all the previous estimates shown for this data set.  The $\alpha$ is lower for this particular data, but in general we're seeing the same thing.
 
 ```{r alpha_congeneric}
 alpha_results_con = psych::alpha(data_congeneric)
@@ -369,6 +352,32 @@ visibly:::plot_coefs(res,
   labs(y='')
 ```
 
+#### Comparison to small sample
+
+
+```{r alpha_small_sample, cache=TRUE}
+neuro_10 = neuroticism %>% sample_frac(.1)
+neuro_05 = neuroticism %>% sample_frac(.05)
+
+alpha_ci_boot_small  = ci.reliability(neuro_10, type = 'alpha', interval.type = 'perc', B = 1000)
+
+alpha_ci_boot_smaller  = ci.reliability(neuro_05, type = 'alpha', interval.type = 'perc', B = 1000)
+
+
+alpha_ci_boot_small %>% 
+  bind_rows(alpha_ci_boot_smaller) %>% 
+  as_data_frame() %>% 
+  select(interval.type, ci.lower, est, ci.upper) %>% 
+  rename(
+    Size = interval.type,
+    LL  = ci.lower,
+    alpha = est,
+    UL = ci.upper)  %>% 
+  mutate(Size = c('10%', '5%')) %>% 
+  kable_df()
+```
+
+
 
 #### Multidimensional Scale
 
@@ -419,11 +428,18 @@ alpha_bfi_indiv_scale %>%
 ```
 
 
-#### Limitations of Cronbach's $\alpha$
+#### Limitations of Coefficient $\alpha$
+
+lower bound estimate
+
+assumes single factor and equal loadings for items
+
+merely adding items will improve
+
 
 ### Generalizability theory
 
-So called 'mixed effects' models are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region).  This clustering can be hierarchical in nature or not. While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.
+So called 'mixed effects' models are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region).  This clustering can be hierarchical in nature (e.g. students within schools, within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.
 
 Mixed models estimate the variance attributable to various sources of dependency in the data.  Thus, aside from the usual regression output, we get a sense of variability due to individuals, schools, surgical procedure or whatever our grouping structure is.  In addition, we may estimate cluster-specific effects, which allow for increased predictive capability.   Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.  These effects
 
@@ -465,7 +481,7 @@ print(alpha_bayes, par='alpha', digits=4)
 
 ### Factor Analysis
 
-omega, ave
+omega (as generalization of alpha), ave
 
 #### The Uncertainty of Factor Loadings
 

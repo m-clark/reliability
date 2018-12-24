@@ -29,7 +29,6 @@ So conceptually we can simply think of an observation of any measure being compo
 
 
 ### Correlation
-<!-- rstudio has some major bug where the editor does not allow proper editing around this point; the solution was to add space from header-->
 
 Let's start with correlation. If two things are correlated, they move in tandem, either they go up and down together, or as one goes up the other goes down and vice versa. At the very least of our understanding of reliability is that similar measurements of the same thing should be correlated.  But this correlation might be assessed by different means.
 
@@ -71,12 +70,20 @@ A notion of reliability not too far removed from the previous is that of split-h
 
 ### Consistency
 
-Split-half reliability allows us to estimate reliability with only one test.  This is important, as many times we can only measure something in one setting, even if multiple times within that setting.  For example, there may be only one qualifying exam, one survey administered, and so forth.  As such we need some way to assess the <span class="emph">internal structure</span> of the measure.  Some of the most commonly used statistics, such as Cronbach's $\alpha$, offer such a measure.  For that, it will still be based on simple correlations, but as we don't have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur.  The average correlation across all items will serve as the basis for an assessment of reliability, but the number of items will have a say as well.
+Split-half reliability allows us to estimate reliability with only one test.  This is important, as many times we can only measure something in one setting, even if multiple times within that setting.  For example, there may be only one qualifying exam, one survey administered, and so forth.  As such we need some way to assess the <span class="emph">internal structure</span> of the measure.  Some of the most commonly used statistics, such as coefficient $\alpha$, offer such a measure.  For that, it will still be based on simple correlations, but as we don't have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur.  The average correlation across all items will serve as the basis for an assessment of reliability, but the number of items will have a say as well.
 
 
 ### Measurement of a Construct
 
 Finally, we can think about reliability in terms of how well the tests measure the construct.  Some would call this validity, though the distinction is muddier in practice.  The observed measurements we have are imperfect measurements of the thing they are purported to measure.  Estimation of that imperfection is the whole of reliability analysis.  We can get at this notion more intently with tools from <span class="emph">factor analysis</span>, and can begin to think about reliability in terms of how much of the *latent* constuct is actually in the observed measures.
+
+
+### The psychometric definition of reliability
+
+We can summarize all of the previous by returning to the classical test theory notion of reliability.  In general, the reliability of a measure $\rho$ is the proportion of true score variance to the total observed variance. 
+
+$$\rho = \frac{\sigma^2_T}{\sigma^2_T + \sigma^2_e}$$
+
 
 
 

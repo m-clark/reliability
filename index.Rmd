@@ -40,9 +40,10 @@ citation_url: https://m-clark.github.io/reliability
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(#comment=NA, R.options=list(width=220),   # code 
-                      dev.args=list(bg = 'transparent'), dev='svglite'#,                                 # viz
+                      dev.args=list(bg = 'transparent'), dev='svglite',                                 # viz
                       #fig.align='center', out.width='75%', fig.asp=.75,                 
-                      #cache.rebuild=F, cache=T
+                      cache.rebuild=F#, 
+                      # cache=T
                       )                                                         # cache
 library(tidyverse)
 library(visibly)
