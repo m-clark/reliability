@@ -8,7 +8,20 @@ Working outline
 
 # Demonstrations
 
-## Cronbach's alpha
+## Coefficient alpha
+
+### Description
+### Estimation with raw data
+### Uncertainty
+- boot, bayes, ?
+
+### Estimation with simulated data
+### Small sample
+### Multidimensional
+
+### Strengths/Limitations
+
+### Summary
 
 ## G-theory
 

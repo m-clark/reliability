@@ -33,7 +33,6 @@ output:
   radix::radix_article:
     css: radix.css
     toc: true
-    toc_float: true
 repository_url: https://github.com/m-clark/reliability
 citation_url: https://m-clark.github.io/reliability
 ---
@@ -57,14 +56,14 @@ library(kableExtra)
 ```
 
 
-```{r intro, child='definitions.Rmd'}
+```{r def, child='definitions.Rmd'}
 ```
 
-```{r intro, child='demo.Rmd'}
+```{r demo, child='demo.Rmd'}
 ```
 
 
-```{r intro, child='conclusion.Rmd'}
+```{r conc, child='conclusion.Rmd'}
 ```
 
 
