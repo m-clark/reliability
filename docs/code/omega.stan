@@ -1,7 +1,9 @@
+// to do: optimize for standardized, general cleanup
+
 data {
   int<lower=1> N;
   int<lower=1> p;
-  matrix[N,p]  X;
+  matrix[N, p]  X;
   int<lower=0, upper=1> scale_flag;   // use standardized or not
 }
 
@@ -46,14 +48,14 @@ model {
   b ~ normal(0, sd(sum_score));
   Z ~ normal(0, 1);
   
-  for (i in 1:p)  X[,i] ~ normal(b[i] + Z*lambda[i], sqrt(u_var[i]));
-
+  for (i in 1:p)
+    col(X, i) ~ normal(b[i] + Z*lambda[i], sqrt(u_var[i]));
 }
 
 generated quantities {
- real<lower=0, upper=1> rho;
+ real<lower=-1, upper=1> rho;
  
- rho = cor(sum_score, Z);
- ave =
+ rho = dot_product(sum_score - mean(sum_score), Z - mean(Z)) / 
+  (sd(sum_score)*sd(Z)*(N-1));
   
 }
