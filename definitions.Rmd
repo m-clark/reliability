@@ -50,11 +50,11 @@ gridExtra::grid.arrange(p1, p2, nrow=1)
 
 #### Test-retest
 
-<div style="text-align: center; size=200%">
+<div style="text-align: center;">
 
-<i class="fas fa-file-alt fa-9x" style="color: #ff550095"></i>
-<i class="fas fa-file-alt fa-9x" style="color: #ff550095; border-style: solid; border-width: 1px; border-color: #ffffff; margin-left: -50px"></i>
-<i class="fas fa-file-alt fa-9x" style="color: #ff550095; border-style: solid; border-width: 1px; border-color: #ffffff; margin-left: -50px"></i>
+<i class="fas fa-file-alt fa-6x" style="color: #ff550095"></i>
+<i class="fas fa-file-alt fa-6x" style="color: #ff550095; border-style: solid; border-width: 1px; border-color: #ffffff; margin-left: -50px"></i>
+<i class="fas fa-file-alt fa-6x" style="color: #ff550095; border-style: solid; border-width: 1px; border-color: #ffffff; margin-left: -50px"></i>
 </div>
 
 Let's say we now take the weights of one hundred people.  Then we do so again six months later.  We should expect that heavier people at the first measurement will likely be heavier the second time as well.  Same for lighter people.
@@ -64,13 +64,13 @@ That correlation of the two measurments can provide us our first attempt at meas
 
 #### Parallel Forms
 
-<div style="text-align: center; ">
+<div style="text-align: center;">
 
-<i class="fas fa-file-alt fa-9x" style="color: #ff5500BF "> </i>
+<i class="fas fa-file-alt fa-6x" style="color: #ff5500BF "> </i>
 <span style=" display:inline-block; width:25px"></span> 
-<i class="fas fa-file-alt fa-9x" style="color: #ff550080"></i>
+<i class="fas fa-file-alt fa-6x" style="color: #ff550080"></i>
 <span style=" display:inline-block; width:25px"></span>
-<i class="fas fa-file-alt fa-9x" style="color: #ff550040"></i>
+<i class="fas fa-file-alt fa-6x" style="color: #ff550040"></i>
 
 </div>
 
@@ -82,9 +82,9 @@ In the more common applied research setting, the question then is how do we know
 
 #### Split-half
 
-<div style="text-align: center; size=200%">
+<div style="text-align: center;">
 
-<img src="img/split_half.svg" style="display:block; margin: 0 auto; height: 9em; opacity: .75">
+<img src="img/split_half.svg" style="display:block; margin: 0 auto; height: 6em; opacity: .75">
 
 </div>
 
@@ -94,10 +94,27 @@ A notion of reliability not too far removed from the previous is that of split-h
 
 ### Consistency
 
+<div style="text-align: center;">
+
+<i class="fas fa-file-alt fa-6x" style="color: #ff5500BF"></i>
+<span style=" display:inline-block; width:25px"></span>
+<i class="fas fa-long-arrow-alt-right fa-4x" style="color: lightgray;  vertical-align: text-bottom"></i>
+<span style=" display:inline-block; width:25px"></span>
+<i class="fas fa-question fa-5x" style="color: #ff550095; border-style: solid; border-width: 1px; border-color: #ffffff; vertical-align: text-bottom"></i>
+</div>
+
 Split-half reliability allows us to estimate reliability with only one test.  This is important, as many times we can only measure something in one setting, even if multiple times within that setting.  For example, there may be only one qualifying exam, one survey administered, and so forth.  As such we need some way to assess the <span class="emph">internal structure</span> of the measure.  Some of the most commonly used statistics, such as coefficient $\alpha$, offer such a measure.  For that, it will still be based on simple correlations, but as we don't have multiple tests, the correlations will regard the items or instances of the measure we have from the setting observations occur.  The average correlation across all items will serve as the basis for an assessment of reliability, but the number of items will have a say as well.
 
 
 ### Measurement of a Construct
+
+```{r construct}
+htmltools::tags$div(style="width:50%; margin:0 auto; font-family:Roboto; font-size:50%",
+         DiagrammeR::grViz('code/graphical_models/construct_base.gv', width='100%', height='250px')
+         )
+```
+
+
 
 Finally, we can think about reliability in terms of how well the tests measure the construct.  Some would call this validity, though the distinction is muddier in practice.  The observed measurements we have are imperfect measurements of the thing they are purported to measure.  Estimation of that imperfection is the whole of reliability analysis.  We can get at this notion more intently with tools from <span class="emph">factor analysis</span>, and can begin to think about reliability in terms of how much of the *latent* constuct is actually in the observed measures.
 

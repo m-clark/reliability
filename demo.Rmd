@@ -168,6 +168,7 @@ library(MBESS)
 ```{r alpha_ci_boot, cache=TRUE}
 set.seed(123)
 
+# note that this is for raw, not standardized alpha
 alpha_ci_boot   = ci.reliability(neuroticism, type = 'alpha', interval.type = 'perc', B = 1000)
 alpha_ci_feldt  = ci.reliability(neuroticism, type = 'alpha', interval.type = 'feldt')
 alpha_ci_normal = ci.reliability(neuroticism, type = 'alpha', interval.type = 'ml')
