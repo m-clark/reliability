@@ -32,14 +32,35 @@ library(gganimate)
 n_hops = 100
 
 alpha_animate = alpha_draws %>% 
-  ggplot(aes(x = alpha2, y= 'alpha')) +
-  geom_point(x = .813, size=3, color='#ff5500') +
-  geom_point(alpha=.05) +
-  transition_reveal(.draw, transition_length = 1, state_length = 1) +
+  ggplot(aes(x = alpha2, y= 'alpha', group=.draw)) +
+  # ggplot(aes(x = alpha2, y= 'alpha')) +
+  geom_point(x = .813, size=10, color='#ff5500', alpha=.25) +
+  geom_point(alpha=.05, size=3, position = position_jitter()) +
+  # transition_states(.draw, transition_length = 1, state_length = 1) +
+  transition_reveal(.draw) + # group .draw to keep dots persistent
   theme_trueMinimal()
     
 
-animate(alpha_animate, nframes = n_hops*2)
+# animate(alpha_animate, nframes = n_hops*2)
+animate(alpha_animate, nframes = n_hops*1)
+anim_save('img/alpha_unc.gif')
+
+
+
+alpha_animate = alpha_draws %>% 
+  mutate(alpha = 'alpha') %>% 
+  ggplot(aes(y = alpha2, x= alpha, group=.draw)) +
+  # ggplot(aes(x = alpha2, y= 'alpha')) +
+  geom_point(y = .813, size=10, color='#ff5500', alpha=.25) +
+  geom_sina(aes(), bins=100) +
+  # transition_states(.draw, transition_length = 1, state_length = 1) +
+  transition_reveal(.draw) + # group .draw to keep dots persistent
+  theme_trueMinimal()
+
+
+# animate(alpha_animate, nframes = n_hops*2)
+animate(alpha_animate, nframes = n_hops*1)
+anim_save('img/alpha_unc.gif')
 
 
 
