@@ -92,7 +92,7 @@ The analysis of the data will be conducted on both the observed and simulated da
 
 ### Coefficient $\alpha$
 
-<aside>Though it was developed independently a few years earlier by Guttman 1945, coefficient $\alpha$ is often called Cronbach's $\alpha$. We prefer the more neutral terminology, in keeping with Cronbach's own wishes (Cronbach Shavelson 2004.</aside>
+<aside>Though it was developed independently a few years earlier by Guttman @guttman_basis_1945, coefficient $\alpha$ is often called Cronbach's $\alpha$. We prefer the more neutral terminology, in keeping with Cronbach's own wishes @cronbach_my_2004.</aside>
 
 Coefficient $\alpha$ is one of the most popular measures of reliability.  Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items.  It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$. 
 
@@ -194,7 +194,6 @@ alpha_ci_results  %>%
 
 We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of $\alpha$ would best be summarized as some value between .80 and .83.
 
-#
 
 
 ##### A Bayesian Approach
@@ -206,7 +205,7 @@ library(rstan); library(tidybayes)
 ```
 
 
-```{r alpha_bayes_rstan, cache=TRUE, eval=T}
+```{r alpha_bayes_rstan, cache=TRUE, eval=T, cache.extra = tools::md5sum('code/alpha.stan')}
 neuroticism_no_na = na.omit(scale(neuroticism))
 
 data_list = list(X=neuroticism_no_na, 
