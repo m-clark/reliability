@@ -219,6 +219,9 @@ library(psych)</code></pre>
 <pre class="r"><code>neuroticism = bfi %&gt;% 
   select(N1:N5) %&gt;% 
   drop_na()</code></pre>
+<blockquote>
+<p>Use only small fraction and compare to full in later discusion of sample size?</p>
+</blockquote>
 <p>Basic descriptives and correlations are shown next. While there is some missing data, some reliability statistics will be based on pairwise correlations, and thus use all available information. Some of the item correlations are not that strong, but this is a realistic situation for many data in social and related sciences.</p>
 <pre class="r"><code>neuroticism %&gt;% 
   tidyext::describe_all_num() %&gt;% 
@@ -482,7 +485,10 @@ N5
 </div>
 <div id="simulatedideal-data" class="section level5">
 <h5>Simulated/Ideal data</h5>
-<p>One of our investigations into reliability will involve what is commonly referred to as factor analysis. Along with the observed data just described, the <span class="pack">psych</span> package additionally provides an easy means to simulate data with known factor structure. We can specify the number of factors, loadings, number of items among other things. Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure if desired. As a starting point, we will simulate a <span class="emph">congeneric</span> data set, one in which the factor structure regards just one latent variable underlying the items. We will have six items for this data, with moderate to strong loadings between .4 and .7.</p>
+<p>One of our investigations into reliability will involve what is commonly referred to as factor analysis. Along with the observed data just described, the <span class="pack">psych</span> package additionally provides an easy means to simulate data with known factor structure. We can specify the number of factors, loadings, number of items among other things. Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure if desired. As a starting point, we will simulate a data set regarding a <span class="emph">congeneric</span> factor model, one in which the factor structure regards just one latent variable underlying the items, but where the loadings for the observations need not be the same. We will have six items for this data, with moderate to strong loadings between .4 and .7.</p>
+<aside>
+In the case where the loadings are equivalent, the model is referred to as <span class="emph">tau-equivalent</span>.
+</aside>
 <pre class="r"><code>set.seed(123)
 N = 1000
 n_items = 6
@@ -857,7 +863,7 @@ alpha.ci(neuro_fem_alpha,
          n.var = ncol(neuro_male)) )</code></pre>
 <div id="the-uncertainty-of-alpha" class="section level4">
 <h4>The Uncertainty of <span class="math inline">\(\alpha\)</span></h4>
-<p>One issue with Coefficient <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack">MBESS</span> package does this in a variety ways. One uses an approach noted in <span class="citation">@feldt_statistical_1987</span>, and which assumes fixed, rather than random, items and subjects. One is a normal based approximation (see <span class="citation">@van_zyl_distribution_2000</span>). The other method is via the bootstrap (<span class="citation">@kelley_confidence_2016</span>), calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. Results are shown below, with the bootstrapped value based on 1000 iterations.</p>
+<p>One issue with Coefficient <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack">MBESS</span> package does this in a variety ways. One uses an approach noted in Feldt et al. <span class="citation">@feldt_statistical_1987</span>, and which assumes fixed, rather than random, items and subjects. Another is based on a normal distribution approximation <span class="citation">@van_zyl_distribution_2000</span>. The other method is via the bootstrap <span class="citation">@kelley_confidence_2016</span>, calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. We will use the latter for our purposes. Results are shown below, with the bootstrapped value based on 1000 iterations.</p>
 <pre class="r"><code>library(MBESS)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;MBESS&#39;</code></pre>
@@ -870,13 +876,23 @@ alpha.ci(neuro_fem_alpha,
 alpha_ci_boot   = ci.reliability(neuroticism, type = &#39;alpha&#39;, interval.type = &#39;perc&#39;, B = 1000)
 alpha_ci_feldt  = ci.reliability(neuroticism, type = &#39;alpha&#39;, interval.type = &#39;feldt&#39;)
 alpha_ci_normal = ci.reliability(neuroticism, type = &#39;alpha&#39;, interval.type = &#39;ml&#39;)</code></pre>
-<pre class="r"><code>alpha_ci_results = list(alpha_ci_boot, alpha_ci_feldt, alpha_ci_normal) %&gt;% 
-  map_df(as_tibble)
+<pre class="r"><code># alpha_ci_results = list(alpha_ci_boot, alpha_ci_feldt, alpha_ci_normal) %&gt;% 
+#   map_df(as_tibble)
+
+# alpha_ci_results = alpha_ci_results %&gt;% 
+#   select(interval.type, ci.lower, est, ci.upper) %&gt;% 
+#   mutate(interval.type = c(&#39;boot&#39;, &#39;feldt&#39;, &#39;normal&#39;)) %&gt;% 
+#   rename(` ` = interval.type,
+#          LL  = ci.lower,
+#          alpha = est,
+#          UL = ci.upper)
+
+alpha_ci_results = as.tibble(alpha_ci_boot)
 
 
 alpha_ci_results = alpha_ci_results %&gt;% 
   select(interval.type, ci.lower, est, ci.upper) %&gt;% 
-  mutate(interval.type = c(&#39;boot&#39;, &#39;feldt&#39;, &#39;normal&#39;)) %&gt;% 
+  mutate(interval.type = &#39;bootstrapped estimate&#39;) %&gt;% 
   rename(` ` = interval.type,
          LL  = ci.lower,
          alpha = est,
@@ -903,7 +919,7 @@ UL
 <tbody>
 <tr>
 <td style="text-align:left;">
-boot
+bootstrapped estimate
 </td>
 <td style="text-align:right;">
 0.8004
@@ -915,45 +931,12 @@ boot
 0.8253
 </td>
 </tr>
-<tr>
-<td style="text-align:left;">
-feldt
-</td>
-<td style="text-align:right;">
-0.8019
-</td>
-<td style="text-align:right;">
-0.8133
-</td>
-<td style="text-align:right;">
-0.8242
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-normal
-</td>
-<td style="text-align:right;">
-0.8021
-</td>
-<td style="text-align:right;">
-0.8133
-</td>
-<td style="text-align:right;">
-0.8245
-</td>
-</tr>
 </tbody>
 </table>
-<p>We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of <span class="math inline">\(\alpha\)</span> would best be summarized as some value between .80 and .83.</p>
-</div>
-</div>
-</div>
-<div id="section" class="section level1">
-<h1></h1>
+<p>We can now see that our estimate of <span class="math inline">\(\alpha\)</span> would best be summarized as some value between 0.80 and 0.83.</p>
 <div id="a-bayesian-approach" class="section level5">
 <h5>A Bayesian Approach</h5>
-<p>An alternative approach to estimating the uncertainty in <span class="math inline">\(\alpha\)</span> would be a Bayesian estimate. We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items. Thus the Bayesian <span class="math inline">\(\alpha\)</span> would be based on the posterior predictive distribution given the estimate of the correlation matrix <span class="citation">@padilla_estimating_2011</span>. Alternatively, we could use a normal approximation for the distribution of the <span class="math inline">\(\alpha\)</span> itself, based on the estimated correlation matrix <span class="citation">@van_zyl_distribution_2000</span>. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section. More detail can be found in the supplemental materials.</p>
+<p>An alternative approach to estimating the uncertainty in <span class="math inline">\(\alpha\)</span> would be a Bayesian estimate. We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items. Thus the Bayesian <span class="math inline">\(\alpha\)</span> would be based on the posterior predictive distribution given the estimate of the correlation matrix <span class="citation">@padilla_estimating_2011</span>. Alternatively, we could use a normal approximation for the distribution of the <span class="math inline">\(\alpha\)</span> itself, based on the estimated correlation matrix <span class="citation">@van_zyl_distribution_2000</span>. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for its own section later. For now, we will use the first estimate. More detail can be found in the supplemental materials.</p>
 <pre class="r"><code>library(rstan); library(tidybayes)</code></pre>
 <pre><code>## Loading required package: StanHeaders</code></pre>
 <pre><code>## rstan (Version 2.18.2, GitRev: 2e1f913d3ca3)</code></pre>
@@ -980,7 +963,8 @@ data_list = list(X=neuroticism_no_na,
                  scale_flag = 0)
 
 alpha_bayes = stan(file = &#39;code/alpha.stan&#39;, data = data_list, cores = 4, thin = 4)</code></pre>
-<pre class="r"><code>alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
+<pre class="r"><code># move to technical section
+alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
 
 alpha_bayes_ci = 
   alpha_draws %&gt;% 
@@ -1094,7 +1078,7 @@ UL
 <tbody>
 <tr>
 <td style="text-align:left;">
-boot
+bootstrapped estimate
 </td>
 <td style="text-align:right;">
 0.80
@@ -1104,34 +1088,6 @@ boot
 </td>
 <td style="text-align:right;">
 0.83
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-feldt
-</td>
-<td style="text-align:right;">
-0.80
-</td>
-<td style="text-align:right;">
-0.81
-</td>
-<td style="text-align:right;">
-0.82
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-normal
-</td>
-<td style="text-align:right;">
-0.80
-</td>
-<td style="text-align:right;">
-0.81
-</td>
-<td style="text-align:right;">
-0.82
 </td>
 </tr>
 <tr>
@@ -1192,9 +1148,11 @@ visibly:::plot_coefs(res,
   labs(y=&#39;&#39;)</code></pre>
 <p><img src="demo_files/figure-html/alpha_all-1.png" width="672" /></p>
 </div>
+</div>
 <div id="simulated-data" class="section level4">
 <h4>Simulated Data</h4>
-<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. However, one assumption with coefficient <span class="math inline">\(\alpha\)</span> is that the loadings for such a model are equivalent, and we know they aren’t in this case. This will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later. For now, we’ll skip the formality and cut right to the chase. Here are all the previous estimates shown for this data set. The <span class="math inline">\(\alpha\)</span> is lower for this particular data, but in general we’re seeing the same thing.</p>
+<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. However, one assumption with coefficient <span class="math inline">\(\alpha\)</span> is that the loadings for such a model are equivalent, and we know they aren’t in this case. As such, coefficient <span class="math inline">\(\alpha\)</span> is a an estimate of the lower bound of reliability. This scenario will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later.</p>
+<p>For now, we’ll skip the formality and cut right to the chase. Here are all the previous estimates shown for this data set. The <span class="math inline">\(\alpha\)</span> is lower for this particular data, but in general we’re seeing the same thing.</p>
 <pre class="r"><code>alpha_results_con = psych::alpha(data_congeneric)</code></pre>
 <pre class="r"><code>library(MBESS)
 
@@ -1577,16 +1535,209 @@ Consc
 <p>assumes single factor and equal loadings for items</p>
 <p>merely adding items will improve</p>
 </div>
+</div>
 <div id="generalizability-theory" class="section level3">
 <h3>Generalizability theory</h3>
-<p>So called ‘mixed effects’ models are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region). This clustering can be hierarchical in nature (e.g. students within schools, within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.</p>
-<p>Mixed models estimate the variance attributable to various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, schools, surgical procedure or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends. These effects</p>
+<p>So called <span class="emph">mixed effects models</span> are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region). This clustering can be hierarchical in nature (e.g. students within schools, schools within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.</p>
+<p>Mixed models estimate the variance attributable to the various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.</p>
+<p>In our example, each person sees the five items, so those scores are not independent. In other words, the multiple observations are clustered within individuals. This becomes more clear when we consider our data in ‘long’ format, as follows.</p>
+<pre class="r"><code>neuroticism_long = neuroticism %&gt;% 
+  rowid_to_column(var=&#39;person&#39;) %&gt;% 
+  gather(key = item, value=score, -person)
+
+neuroticism_long %&gt;% 
+  arrange(person, item) %&gt;% 
+  head( 15) %&gt;%
+  kable_df()</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+person
+</th>
+<th style="text-align:left;">
+item
+</th>
+<th style="text-align:right;">
+score
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+N1
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+N2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+N3
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+N4
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+N5
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+N1
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+N2
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+N3
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+N4
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+N5
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+N1
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+N2
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+N3
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+N4
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+N5
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+</tbody>
+</table>
+<p>In this case we can treat the person or item as a source of variance, or even their interaction. For simplicity we will focus on the person variance only.</p>
 <p><span class="emph">Generalizability Theory</span> focuses on the variance.</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}\]</span></p>
-<pre class="r"><code>bfi_long = bfi_items_only %&gt;% 
-  gather(key = item, value = score) %&gt;% 
-  mutate(scale = str_sub(item, end=1))</code></pre>
 <pre class="r"><code># alpha as icc/generalizability statistic from g-theory
+bfi_long = bfi_items_only %&gt;% 
+  gather(key = item, value = score) %&gt;% 
+  mutate(scale = str_sub(item, end=1))
 
 library(rstanarm)
 mixed_congeneric_bayes = stan_lmer(value ~ (1|subject), d_congeneric_long_std, cores=4, thin=4)

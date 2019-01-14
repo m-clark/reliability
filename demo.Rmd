@@ -37,6 +37,8 @@ neuroticism = bfi %>%
   drop_na()
 ```
 
+> Use only small fraction and compare to full in later discusion of sample size?
+
 Basic descriptives and correlations are shown next. While there is some missing data, some reliability statistics will be based on pairwise correlations, and thus use all available information.  Some of the item correlations are not that strong, but this is a realistic situation for many data in social and related sciences.
 
 ```{r bfi_descriptive}
@@ -57,7 +59,10 @@ cor(neuroticism, use = 'pair') %>%
 
 ##### Simulated/Ideal data
 
-One of our investigations into reliability will involve what is commonly referred to as factor analysis.  Along with the observed data just described, the <span class="pack">psych</span> package additionally provides an easy means to simulate data with known factor structure.  We can specify the number of factors, loadings, number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure if desired.  As a starting point, we will simulate a <span class="emph">congeneric</span> data set, one in which the factor structure regards just one latent variable underlying the items.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
+One of our investigations into reliability will involve what is commonly referred to as factor analysis.  Along with the observed data just described, the <span class="pack">psych</span> package additionally provides an easy means to simulate data with known factor structure.  We can specify the number of factors, loadings, number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure if desired.  As a starting point, we will simulate a data set regarding a <span class="emph">congeneric</span> factor model, one in which the factor structure regards just one latent variable underlying the items, but where the loadings for the observations need not be the same.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
+
+<aside>In the case where the loadings are equivalent, the model is referred to as <span class="emph">tau-equivalent</span>.</aside>
+
 
 ```{r sim_congeneric_create_data, echo=TRUE}
 set.seed(123)
@@ -158,7 +163,7 @@ alpha.ci(neuro_fem_alpha,
 
 #### The Uncertainty of $\alpha$
 
-One issue with Coefficient $\alpha$ is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack">MBESS</span> package does this in a variety ways.  One uses an approach noted in @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. One is a normal based approximation (see @van_zyl_distribution_2000). The other method is via the bootstrap (@kelley_confidence_2016), calculating $\alpha$ for $R$ number of bootstrap resamples of the data. Results are shown below, with the bootstrapped value based on 1000 iterations.
+One issue with Coefficient $\alpha$ is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it.  The <span class="pack">MBESS</span> package does this in a variety ways.  One uses an approach noted in Feldt et al. @feldt_statistical_1987, and which assumes fixed, rather than random, items and subjects. Another is based on a normal distribution approximation @van_zyl_distribution_2000. The other method is via the bootstrap @kelley_confidence_2016, calculating $\alpha$ for $R$ number of bootstrap resamples of the data. We will use the latter for our purposes. Results are shown below, with the bootstrapped value based on 1000 iterations. 
 
 
 ```{r load_MBESS}
@@ -175,13 +180,23 @@ alpha_ci_normal = ci.reliability(neuroticism, type = 'alpha', interval.type = 'm
 ```
 
 ```{r alpha_ci_results}
-alpha_ci_results = list(alpha_ci_boot, alpha_ci_feldt, alpha_ci_normal) %>% 
-  map_df(as_tibble)
+# alpha_ci_results = list(alpha_ci_boot, alpha_ci_feldt, alpha_ci_normal) %>% 
+#   map_df(as_tibble)
+
+# alpha_ci_results = alpha_ci_results %>% 
+#   select(interval.type, ci.lower, est, ci.upper) %>% 
+#   mutate(interval.type = c('boot', 'feldt', 'normal')) %>% 
+#   rename(` ` = interval.type,
+#          LL  = ci.lower,
+#          alpha = est,
+#          UL = ci.upper)
+
+alpha_ci_results = as.tibble(alpha_ci_boot)
 
 
 alpha_ci_results = alpha_ci_results %>% 
   select(interval.type, ci.lower, est, ci.upper) %>% 
-  mutate(interval.type = c('boot', 'feldt', 'normal')) %>% 
+  mutate(interval.type = 'bootstrapped estimate') %>% 
   rename(` ` = interval.type,
          LL  = ci.lower,
          alpha = est,
@@ -192,13 +207,13 @@ alpha_ci_results  %>%
 ```
 
 
-We can see that the bootstrapped interval is essentially the same, but in either case we can see that our estimate of $\alpha$ would best be summarized as some value between .80 and .83.
+We can now see that our estimate of $\alpha$ would best be summarized as some value between `r arm::fround(alpha_ci_results$LL, 2)` and `r arm::fround(alpha_ci_results$UL,  2)`.
 
 
 
 ##### A Bayesian Approach
 
-An alternative approach to estimating the uncertainty in $\alpha$ would be a Bayesian estimate.  We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items.  Thus the Bayesian $\alpha$ would be based on the posterior predictive distribution given the estimate of the correlation matrix @padilla_estimating_2011.  Alternatively, we could use a normal approximation for the distribution of the $\alpha$ itself, based on the estimated correlation matrix -@van_zyl_distribution_2000. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for the following section.  More detail can be found in the supplemental materials.
+An alternative approach to estimating the uncertainty in $\alpha$ would be a Bayesian estimate.  We could estimate the value by first estimating the correlation matrix underlying the assumed multivariate normal distribution of the observations/items.  Thus the Bayesian $\alpha$ would be based on the posterior predictive distribution given the estimate of the correlation matrix @padilla_estimating_2011.  Alternatively, we could use a normal approximation for the distribution of the $\alpha$ itself, based on the estimated correlation matrix -@van_zyl_distribution_2000. Yet another approach would be based on a mixed model, calculating an <span class="emph">intra-class correlation coefficent</span> for a set number of items, as in Generalizability theory. We will save that for its own section later.  For now, we will use the first estimate.  More detail can be found in the supplemental materials.
 
 ```{r load_bayes_packages}
 library(rstan); library(tidybayes)
@@ -218,6 +233,7 @@ alpha_bayes = stan(file = 'code/alpha.stan', data = data_list, cores = 4, thin =
 
 
 ```{r alpha_bayes_rstan_present}
+# move to technical section
 alpha_draws = spread_draws(alpha_bayes, alpha, alpha2, theta)
 
 alpha_bayes_ci = 
@@ -278,7 +294,9 @@ visibly:::plot_coefs(res,
 
 #### Simulated Data
 
-The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  However, one assumption with coefficient $\alpha$ is that the loadings for such a model are equivalent, and we know they aren't in this case.  This will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later.  For now, we'll skip the formality and cut right to the chase.  Here are all the previous estimates shown for this data set.  The $\alpha$ is lower for this particular data, but in general we're seeing the same thing.
+The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  However, one assumption with coefficient $\alpha$ is that the loadings for such a model are equivalent, and we know they aren't in this case.  As such, coefficient $\alpha$ is a an estimate of the lower bound of reliability. This scenario will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later.  
+
+For now, we'll skip the formality and cut right to the chase.  Here are all the previous estimates shown for this data set.  The $\alpha$ is lower for this particular data, but in general we're seeing the same thing.
 
 ```{r alpha_congeneric}
 alpha_results_con = psych::alpha(data_congeneric)
@@ -439,23 +457,40 @@ merely adding items will improve
 
 ### Generalizability theory
 
-So called 'mixed effects' models are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region).  This clustering can be hierarchical in nature (e.g. students within schools, within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.
+So called <span class="emph">mixed effects models</span> are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region).  This clustering can be hierarchical in nature (e.g. students within schools, schools within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.
 
-Mixed models estimate the variance attributable to various sources of dependency in the data.  Thus, aside from the usual regression output, we get a sense of variability due to individuals, schools, surgical procedure or whatever our grouping structure is.  In addition, we may estimate cluster-specific effects, which allow for increased predictive capability.   Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.  These effects
+Mixed models estimate the variance attributable to the various sources of dependency in the data.  Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is.  In addition, we may estimate cluster-specific effects, which allow for increased predictive capability.   Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.  
 
-<span class="emph">Generalizability Theory</span> focuses on the variance.
+In our example, each person sees the five items, so those scores are not independent. In other words, the multiple observations are clustered within individuals.  This becomes more clear when we consider our data in 'long' format, as follows.
+
+
+```{r neuro_long_form}
+neuroticism_long = neuroticism %>% 
+  rowid_to_column(var='person') %>% 
+  gather(key = item, value=score, -person)
+
+neuroticism_long %>% 
+  arrange(person, item) %>% 
+  head( 15) %>%
+  kable_df()
+```
+
+
+In this case we can treat the person or item as a source of variance, or even their interaction. For simplicity we will focus on the person variance only.
+
+
+
+
+<span class="emph">Generalizability Theory</span> focuses on the variance. 
 
 
 $$\rho = \frac{\sigma_g^2}{\sigma_g^2 + \sigma^2}$$
 
-```{r bfi_long_form}
+```{r alpha_bayes_rstanarm, cache=TRUE, eval=FALSE}
+# alpha as icc/generalizability statistic from g-theory
 bfi_long = bfi_items_only %>% 
   gather(key = item, value = score) %>% 
   mutate(scale = str_sub(item, end=1))
-```
-
-```{r alpha_bayes_rstanarm, cache=TRUE, eval=FALSE}
-# alpha as icc/generalizability statistic from g-theory
 
 library(rstanarm)
 mixed_congeneric_bayes = stan_lmer(value ~ (1|subject), d_congeneric_long_std, cores=4, thin=4)
