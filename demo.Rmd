@@ -484,6 +484,8 @@ In similar fashion, we can see observations within items as being more correlate
 
 $$\rho = \frac{\sigma_g^2}{\sigma_g^2 +  \sigma_{residual}^2}$$
 
+In more complicated circumstances
+
 $$\rho = \frac{\sigma_g^2 + \sigma_{g*}^2}{\sigma_g^2 + \sigma_{g*}^2 + \sigma_{other}^2 + \sigma_{residual}^2}$$
 
 In the above, *g\** refers to interactions of g with other other sources of variance, *other* refers to other still other sources of variance that don't include *g*, and then the *residual* variance is whatever else is not accounted for.
