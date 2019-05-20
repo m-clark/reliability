@@ -30,7 +30,7 @@ author:
 date: "`r Sys.Date()`"
 bibliography: measurement.bib
 output: 
-  radix::radix_article:
+  distill::distill_article:
     css: radix.css
     toc: true
 repository_url: https://github.com/m-clark/reliability
@@ -38,16 +38,26 @@ citation_url: https://m-clark.github.io/reliability
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(#comment=NA, R.options=list(width=220),   # code 
-                      dev.args=list(bg = 'transparent'), dev='svglite',                                 # viz
-                      #fig.align='center', out.width='75%', fig.asp=.75,                 
-                      cache.rebuild=F#, 
-                      # cache=T
-                      )                                                         # cache
-library(tidyverse)
-library(visibly)
-library(kableExtra)
+knitr::opts_chunk$set(
+  #comment=NA, 
+  R.options=list(width=220),   
+  dev.args=list(bg = 'transparent'), 
+  dev='svglite',
+  #fig.align='center', 
+  out.width='75%', 
+  fig.asp=.75,                 
+  cache.rebuild=F#, 
+  # cache=T
+)
 
+library(tidyverse); library(kableExtra); library(visibly)
+
+kable_df <- function(..., digits=3) {
+  kable(..., digits=digits) %>% 
+    kable_styling(full_width = F)
+}
+
+rnd = function(x, digits = 3) arm::fround(x, digits = digits)
 
 ```
 

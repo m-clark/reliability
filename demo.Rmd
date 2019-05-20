@@ -59,7 +59,7 @@ cor(neuroticism, use = 'pair') %>%
 
 ##### Simulated/Ideal data
 
-One of our investigations into reliability will involve what is commonly referred to as factor analysis.  Along with the observed data just described, the <span class="pack">psych</span> package additionally provides an easy means to simulate data with known factor structure.  We can specify the number of factors, loadings, number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure if desired.  As a starting point, we will simulate a data set regarding a <span class="emph">congeneric</span> factor model, one in which the factor structure regards just one latent variable underlying the items, but where the loadings for the observations need not be the same.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
+One of our investigations into reliability will involve what is commonly referred to as factor analysis.  Along with the observed data just described, the <span class="pack">psych</span> package additionally provides an easy means to simulate data with known factor structure.  We can specify the number of factors, loadings, number of items among other things.  Doing so will allow us to know what to expect from the factor analysis portion of the exploration, and explore uni- vs. multidimensional structure if desired.  As a starting point, we will simulate a data set regarding a <span class="emph">congeneric</span> factor model, one in which the factor structure regards just one latent variable underlying the observed items, but where the loadings for the observations need not be the same.  We will have six items for this data, with moderate to strong loadings between .4 and .7.
 
 <aside>In the case where the loadings are equivalent, the model is referred to as <span class="emph">tau-equivalent</span>.</aside>
 
@@ -94,10 +94,9 @@ data_congeneric %>%
 The analysis of the data will be conducted on both the observed and simulated data sets.  We will show three conceptual estimates of reliability, but, in addition, we will focus on the estimated uncertainty in those estimates.  Far too often reliability statistics are reported without any thought of the underlying models, or that there is possibly notable uncertainty in the estimate.  The three conceptual estimates include the most popular estimate of reliability, Coefficient $\alpha$, followed by two model-based approaches - generalizability theory and latent variable/factor analysis.
 
 
-
+<aside>Though it was developed independently a few years earlier by Guttman @guttman_basis_1945, coefficient $\alpha$ is often called Cronbach's $\alpha$. We prefer the more neutral terminology, in keeping with Cronbach's own wishes @cronbach_my_2004.</aside>
 ### Coefficient $\alpha$
 
-<aside>Though it was developed independently a few years earlier by Guttman @guttman_basis_1945, coefficient $\alpha$ is often called Cronbach's $\alpha$. We prefer the more neutral terminology, in keeping with Cronbach's own wishes @cronbach_my_2004.</aside>
 
 Coefficient $\alpha$ is one of the most popular measures of reliability.  Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items.  It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$. 
 
@@ -108,7 +107,7 @@ $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
 
 All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, as the goal is to use an average or sum score, and we are interested in the reliability of that instead of any particular item. In other contexts such an estimate may overestimate the type of reliability we care about.
 
-The following shows the results from the <span class="pack">psych</span> package.  In addition to both raw and standardized $\alpha$ measures, it also offers Guttman's lambda 6, a 'signal-to-noise' ratio and tohre info.  Shown are the alphas, absolute standard error, and average/median inter-item correlation.
+The following shows the results from the <span class="pack">psych</span> package.  In addition to both raw and standardized $\alpha$ measures, it also offers Guttman's lambda 6, a 'signal-to-noise' ratio and tohre info.  Shown are the $\alpha$ values, absolute standard error, and average/median inter-item correlation.
 
 
 ```{r cronbach_base}
@@ -116,7 +115,8 @@ alpha_results = psych::alpha(neuroticism)
 
 alpha_results %>% 
   magrittr::extract2('total') %>% 
-  as_data_frame() %>% 
+  as_tibble() %>% 
+  rownames_to_column('Item') %>% 
   rename(`Raw` = raw_alpha,
          Standardized = std.alpha,
          G6 = `G6(smc)`,

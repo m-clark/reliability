@@ -20,7 +20,8 @@ re_est = data.frame(ranef(mod, condVar=T)) %>%
          denom = (c(VarCorr(mod)[[1]]) + sigma(mod)^2)/1:50)   # style of denominator in d-study
 
 qplot(group_N, condsd^2, data=re_est) +
-  geom_line(aes(y=rel_sem))  
+  geom_line(aes(y=rel_sem))  +
+  geom_line(aes(y=denom), color = 'darkred') 
 
 # 56 in lme4 article (ignoring weights)
 # Lambdat = transpose of relative covariance matrix
