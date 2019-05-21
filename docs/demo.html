@@ -502,6 +502,8 @@ data_congeneric =
                    sigma = cor_congeneric) %&gt;% 
   as_data_frame() %&gt;% 
   rename_all(str_replace, pattern = &#39;V&#39;, replacement = &#39;item_&#39;)</code></pre>
+<pre><code>## Warning: `as_data_frame()` is deprecated, use `as_tibble()` (but mind the new semantics).
+## This warning is displayed once per session.</code></pre>
 <pre class="r"><code>data_congeneric %&gt;% 
   as_data_frame() %&gt;% 
   head() %&gt;% 
@@ -687,8 +689,6 @@ alpha_results %&gt;%
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
-<th style="text-align:left;">
-</th>
 <th style="text-align:right;">
 Raw
 </th>
@@ -708,8 +708,6 @@ ASE
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-</td>
 <td style="text-align:right;">
 0.81
 </td>
@@ -746,8 +744,6 @@ Reliability if the item is dropped.
 </caption>
 <thead>
 <tr>
-<th style="text-align:left;">
-</th>
 <th style="text-align:right;">
 Raw
 </th>
@@ -764,9 +760,6 @@ Median r
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-N1
-</td>
 <td style="text-align:right;">
 0.76
 </td>
@@ -781,9 +774,6 @@ N1
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-N2
-</td>
 <td style="text-align:right;">
 0.76
 </td>
@@ -798,9 +788,6 @@ N2
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-N3
-</td>
 <td style="text-align:right;">
 0.75
 </td>
@@ -815,9 +802,6 @@ N3
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-N4
-</td>
 <td style="text-align:right;">
 0.79
 </td>
@@ -832,9 +816,6 @@ N4
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-N5
-</td>
 <td style="text-align:right;">
 0.81
 </td>
@@ -887,10 +868,10 @@ alpha_ci_normal = ci.reliability(neuroticism, type = &#39;alpha&#39;, interval.t
 #          alpha = est,
 #          UL = ci.upper)
 
-alpha_ci_results = as.tibble(alpha_ci_boot)
-
-
-alpha_ci_results = alpha_ci_results %&gt;% 
+alpha_ci_results = as.tibble(alpha_ci_boot)</code></pre>
+<pre><code>## Warning: `as.tibble()` is deprecated, use `as_tibble()` (but mind the new semantics).
+## This warning is displayed once per session.</code></pre>
+<pre class="r"><code>alpha_ci_results = alpha_ci_results %&gt;% 
   select(interval.type, ci.lower, est, ci.upper) %&gt;% 
   mutate(interval.type = &#39;bootstrapped estimate&#39;) %&gt;% 
   rename(` ` = interval.type,
@@ -1391,9 +1372,14 @@ UL
 <h4>Multidimensional Scale</h4>
 <p>Notes: can’t generalize from subscale to whole or vice versa, alpha &lt; reliability in this setting <span class="citation">@zinbarg_cronbachs_2005</span></p>
 <pre class="r"><code>bfi_items_only = visibly::bfi
-alpha_bfi_whole_scale = psych::alpha(bfi_items_only)
-
-alpha_neuro = psych::alpha(neuroticism)
+alpha_bfi_whole_scale = psych::alpha(bfi_items_only)</code></pre>
+<pre><code>## Warning in psych::alpha(bfi_items_only): Some items were negatively correlated with the total scale and probably 
+## should be reversed.  
+## To do this, run the function again with the &#39;check.keys=TRUE&#39; option</code></pre>
+<pre><code>## Some items ( N1 N2 N3 N4 N5 O4 ) were negatively correlated with the total scale and 
+## probably should be reversed.  
+## To do this, run the function again with the &#39;check.keys=TRUE&#39; option</code></pre>
+<pre class="r"><code>alpha_neuro = psych::alpha(neuroticism)
 alpha_extra = psych::alpha(select(bfi_items_only, 
                                   starts_with(&#39;E&#39;, ignore.case = F)))
 alpha_open  = psych::alpha(select(bfi_items_only, 
@@ -1431,8 +1417,6 @@ alpha_bfi_whole_scale$total %&gt;%
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
-<th style="text-align:left;">
-</th>
 <th style="text-align:right;">
 Raw
 </th>
@@ -1452,8 +1436,6 @@ ASE
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-</td>
 <td style="text-align:right;">
 0.69
 </td>
@@ -1534,6 +1516,7 @@ Consc
 <p>lower bound estimate</p>
 <p>assumes single factor and equal loadings for items</p>
 <p>merely adding items will improve</p>
+<p>note internal consistency can be low even if stable across time; see ?psych::epiR</p>
 </div>
 </div>
 <div id="generalizability-theory" class="section level3">

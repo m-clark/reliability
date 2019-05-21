@@ -454,6 +454,7 @@ assumes single factor and equal loadings for items
 
 merely adding items will improve
 
+note internal consistency can be low even if stable across time; see ?psych::epiR
 
 ### Generalizability theory
 
