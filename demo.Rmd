@@ -294,7 +294,7 @@ visibly:::plot_coefs(res,
 
 #### Simulated Data
 
-The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  However, one assumption with coefficient $\alpha$ is that the loadings for such a model are equivalent, and we know they aren't in this case.  As such, coefficient $\alpha$ is a an estimate of the lower bound of reliability. This scenario will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later.  
+The simulated data allows for us to have a more controlled exploration.  We know the items are multivariate normal and unidimensional, so this is where $\alpha$ shines as a measure of reliability.  However, one assumption with coefficient $\alpha$ is that the loadings for such a model are equivalent, and we know they aren't in this case.  As such, coefficient $\alpha$ is an estimate of the lower bound of reliability @revelle_coefficients_2009 This scenario will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later.  
 
 For now, we'll skip the formality and cut right to the chase.  Here are all the previous estimates shown for this data set.  The $\alpha$ is lower for this particular data, but in general we're seeing the same thing.
 
@@ -448,13 +448,10 @@ alpha_bfi_indiv_scale %>%
 
 #### Limitations of Coefficient $\alpha$
 
-lower bound estimate
-
-assumes single factor and equal loadings for items
-
-merely adding items will improve
-
-note internal consistency can be low even if stable across time; see ?psych::epiR
+- Assumes an underlying single factor model with equal loadings for items
+- Unless the assumptions, $\alpha$ can only provide a lower bound estimate
+- Merely adding items will improve the estimate, which may not be how we think about reliability for a given scenario
+- Internal consistency can be low even measures are stable across time; see `?psych::epiR` for example.
 
 ### Generalizability theory
 
