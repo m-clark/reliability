@@ -62,7 +62,11 @@ rnd = function(x, digits = 3) arm::fround(x, digits = digits)
 ```
 
 
+
+
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+<div style="text-align: center; font-size: 200%">**IN PROGRESS**</div>
 
 ```{r intro, child='intro.Rmd'}
 ```

@@ -950,7 +950,7 @@
   <script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
   <script src="site_libs/viz-0.3/viz.js"></script>
   <link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
-  <script src="site_libs/grViz-binding-1.0.1/grViz.js"></script>
+  <script src="site_libs/grViz-binding-1.0.0/grViz.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
   <script src="site_libs/bowser-1.9.3/bowser.min.js"></script>
@@ -1026,6 +1026,9 @@
 </nav>
 <hr class="d-toc-separator"/>
 <p><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"></p>
+<div style="text-align: center; font-size: 200%">
+<strong>IN PROGRESS</strong>
+</div>
 <h4 id="goalsabstract">Goals/Abstract</h4>
 <p>To examine reliability from different perspectives, and the uncertainty in the measurement of it.</p>
 <h4 id="audience">Audience</h4>
@@ -1082,8 +1085,8 @@ Note that by <span class="emph">test</span>, we mean any thing we might want to 
 <h3 id="measurement-of-a-construct">Measurement of a Construct</h3>
 <div class="layout-chunk" data-layout="l-body">
 <div style="width:50%; margin:0 auto; font-family:Roboto; font-size:50%">
-<div id="htmlwidget-6178b31cda83531c3108" style="width:100%;height:250px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6178b31cda83531c3108">{"x":{"diagram":"digraph Factor  {\n graph [rankdir=TB  bgcolor=transparent]\n node [fontname=\"Roboto\" fontsize=10 fontcolor=gray50 shape=box width=.5 color=\"#ff5500\"];\n edge [fontname=\"Roboto\" fontsize=10 fontcolor=gray50 color=\"#00aaff80\" style=\"dashed\"];\n X1  [label = \"X1\"];\n X2  [label = \"X2\"];\n X3  [label = \"X3\"];\n X4  [label = \"X4\"];\n X5  [label = \"X5\"];\n\n node [shape=circle width=1];\n   C [label = \"?\" style=filled color=\"#00aaff\", fillcolor=\"#ff550080\" fontcolor=\"#fffff8\" fontsize=32];\n   C -> X1  ;\n   C -> X2  ;\n   C -> X3  ;\n   C -> X4  ;\n   C -> X5  ;\n \n { rank=same; \n X1; X2; X3; X4; X5; }\n \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4d0b19d602108df71475" style="width:100%;height:250px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4d0b19d602108df71475">{"x":{"diagram":"digraph Factor  {\n graph [rankdir=TB  bgcolor=transparent]\n node [fontname=\"Roboto\" fontsize=10 fontcolor=gray50 shape=box width=.5 color=\"#ff5500\"];\n edge [fontname=\"Roboto\" fontsize=10 fontcolor=gray50 color=\"#00aaff80\" style=\"dashed\"];\n X1  [label = \"X1\"];\n X2  [label = \"X2\"];\n X3  [label = \"X3\"];\n X4  [label = \"X4\"];\n X5  [label = \"X5\"];\n\n node [shape=circle width=1];\n   C [label = \"?\" style=filled color=\"#00aaff\", fillcolor=\"#ff550080\" fontcolor=\"#fffff8\" fontsize=32];\n   C -> X1  ;\n   C -> X2  ;\n   C -> X3  ;\n   C -> X4  ;\n   C -> X5  ;\n \n { rank=same; \n X1; X2; X3; X4; X5; }\n \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>Finally, we can think about reliability in terms of how well the tests measure the construct. Some would call this validity, though the distinction is muddier in practice. The observed measurements we have are imperfect measurements of the thing they are purported to measure. Estimation of that imperfection is the whole of reliability analysis. We can get at this notion more intently with tools from <span class="emph">factor analysis</span>, and can begin to think about reliability in terms of how much of the <em>latent</em> constuct is actually in the observed measures.</p>
@@ -1542,16 +1545,16 @@ item_6
 </div>
 <h4 id="analytical-approach">Analytical Approach</h4>
 <p>The analysis of the data will be conducted on both the observed and simulated data sets. We will show three conceptual estimates of reliability, but, in addition, we will focus on the estimated uncertainty in those estimates. Far too often reliability statistics are reported without any thought of the underlying models, or that there is possibly notable uncertainty in the estimate. The three conceptual estimates include the most popular estimate of reliability, Coefficient <span class="math inline">\(\alpha\)</span>, followed by two model-based approaches - generalizability theory and latent variable/factor analysis.</p>
+<h3 id="coefficient-alpha">Coefficient <span class="math inline">\(\alpha\)</span></h3>
+<p>Coefficient <span class="math inline">\(\alpha\)</span> is one of the most popular measures of reliability. Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items. It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. The standardized formula only requires the two values of the number of items <span class="math inline">\(k\)</span> and average inter-item correlation <span class="math inline">\(\bar{r}\)</span>.</p>
 <aside>
 Though it was developed independently a few years earlier by Guttman <span class="citation" data-cites="guttman_basis_1945">Guttman (<a href="#ref-guttman_basis_1945">1945</a>)</span>, coefficient <span class="math inline">\(\alpha\)</span> is often called Cronbach’s <span class="math inline">\(\alpha\)</span>. We prefer the more neutral terminology, in keeping with Cronbach’s own wishes <span class="citation" data-cites="cronbach_my_2004">Cronbach and Shavelson (<a href="#ref-cronbach_my_2004">2004</a>)</span>.
 </aside>
-<h3 id="coefficient-alpha">Coefficient <span class="math inline">\(\alpha\)</span></h3>
-<p>Coefficient <span class="math inline">\(\alpha\)</span> is one of the most popular measures of reliability. Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items. It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. The standardized formula only requires the two values of the number of items <span class="math inline">\(k\)</span> and average inter-item correlation <span class="math inline">\(\bar{r}\)</span>.</p>
 <p><span class="math display">\[\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}\]</span></p>
+<p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, as the goal is to use an average or sum score, and we are interested in the reliability of that instead of any particular item. In other contexts such an estimate may overestimate the type of reliability we care about.</p>
 <aside>
 The raw score formula for <span class="math inline">\(\alpha\)</span> in terms of the average variance of the items <span class="math inline">\(\bar{v}\)</span> and average covariance <span class="math inline">\(\bar{c}\)</span> is: <span class="math display">\[\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}\]</span>
 </aside>
-<p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, as the goal is to use an average or sum score, and we are interested in the reliability of that instead of any particular item. In other contexts such an estimate may overestimate the type of reliability we care about.</p>
 <p>The following shows the results from the <span class="pack">psych</span> package. In addition to both raw and standardized <span class="math inline">\(\alpha\)</span> measures, it also offers Guttman’s lambda 6, a ‘signal-to-noise’ ratio and tohre info. Shown are the <span class="math inline">\(\alpha\)</span> values, absolute standard error, and average/median inter-item correlation.</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -1695,7 +1698,7 @@ Median r
 
 </div>
 <h4 id="the-uncertainty-of-alpha">The Uncertainty of <span class="math inline">\(\alpha\)</span></h4>
-<p>One issue with Coefficient <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack">MBESS</span> package does this in a variety ways. One uses an approach noted in Feldt et al. <span class="citation" data-cites="feldt_statistical_1987">Feldt, Woodruff, and Salih (<a href="#ref-feldt_statistical_1987">1987</a>)</span>, and which assumes fixed, rather than random, items and subjects. Another is based on a normal distribution approximation <span class="citation" data-cites="van_zyl_distribution_2000">Zyl, Neudecker, and Nel (<a href="#ref-van_zyl_distribution_2000">2000</a>)</span>. The other method is via the bootstrap <span class="citation" data-cites="kelley_confidence_2016">Kelley and Pornprasertmanit (<a href="#ref-kelley_confidence_2016">2016</a>)</span>, calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. We will use the latter for our purposes. Results are shown below, with the bootstrapped value based on 1000 iterations.</p>
+<p>One issue with Coefficient <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack">MBESS</span> package does this in a variety ways. One uses an approach noted in Feldt et al. <span class="citation" data-cites="feldt_statistical_1987">Feldt, Woodruff, and Salih (<a href="#ref-feldt_statistical_1987">1987</a>)</span>, and which assumes fixed, rather than random, items and subjects. Another is based on a normal distribution approximation <span class="citation" data-cites="van_zyl_distribution_2000">Zyl, Neudecker, and Nel (<a href="#ref-van_zyl_distribution_2000">2000</a>)</span>. The other method is via the bootstrap <span class="citation" data-cites="kelley_confidence_2016">Kelley and Pornprasertmanit (<a href="#ref-kelley_confidence_2016">2016</a>)</span>, calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. We will use the latter for our purposes. Results are shown below, with the bootstrapped value based on 1000 iterations.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -1725,13 +1728,13 @@ UL
 bootstrapped estimate
 </td>
 <td style="text-align:right;">
-0.8007
+0.8004
 </td>
 <td style="text-align:right;">
 0.8133
 </td>
 <td style="text-align:right;">
-0.8254
+0.8253
 </td>
 </tr>
 </tbody>
@@ -1769,13 +1772,13 @@ UL
 normal bayes
 </td>
 <td style="text-align:right;">
-0.790
+0.787
 </td>
 <td style="text-align:right;">
 0.813
 </td>
 <td style="text-align:right;">
-0.837
+0.836
 </td>
 </tr>
 <tr>
@@ -1783,7 +1786,7 @@ normal bayes
 post. pred.
 </td>
 <td style="text-align:right;">
-0.804
+0.805
 </td>
 <td style="text-align:right;">
 0.813
@@ -1797,7 +1800,7 @@ post. pred.
 post. pred. non-normal
 </td>
 <td style="text-align:right;">
-0.807
+0.808
 </td>
 <td style="text-align:right;">
 0.816
@@ -1933,7 +1936,7 @@ boot
 0.72
 </td>
 <td style="text-align:right;">
-0.74
+0.75
 </td>
 </tr>
 <tr>
@@ -2035,13 +2038,13 @@ UL
 10%
 </td>
 <td style="text-align:right;">
-0.750
+0.816
 </td>
 <td style="text-align:right;">
-0.796
+0.848
 </td>
 <td style="text-align:right;">
-0.832
+0.874
 </td>
 </tr>
 <tr>
@@ -2049,13 +2052,13 @@ UL
 5%
 </td>
 <td style="text-align:right;">
-0.742
+0.793
 </td>
 <td style="text-align:right;">
-0.807
+0.841
 </td>
 <td style="text-align:right;">
-0.858
+0.878
 </td>
 </tr>
 </tbody>
@@ -2165,13 +2168,15 @@ Consc
 </table>
 </div>
 <h4 id="limitations-of-coefficient-alpha">Limitations of Coefficient <span class="math inline">\(\alpha\)</span></h4>
-<p>lower bound estimate</p>
-<p>assumes single factor and equal loadings for items</p>
-<p>merely adding items will improve</p>
-<p>note internal consistency can be low even if stable across time; see ?psych::epiR</p>
+<ul>
+<li>Assumes an underlying single factor model with equal loadings for items</li>
+<li>Unless the assumptions, <span class="math inline">\(\alpha\)</span> can only provide a lower bound estimate</li>
+<li>Merely adding items will improve the estimate, which may not be how we think about reliability for a given scenario</li>
+<li>Internal consistency can be low even measures are stable across time; see <code>?psych::epiR</code> for example.</li>
+</ul>
 <h3 id="generalizability-theory">Generalizability theory</h3>
 <p>So called <span class="emph">mixed effects models</span> are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together, for example, students within school, or cities within geographic region. This clustering can be hierarchical in nature (e.g. students within schools, schools within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.</p>
-<p>Mixed models estimate the variance attributable to the various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.</p>
+<p>Mixed models estimate the variance attributable to the various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. For example, we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.</p>
 <p>In our data example, each person sees the five items, so those scores within each person are not independent. In other words, the multiple observations are clustered within individuals. This becomes more clear when we consider our data in ‘long’ format, as follows.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
@@ -2305,71 +2310,19 @@ N5
 5
 </td>
 </tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N1
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N2
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N3
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N4
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N5
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
 </tbody>
 </table>
 </div>
-<p>In similar fashion, we can see observations within items as being more correlated than observationa within other items. As such, in this case we can treat the person or item as a source of variance, or in other settings, even their interaction.</p>
-<p><span class="emph">Generalizability Theory</span> focuses on the variance components resulting from a linear mixed model. Using the variance estimates we can obtain a measure of the reliability of a mean score for an individual across the multiple observations. This reliability is defined as what proportion of the total variance is attributable to the particular source of variance, e.g. person, we wish to study. For some grouping or clustering factor <em>g</em>, the simplest estimate of reliability (<span class="math inline">\(\rho\)</span>) would be calculated as follows:</p>
+<p>In similar fashion, we can see observations within items as being more correlated than observations within other items. As such, in this case we can treat the person or item as a source of variance, or in other settings, even their interaction.</p>
+<p><span class="emph">Generalizability Theory</span> focuses on the variance components resulting from a linear mixed model. Using the variance estimates we can obtain a measure of the reliability of a mean score for an individual across the multiple observations. This reliability is defined as what proportion of the total variance is attributable to the particular source of variance, e.g. person, we wish to study. For some grouping or clustering factor <span class="math inline">\(g\)</span>, the simplest estimate of reliability (<span class="math inline">\(\rho\)</span>) would be calculated as follows:</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 +  \sigma_{residual}^2}\]</span></p>
-<p>In more complicated circumstances</p>
+<aside>
+Many will recognize this as the ICC or <span class="emph">intra-class correlation coefficient</span>.
+</aside>
+<p>In more complicated circumstances:</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2 + \sigma_{g*}^2}{\sigma_g^2 + \sigma_{g*}^2 + \sigma_{other}^2 + \sigma_{residual}^2}\]</span></p>
-<p>In the above, <em>g*</em> refers to interactions of g with other other sources of variance, <em>other</em> refers to other still other sources of variance that don’t include <em>g</em>, and then the <em>residual</em> variance is whatever else is not accounted for.</p>
-<p>For simplicity we will focus on the person variance only.</p>
+<p>In the above, <span class="math inline">\(g*\)</span> refers to interactions of g with other other sources of variance, <span class="math inline">\(other\)</span> refers to other still other sources of variance that don’t include <span class="math inline">\(g*\)</span>, and then the <span class="math inline">\(residual\)</span> variance is whatever else is not accounted for.</p>
+<p>For simplicity we will focus on the person variance only in our examples.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -2489,7 +2442,7 @@ N5
 }
 
 @article{tavakol_reliability_2017,
-	title = {The reliability of assessments: {The} {Bayesian} {Cronbach}â€™s alpha},
+	title = {The reliability of assessments: {The} {Bayesian} {Cronbach}’s alpha},
 	volume = {39},
 	issn = {0142-159X, 1466-187X},
 	shorttitle = {The reliability of assessments},
@@ -2524,7 +2477,7 @@ N5
 }
 
 @article{sijtsma_use_2009,
-	title = {On the {Use}, the {Misuse}, and the {Very} {Limited} {Usefulness} of {Cronbach}â€™s {Alpha}},
+	title = {On the {Use}, the {Misuse}, and the {Very} {Limited} {Usefulness} of {Cronbach}’s {Alpha}},
 	volume = {74},
 	issn = {0033-3123, 1860-0980},
 	url = {http://link.springer.com/10.1007/s11336-008-9101-0},
@@ -2557,10 +2510,10 @@ N5
 }
 
 @article{barbaranelli_problem_2015,
-	title = {The {Problem} {With} {Cronbach}â€™s {Alpha}: {Comment} on {Sijtsma} and van der {Ark} (2015)},
+	title = {The {Problem} {With} {Cronbach}’s {Alpha}: {Comment} on {Sijtsma} and van der {Ark} (2015)},
 	volume = {64},
 	issn = {0029-6562},
-	shorttitle = {The {Problem} {With} {Cronbach}â€™s {Alpha}},
+	shorttitle = {The {Problem} {With} {Cronbach}’s {Alpha}},
 	url = {http://content.wkhealth.com/linkback/openurl?sid=WKPTLP:landingpage&an=00006199-201503000-00009},
 	doi = {10.1097/NNR.0000000000000079},
 	language = {en},
@@ -2700,13 +2653,13 @@ N5
 }
 
 @article{zinbarg_cronbachs_2005,
-	title = {Cronbachâ€™s Î±, {Revelle}â€™s Î², and {Mcdonald}â€™s Ï‰{H}: their relations with each other and two alternative conceptualizations of reliability},
+	title = {Cronbach’s α, {Revelle}’s β, and {Mcdonald}’s ω{H}: their relations with each other and two alternative conceptualizations of reliability},
 	volume = {70},
 	issn = {1860-0980},
-	shorttitle = {Cronbachâ€™s Î±, {Revelle}â€™s Î², and {Mcdonald}â€™s Ï‰{H}},
+	shorttitle = {Cronbach’s α, {Revelle}’s β, and {Mcdonald}’s ω{H}},
 	url = {https://doi.org/10.1007/s11336-003-0974-7},
 	doi = {10.1007/s11336-003-0974-7},
-	abstract = {We make theoretical comparisons among five coefficientsâ€”Cronbachâ€™s Î±, Revelleâ€™s Î², McDonaldâ€™s Ï‰ h , and two alternative conceptualizations of reliability. Though many end users and psychometricians alike may not distinguish among these five coefficients, we demonstrate formally their nonequivalence. Specifically, whereas there are conditions under which Î±, Î², and Ï‰ h are equivalent to each other and to one of the two conceptualizations of reliability considered here, we show that equality with this conceptualization of reliability and between Î± and Ï‰ h holds only under a highly restrictive set of conditions and that the conditions under which Î² equals Ï‰ h are only somewhat more general. The nonequivalence of Î±, Î², and Ï‰ h suggests that important information about the psychometric properties of a scale may be missing when scale developers and users only report Î± as is almost always the case},
+	abstract = {We make theoretical comparisons among five coefficients—Cronbach’s α, Revelle’s β, McDonald’s ω h , and two alternative conceptualizations of reliability. Though many end users and psychometricians alike may not distinguish among these five coefficients, we demonstrate formally their nonequivalence. Specifically, whereas there are conditions under which α, β, and ω h are equivalent to each other and to one of the two conceptualizations of reliability considered here, we show that equality with this conceptualization of reliability and between α and ω h holds only under a highly restrictive set of conditions and that the conditions under which β equals ω h are only somewhat more general. The nonequivalence of α, β, and ω h suggests that important information about the psychometric properties of a scale may be missing when scale developers and users only report α as is almost always the case},
 	language = {en},
 	number = {1},
 	urldate = {2018-12-20},
@@ -2716,7 +2669,7 @@ N5
 	year = {2005},
 	keywords = {Alternative Conceptualization, Psychometric Property, Public Policy, Statistical Theory, Theoretical Comparison},
 	pages = {123--133},
-	file = {Springer Full Text PDF:/Users/micl/Zotero/storage/PWZXY6Z2/Zinbarg et al. - 2005 - Cronbachâ€™s Î±, Revelleâ€™s Î², and Mcdonaldâ€™s Ï‰H thei.pdf:application/pdf}
+	file = {Springer Full Text PDF:/Users/micl/Zotero/storage/PWZXY6Z2/Zinbarg et al. - 2005 - Cronbach’s α, Revelle’s β, and Mcdonald’s ωH thei.pdf:application/pdf}
 }
 
 @article{guttman_basis_1945,
@@ -2725,7 +2678,7 @@ N5
 	issn = {1860-0980},
 	url = {https://doi.org/10.1007/BF02288892},
 	doi = {10.1007/BF02288892},
-	abstract = {Three sources of variation in experimental results for a test are distinguished: trials, persons, and items. Unreliability is defined only in terms of variation over trials. This definition leads to a more complete analysis than does the conventional one; Spearman's contention is verified that the conventional approachâ€”which was formulated by Yuleâ€”introduces unnecessary hypotheses. It is emphasized that at least two trials are necessary to estimate the reliability coefficient. This paper is devoted largely to developinglower bounds to the reliability coefficient that can be computed from but asingle trial; these avoid the experimental difficulties of making two independent trials. Six different lower bounds are established, appropriate for different situations. Some of the bounds are easier to compute than are conventional formulas, and all the bounds assume less than do conventional formulas. The terminology used is that of psychological and sociological testing, but the discussion actually provides a general analysis of the reliability of the sum ofn variables.},
+	abstract = {Three sources of variation in experimental results for a test are distinguished: trials, persons, and items. Unreliability is defined only in terms of variation over trials. This definition leads to a more complete analysis than does the conventional one; Spearman's contention is verified that the conventional approach—which was formulated by Yule—introduces unnecessary hypotheses. It is emphasized that at least two trials are necessary to estimate the reliability coefficient. This paper is devoted largely to developinglower bounds to the reliability coefficient that can be computed from but asingle trial; these avoid the experimental difficulties of making two independent trials. Six different lower bounds are established, appropriate for different situations. Some of the bounds are easier to compute than are conventional formulas, and all the bounds assume less than do conventional formulas. The terminology used is that of psychological and sociological testing, but the discussion actually provides a general analysis of the reliability of the sum ofn variables.},
 	language = {en},
 	number = {4},
 	urldate = {2019-01-12},
@@ -2742,7 +2695,7 @@ N5
 	volume = {8},
 	url = {http://psycnet.apa.org/search/display?id=0e8f6328-2a4c-bc07-a8d1-73f18caec397&recordId=1&tab=PA&page=1&display=25&sort=PublicationYearMSSort%20desc,AuthorSort%20asc&sr=1},
 	doi = {10.1027/1614-2241/a000036},
-	abstract = {The reliability of a composite score is a fundamental and important topic in the social and behavioral sciences. The most commonly used reliability estimate of a composite score is coefficient Î±. However, under regularity conditions, the population value of coefficient Î± is only a lower bound on the population reliability, unless the items are essentially Ï„-equivalent, an assumption that is likely violated in most applications. A generalization of coefficient Î±, termed Ï‰, is discussed and generally recommended. Furthermore, a point estimate itself almost certainly differs from the population value. Therefore, it is important to provide confidence interval limits so as not to overinterpret the point estimate. Analytic and bootstrap methods are described in detail for confidence interval construction for Ï‰. We go on to recommend the bias-corrected bootstrap approach for Ï‰ and provide open source and freely available R functions via the MBESS package to implement the methods discussed.},
+	abstract = {The reliability of a composite score is a fundamental and important topic in the social and behavioral sciences. The most commonly used reliability estimate of a composite score is coefficient α. However, under regularity conditions, the population value of coefficient α is only a lower bound on the population reliability, unless the items are essentially τ-equivalent, an assumption that is likely violated in most applications. A generalization of coefficient α, termed ω, is discussed and generally recommended. Furthermore, a point estimate itself almost certainly differs from the population value. Therefore, it is important to provide confidence interval limits so as not to overinterpret the point estimate. Analytic and bootstrap methods are described in detail for confidence interval construction for ω. We go on to recommend the bias-corrected bootstrap approach for ω and provide open source and freely available R functions via the MBESS package to implement the methods discussed.},
 	number = {2},
 	journal = {Methodology: European Journal of Research Methods for the Behavioral and Social Sciences},
 	author = {Kelley, Ken and Chen, Ying},
@@ -2754,7 +2707,7 @@ N5
 @article{terry_sample_2012,
 	title = {Sample size planning for composite reliability coefficients: {Accuracy} in parameter estimation via narrow confidence intervals},
 	volume = {65},
-	copyright = {Â©2011 The British Psychological Society},
+	copyright = {©2011 The British Psychological Society},
 	issn = {2044-8317},
 	shorttitle = {Sample size planning for composite reliability coefficients},
 	url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/j.2044-8317.2011.02030.x},
@@ -2791,7 +2744,7 @@ N5
 	issn = {0013-1644},
 	url = {https://doi.org/10.1177/0013164404266386},
 	doi = {10.1177/0013164404266386},
-	abstract = {In 1997, noting that the 50th anniversary of the publication of â€œCoefficient Alpha and the Internal Structure of Testsâ€ was fast approaching, Lee Cronbach planned what have become the notes published here. His aimwas to point out theways in which his views on coefficient alpha had evolved, doubting nowthat the coefficientwas the bestway of judging the reliability of an instrument to which it was applied. Tracing in these notes, in vintage Cronbach style, his thinking before, during, and after the publication of the alpha paper, his â€œcurrent thoughtsâ€ on coefficient alpha are that alpha covers only a small perspective of the range of measurement uses for which reliability information is needed and that it should be viewed within a much larger system of reliability analysis, generalizability theory.},
+	abstract = {In 1997, noting that the 50th anniversary of the publication of “Coefficient Alpha and the Internal Structure of Tests” was fast approaching, Lee Cronbach planned what have become the notes published here. His aimwas to point out theways in which his views on coefficient alpha had evolved, doubting nowthat the coefficientwas the bestway of judging the reliability of an instrument to which it was applied. Tracing in these notes, in vintage Cronbach style, his thinking before, during, and after the publication of the alpha paper, his “current thoughts” on coefficient alpha are that alpha covers only a small perspective of the range of measurement uses for which reliability information is needed and that it should be viewed within a much larger system of reliability analysis, generalizability theory.},
 	language = {en},
 	number = {3},
 	urldate = {2019-01-12},

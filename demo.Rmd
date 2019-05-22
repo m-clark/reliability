@@ -94,19 +94,20 @@ data_congeneric %>%
 The analysis of the data will be conducted on both the observed and simulated data sets.  We will show three conceptual estimates of reliability, but, in addition, we will focus on the estimated uncertainty in those estimates.  Far too often reliability statistics are reported without any thought of the underlying models, or that there is possibly notable uncertainty in the estimate.  The three conceptual estimates include the most popular estimate of reliability, Coefficient $\alpha$, followed by two model-based approaches - generalizability theory and latent variable/factor analysis.
 
 
-<aside>Though it was developed independently a few years earlier by Guttman @guttman_basis_1945, coefficient $\alpha$ is often called Cronbach's $\alpha$. We prefer the more neutral terminology, in keeping with Cronbach's own wishes @cronbach_my_2004.</aside>
+
 ### Coefficient $\alpha$
 
-
 Coefficient $\alpha$ is one of the most popular measures of reliability.  Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items.  It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct[^chron_app].  The standardized formula only requires the two values of the number of items $k$ and average inter-item correlation $\bar{r}$. 
+
+<aside>Though it was developed independently a few years earlier by Guttman @guttman_basis_1945, coefficient $\alpha$ is often called Cronbach's $\alpha$. We prefer the more neutral terminology, in keeping with Cronbach's own wishes @cronbach_my_2004.</aside>
 
 
 $$\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}$$
 
-<aside>The raw score formula for $\alpha$ in terms of the average variance of the items $\bar{v}$ and average covariance $\bar{c}$ is: $$\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}$$</aside>
 
 All else being equal, simply increasing the number of observations/items will give you a higher reliability.  In some contexts this may make sense, as the goal is to use an average or sum score, and we are interested in the reliability of that instead of any particular item. In other contexts such an estimate may overestimate the type of reliability we care about.
 
+<aside>The raw score formula for $\alpha$ in terms of the average variance of the items $\bar{v}$ and average covariance $\bar{c}$ is: $$\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}$$</aside>
 The following shows the results from the <span class="pack">psych</span> package.  In addition to both raw and standardized $\alpha$ measures, it also offers Guttman's lambda 6, a 'signal-to-noise' ratio and tohre info.  Shown are the $\alpha$ values, absolute standard error, and average/median inter-item correlation.
 
 
@@ -457,7 +458,7 @@ alpha_bfi_indiv_scale %>%
 
 So called <span class="emph">mixed effects models</span> are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together, for example, students within school, or cities within geographic region.  This clustering can be hierarchical in nature (e.g. students within schools, schools within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.
 
-Mixed models estimate the variance attributable to the various sources of dependency in the data.  Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is.  In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.  
+Mixed models estimate the variance attributable to the various sources of dependency in the data.  Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is.  In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. For example, we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.  
 
 In our data example, each person sees the five items, so those scores within each person are not independent. In other words, the multiple observations are clustered within individuals.  This becomes more clear when we consider our data in 'long' format, as follows.
 
@@ -467,28 +468,31 @@ neuroticism_long = neuroticism %>%
   rowid_to_column(var='person') %>%          # create person id
   gather(key = item, value=score, -person)   # melt data into long format
 ```
+
 ```{r neuro_long_form_display}
 neuroticism_long %>% 
   arrange(person, item) %>% 
-  head( 15) %>%
+  head(10) %>%
   kable_df()
 ```
 
 
-In similar fashion, we can see observations within items as being more correlated than observationa within other items. As such, in this case we can treat the person or item as a source of variance, or in other settings, even their interaction.
+In similar fashion, we can see observations within items as being more correlated than observations within other items. As such, in this case we can treat the person or item as a source of variance, or in other settings, even their interaction.
 
-<span class="emph">Generalizability Theory</span> focuses on the variance components resulting from a linear mixed model.  Using the variance estimates we can obtain a measure of the reliability of a mean score for an individual across the multiple observations.  This reliability is defined as what proportion of the total variance is attributable to the particular source of variance, e.g. person, we wish to study.  For some grouping or clustering factor *g*, the simplest estimate of reliability ($\rho$) would be calculated as follows:
+<span class="emph">Generalizability Theory</span> focuses on the variance components resulting from a linear mixed model.  Using the variance estimates we can obtain a measure of the reliability of a mean score for an individual across the multiple observations.  This reliability is defined as what proportion of the total variance is attributable to the particular source of variance, e.g. person, we wish to study.  For some grouping or clustering factor $g$, the simplest estimate of reliability ($\rho$) would be calculated as follows:
 
 
 $$\rho = \frac{\sigma_g^2}{\sigma_g^2 +  \sigma_{residual}^2}$$
 
-In more complicated circumstances
+<aside>Many will recognize this as the ICC or <span class="emph">intra-class correlation coefficient</span>.</aside>
+
+In more complicated circumstances:
 
 $$\rho = \frac{\sigma_g^2 + \sigma_{g*}^2}{\sigma_g^2 + \sigma_{g*}^2 + \sigma_{other}^2 + \sigma_{residual}^2}$$
 
-In the above, *g\** refers to interactions of g with other other sources of variance, *other* refers to other still other sources of variance that don't include *g*, and then the *residual* variance is whatever else is not accounted for.
+In the above, $g*$ refers to interactions of g with other other sources of variance, $other$ refers to other still other sources of variance that don't include $g*$, and then the $residual$ variance is whatever else is not accounted for.
 
-For simplicity we will focus on the person variance only.
+For simplicity we will focus on the person variance only in our examples.
 
 
 ```{r alpha_bayes_rstanarm, cache=TRUE, eval=FALSE}

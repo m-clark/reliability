@@ -664,19 +664,19 @@ item_6
 <div id="analytical-approach" class="section level4">
 <h4>Analytical Approach</h4>
 <p>The analysis of the data will be conducted on both the observed and simulated data sets. We will show three conceptual estimates of reliability, but, in addition, we will focus on the estimated uncertainty in those estimates. Far too often reliability statistics are reported without any thought of the underlying models, or that there is possibly notable uncertainty in the estimate. The three conceptual estimates include the most popular estimate of reliability, Coefficient <span class="math inline">\(\alpha\)</span>, followed by two model-based approaches - generalizability theory and latent variable/factor analysis.</p>
-<aside>
-Though it was developed independently a few years earlier by Guttman <span class="citation">@guttman_basis_1945</span>, coefficient <span class="math inline">\(\alpha\)</span> is often called Cronbach’s <span class="math inline">\(\alpha\)</span>. We prefer the more neutral terminology, in keeping with Cronbach’s own wishes <span class="citation">@cronbach_my_2004</span>.
-</aside>
 </div>
 </div>
 <div id="coefficient-alpha" class="section level3">
 <h3>Coefficient <span class="math inline">\(\alpha\)</span></h3>
 <p>Coefficient <span class="math inline">\(\alpha\)</span> is one of the most popular measures of reliability. Sometimes considered a measure of <span class="emph">internal consistency</span>, it is a function of the average covariance/correlation among the observations/items, the total variance of the test, as well as the number of items. It is also interpreted as the average of all possible spit-half reliabilities. While it is descriptive in nature, it actually assumes a unidimensional factor structure as the underlying model representation, or in other words, that all the items correspond to the same underlying construct<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The standardized formula only requires the two values of the number of items <span class="math inline">\(k\)</span> and average inter-item correlation <span class="math inline">\(\bar{r}\)</span>.</p>
+<aside>
+Though it was developed independently a few years earlier by Guttman <span class="citation">@guttman_basis_1945</span>, coefficient <span class="math inline">\(\alpha\)</span> is often called Cronbach’s <span class="math inline">\(\alpha\)</span>. We prefer the more neutral terminology, in keeping with Cronbach’s own wishes <span class="citation">@cronbach_my_2004</span>.
+</aside>
 <p><span class="math display">\[\alpha = \frac{k\bar{r}}{1+(k-1)\bar{r}}\]</span></p>
+<p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, as the goal is to use an average or sum score, and we are interested in the reliability of that instead of any particular item. In other contexts such an estimate may overestimate the type of reliability we care about.</p>
 <aside>
 The raw score formula for <span class="math inline">\(\alpha\)</span> in terms of the average variance of the items <span class="math inline">\(\bar{v}\)</span> and average covariance <span class="math inline">\(\bar{c}\)</span> is: <span class="math display">\[\alpha = \frac{k\bar{c}}{\bar{v}+(k-1)\bar{c}}\]</span>
 </aside>
-<p>All else being equal, simply increasing the number of observations/items will give you a higher reliability. In some contexts this may make sense, as the goal is to use an average or sum score, and we are interested in the reliability of that instead of any particular item. In other contexts such an estimate may overestimate the type of reliability we care about.</p>
 <p>The following shows the results from the <span class="pack">psych</span> package. In addition to both raw and standardized <span class="math inline">\(\alpha\)</span> measures, it also offers Guttman’s lambda 6, a ‘signal-to-noise’ ratio and tohre info. Shown are the <span class="math inline">\(\alpha\)</span> values, absolute standard error, and average/median inter-item correlation.</p>
 <pre class="r"><code>alpha_results = psych::alpha(neuroticism)
 
@@ -850,7 +850,7 @@ alpha.ci(neuro_fem_alpha,
          n.var = ncol(neuro_male)) )</code></pre>
 <div id="the-uncertainty-of-alpha" class="section level4">
 <h4>The Uncertainty of <span class="math inline">\(\alpha\)</span></h4>
-<p>One issue with Coefficient <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack">MBESS</span> package does this in a variety ways. One uses an approach noted in Feldt et al. <span class="citation">@feldt_statistical_1987</span>, and which assumes fixed, rather than random, items and subjects. Another is based on a normal distribution approximation <span class="citation">@van_zyl_distribution_2000</span>. The other method is via the bootstrap <span class="citation">@kelley_confidence_2016</span>, calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. We will use the latter for our purposes. Results are shown below, with the bootstrapped value based on 1000 iterations.</p>
+<p>One issue with Coefficient <span class="math inline">\(\alpha\)</span> is that the uncertainty in the estimate is rarely reported, even though it has been known for some time how to derive a confidence interval for it, and tools are readily available for producing it. The <span class="pack">MBESS</span> package does this in a variety ways. One uses an approach noted in Feldt et al. <span class="citation">@feldt_statistical_1987</span>, and which assumes fixed, rather than random, items and subjects. Another is based on a normal distribution approximation <span class="citation">@van_zyl_distribution_2000</span>. The other method is via the bootstrap <span class="citation">@kelley_confidence_2016</span>, calculating <span class="math inline">\(\alpha\)</span> for <span class="math inline">\(R\)</span> number of bootstrap resamples of the data. We will use the latter for our purposes. Results are shown below, with the bootstrapped value based on 1000 iterations.</p>
 <pre class="r"><code>library(MBESS)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;MBESS&#39;</code></pre>
@@ -909,13 +909,13 @@ UL
 bootstrapped estimate
 </td>
 <td style="text-align:right;">
-0.8007
+0.8004
 </td>
 <td style="text-align:right;">
 0.8133
 </td>
 <td style="text-align:right;">
-0.8254
+0.8253
 </td>
 </tr>
 </tbody>
@@ -931,9 +931,6 @@ bootstrapped estimate
 ## options(mc.cores = parallel::detectCores()).
 ## To avoid recompilation of unchanged Stan programs, we recommend calling
 ## rstan_options(auto_write = TRUE)</code></pre>
-<pre><code>## For improved execution time, we recommend calling
-## Sys.setenv(LOCAL_CPPFLAGS = &#39;-march=native&#39;)
-## although this causes Stan to throw an error on a few processors.</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;rstan&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:psych&#39;:
@@ -996,13 +993,13 @@ UL
 normal bayes
 </td>
 <td style="text-align:right;">
-0.790
+0.787
 </td>
 <td style="text-align:right;">
 0.813
 </td>
 <td style="text-align:right;">
-0.837
+0.836
 </td>
 </tr>
 <tr>
@@ -1010,7 +1007,7 @@ normal bayes
 post. pred.
 </td>
 <td style="text-align:right;">
-0.804
+0.805
 </td>
 <td style="text-align:right;">
 0.813
@@ -1024,7 +1021,7 @@ post. pred.
 post. pred. non-normal
 </td>
 <td style="text-align:right;">
-0.807
+0.808
 </td>
 <td style="text-align:right;">
 0.816
@@ -1141,7 +1138,7 @@ visibly:::plot_coefs(res,
 </div>
 <div id="simulated-data" class="section level4">
 <h4>Simulated Data</h4>
-<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. However, one assumption with coefficient <span class="math inline">\(\alpha\)</span> is that the loadings for such a model are equivalent, and we know they aren’t in this case. As such, coefficient <span class="math inline">\(\alpha\)</span> is a an estimate of the lower bound of reliability. This scenario will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later.</p>
+<p>The simulated data allows for us to have a more controlled exploration. We know the items are multivariate normal and unidimensional, so this is where <span class="math inline">\(\alpha\)</span> shines as a measure of reliability. However, one assumption with coefficient <span class="math inline">\(\alpha\)</span> is that the loadings for such a model are equivalent, and we know they aren’t in this case. As such, coefficient <span class="math inline">\(\alpha\)</span> is an estimate of the lower bound of reliability <span class="citation">@revelle_coefficients_2009</span> This scenario will serve as a comparison when we actually look at factor analytic approaches to reliability estimation later.</p>
 <p>For now, we’ll skip the formality and cut right to the chase. Here are all the previous estimates shown for this data set. The <span class="math inline">\(\alpha\)</span> is lower for this particular data, but in general we’re seeing the same thing.</p>
 <pre class="r"><code>alpha_results_con = psych::alpha(data_congeneric)</code></pre>
 <pre class="r"><code>library(MBESS)
@@ -1219,7 +1216,7 @@ boot
 0.72
 </td>
 <td style="text-align:right;">
-0.74
+0.75
 </td>
 </tr>
 <tr>
@@ -1351,13 +1348,13 @@ UL
 10%
 </td>
 <td style="text-align:right;">
-0.750
+0.816
 </td>
 <td style="text-align:right;">
-0.796
+0.848
 </td>
 <td style="text-align:right;">
-0.832
+0.874
 </td>
 </tr>
 <tr>
@@ -1365,13 +1362,13 @@ UL
 5%
 </td>
 <td style="text-align:right;">
-0.742
+0.793
 </td>
 <td style="text-align:right;">
-0.807
+0.841
 </td>
 <td style="text-align:right;">
-0.858
+0.878
 </td>
 </tr>
 </tbody>
@@ -1522,23 +1519,25 @@ Consc
 </div>
 <div id="limitations-of-coefficient-alpha" class="section level4">
 <h4>Limitations of Coefficient <span class="math inline">\(\alpha\)</span></h4>
-<p>lower bound estimate</p>
-<p>assumes single factor and equal loadings for items</p>
-<p>merely adding items will improve</p>
-<p>note internal consistency can be low even if stable across time; see ?psych::epiR</p>
+<ul>
+<li>Assumes an underlying single factor model with equal loadings for items</li>
+<li>Unless the assumptions, <span class="math inline">\(\alpha\)</span> can only provide a lower bound estimate</li>
+<li>Merely adding items will improve the estimate, which may not be how we think about reliability for a given scenario</li>
+<li>Internal consistency can be low even measures are stable across time; see <code>?psych::epiR</code> for example.</li>
+</ul>
 </div>
 </div>
 <div id="generalizability-theory" class="section level3">
 <h3>Generalizability theory</h3>
 <p>So called <span class="emph">mixed effects models</span> are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together, for example, students within school, or cities within geographic region. This clustering can be hierarchical in nature (e.g. students within schools, schools within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.</p>
-<p>Mixed models estimate the variance attributable to the various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. Thus we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.</p>
+<p>Mixed models estimate the variance attributable to the various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. For example, we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.</p>
 <p>In our data example, each person sees the five items, so those scores within each person are not independent. In other words, the multiple observations are clustered within individuals. This becomes more clear when we consider our data in ‘long’ format, as follows.</p>
 <pre class="r"><code>neuroticism_long = neuroticism %&gt;% 
   rowid_to_column(var=&#39;person&#39;) %&gt;%          # create person id
   gather(key = item, value=score, -person)   # melt data into long format</code></pre>
 <pre class="r"><code>neuroticism_long %&gt;% 
   arrange(person, item) %&gt;% 
-  head( 15) %&gt;%
+  head(10) %&gt;%
   kable_df()</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1665,70 +1664,18 @@ N5
 5
 </td>
 </tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N1
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N2
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N3
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N4
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-N5
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
 </tbody>
 </table>
-<p>In similar fashion, we can see observations within items as being more correlated than observationa within other items. As such, in this case we can treat the person or item as a source of variance, or in other settings, even their interaction.</p>
-<p><span class="emph">Generalizability Theory</span> focuses on the variance components resulting from a linear mixed model. Using the variance estimates we can obtain a measure of the reliability of a mean score for an individual across the multiple observations. This reliability is defined as what proportion of the total variance is attributable to the particular source of variance, e.g. person, we wish to study. For some grouping or clustering factor <em>g</em>, the simplest estimate of reliability (<span class="math inline">\(\rho\)</span>) would be calculated as follows:</p>
+<p>In similar fashion, we can see observations within items as being more correlated than observations within other items. As such, in this case we can treat the person or item as a source of variance, or in other settings, even their interaction.</p>
+<p><span class="emph">Generalizability Theory</span> focuses on the variance components resulting from a linear mixed model. Using the variance estimates we can obtain a measure of the reliability of a mean score for an individual across the multiple observations. This reliability is defined as what proportion of the total variance is attributable to the particular source of variance, e.g. person, we wish to study. For some grouping or clustering factor <span class="math inline">\(g\)</span>, the simplest estimate of reliability (<span class="math inline">\(\rho\)</span>) would be calculated as follows:</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 +  \sigma_{residual}^2}\]</span></p>
-<p>In more complicated circumstances</p>
+<aside>
+Many will recognize this as the ICC or <span class="emph">intra-class correlation coefficient</span>.
+</aside>
+<p>In more complicated circumstances:</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2 + \sigma_{g*}^2}{\sigma_g^2 + \sigma_{g*}^2 + \sigma_{other}^2 + \sigma_{residual}^2}\]</span></p>
-<p>In the above, <em>g*</em> refers to interactions of g with other other sources of variance, <em>other</em> refers to other still other sources of variance that don’t include <em>g</em>, and then the <em>residual</em> variance is whatever else is not accounted for.</p>
-<p>For simplicity we will focus on the person variance only.</p>
+<p>In the above, <span class="math inline">\(g*\)</span> refers to interactions of g with other other sources of variance, <span class="math inline">\(other\)</span> refers to other still other sources of variance that don’t include <span class="math inline">\(g*\)</span>, and then the <span class="math inline">\(residual\)</span> variance is whatever else is not accounted for.</p>
+<p>For simplicity we will focus on the person variance only in our examples.</p>
 <pre class="r"><code># alpha as icc/generalizability statistic from g-theory
 bfi_long = bfi_items_only %&gt;% 
   gather(key = item, value = score) %&gt;% 
