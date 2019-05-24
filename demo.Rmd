@@ -484,7 +484,7 @@ In similar fashion, we can see observations within items as being more correlate
 
 $$\rho = \frac{\sigma_g^2}{\sigma_g^2 +  \sigma_{residual}^2}$$
 
-<aside>Many will recognize this as the ICC or <span class="emph">intra-class correlation coefficient</span>.</aside>
+<aside>Many will recognize this as the ICC or <span class="emph">intraclass correlation coefficient</span>.</aside>
 
 In more complicated circumstances:
 
@@ -492,7 +492,23 @@ $$\rho = \frac{\sigma_g^2 + \sigma_{g*}^2}{\sigma_g^2 + \sigma_{g*}^2 + \sigma_{
 
 In the above, $g*$ refers to interactions of g with other other sources of variance, $other$ refers to other still other sources of variance that don't include $g*$, and then the $residual$ variance is whatever else is not accounted for.
 
-For simplicity we will focus on the person variance only in our examples.
+For simplicity we will focus on the person variance only in our examples. To calculate it we will use lme4 to run the mixed model using the long form data.
+
+```{r mixed_model}
+library(lme4)
+model_gtheory = lmer(score ~ item + (1|person), neuroticism_long)
+summary(model_gtheory, cor=F)
+VarCorr(model_gtheory)
+```
+
+```{r}
+psych::ICC(neuroticism)
+dependability = sjstats::icc(model_gtheory)
+```
+
+
+
+
 
 
 ```{r alpha_bayes_rstanarm, cache=TRUE, eval=FALSE}
