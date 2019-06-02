@@ -1530,7 +1530,7 @@ Consc
 <div id="generalizability-theory" class="section level3">
 <h3>Generalizability theory</h3>
 <p>So called <span class="emph">mixed effects models</span> are statistical models applicable to situations in which there is some dependency among observations in the data, where that correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements of individuals, or cases in which the units of observation are otherwise grouped together, for example, students within school, or cities within geographic region. This clustering can be hierarchical in nature (e.g. students within schools, schools within districts) or not (e.g. students and items on a test). While there are different ways to approach such a situation, mixed models are a powerful tool with which to do so.</p>
-<p>Mixed models estimate the variance attributable to the various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure is. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. For example, we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.</p>
+<p>Mixed models estimate the variance attributable to the various sources of dependency in the data. Thus, aside from the usual regression output, we get a sense of variability due to individuals, species, surgical procedure, or whatever our grouping structure may be that produces the multiple observations. In addition, we may estimate cluster-specific effects, which allow for increased predictive capability. For example, in a longitudinal setting we may know the general trend across all individuals, but we can also allow each individual to have separate starting points and trends.</p>
 <p>In our data example, each person sees the five items, so those scores within each person are not independent. In other words, the multiple observations are clustered within individuals. This becomes more clear when we consider our data in ‘long’ format, as follows.</p>
 <pre class="r"><code>neuroticism_long = neuroticism %&gt;% 
   rowid_to_column(var=&#39;person&#39;) %&gt;%          # create person id
@@ -1666,16 +1666,112 @@ N5
 </tr>
 </tbody>
 </table>
-<p>In similar fashion, we can see observations within items as being more correlated than observations within other items. As such, in this case we can treat the person or item as a source of variance, or in other settings, even their interaction.</p>
+<p>In similar fashion, we can see observations <em>within items</em> as being more correlated than observations within other items. As such, in this case we can treat the person or item as a source of variance, or in other settings, even their interaction.</p>
 <p><span class="emph">Generalizability Theory</span> focuses on the variance components resulting from a linear mixed model. Using the variance estimates we can obtain a measure of the reliability of a mean score for an individual across the multiple observations. This reliability is defined as what proportion of the total variance is attributable to the particular source of variance, e.g. person, we wish to study. For some grouping or clustering factor <span class="math inline">\(g\)</span>, the simplest estimate of reliability (<span class="math inline">\(\rho\)</span>) would be calculated as follows:</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 +  \sigma_{residual}^2}\]</span></p>
 <aside>
-Many will recognize this as the ICC or <span class="emph">intra-class correlation coefficient</span>.
+Many will recognize this as the <strong>ICC</strong> or <span class="emph">intraclass correlation coefficient</span>.
 </aside>
 <p>In more complicated circumstances:</p>
 <p><span class="math display">\[\rho = \frac{\sigma_g^2 + \sigma_{g*}^2}{\sigma_g^2 + \sigma_{g*}^2 + \sigma_{other}^2 + \sigma_{residual}^2}\]</span></p>
 <p>In the above, <span class="math inline">\(g*\)</span> refers to interactions of g with other other sources of variance, <span class="math inline">\(other\)</span> refers to other still other sources of variance that don’t include <span class="math inline">\(g*\)</span>, and then the <span class="math inline">\(residual\)</span> variance is whatever else is not accounted for.</p>
-<p>For simplicity we will focus on the person variance only in our examples.</p>
+<p>Generalizability theory distinguishes between two main statistical estimates of reliability: <span class="emph">dependability</span> which is calculated as above, and <span class="emph">generalizability</span> which would not include the <span class="math inline">\(\sigma_{other}^2\)</span> sources of variance. The former regards the reliability of ‘absolute’ measures, e.g. when we are interested in the specific score for an observation/individual. The latter regards a ‘relative’ measure, for example, when we are primarily interested only in whether the individual scores higher than another or passes some arbitrary cutoff score. If there is only one source of variance to consider, the statistics are identical, but otherwise dependability will always be less if the other sources of variances are non-negligible.</p>
+<aside>
+If you’re like me, the the absolute vs. relative distinction may not be as conceptually clear as you’d like. However, this is as much description as you’ll find in the texts.
+</aside>
+<p>Generalizability theory denotes two types of ‘study’, the <span class="emph">g-study</span>, or generalizability study, and the <span class="emph">d-study</span>, or decision study. The first simply calculates the basic dependability and/or generalizability statistic for a given data setting. The latter is concerned with the reliability of the mean or sum score over the set of <span class="math inline">\(N\)</span> possible observations. In this case, our above formulas would be altered to the following:</p>
+<p><span class="math display">\[\rho = \frac{\sigma_g^2}{\sigma_g^2 +  \frac{\sigma_{residual}^2}{n_{obs}}}\]</span></p>
+<p><span class="math display">\[\rho = \frac{\sigma_g^2 + \sigma_{g*}^2}{\sigma_g^2 + \frac{{\sigma_{g*}^2}}{n_{g*}} + \frac{\sigma_{other}^2}{n_{other}} + \frac{\sigma_{residual}^2}{n_{obs}}}\]</span></p>
+<aside>
+With unbalanced/typical data, what the <span class="math inline">\(n\_\)</span> should be is not straightforward. One could use the mean number of observations seen across clusters, the geometric mean (as in Brennan <span class="citation">@brennan</span>), or median (e.g. <span class="pack">gtheory</span> package in R). But these will definitely give you potentially very different estimates of reliability. Furthermore, beyond the simple mixed model setting, where we might have random slopes, other distributions for the response besides normal, etc. it becomes even muddier on what to do with these statistics.
+</aside>
+<p>The main take home point is that we have a more reliable measure dealing with a mean score of multiple observations than we do a single observation. We can set the various <span class="math inline">\(n\_*\)</span> to whatever we like. This allows us to see how many observations are needed to get to a certain level of reliability, assuming the variance components are held constant.</p>
+<p>For simplicity we will focus only on the person variance in our examples. To calculate it we will use <span class="pack">lme4</span> to run the mixed model using the long form data.</p>
+<pre class="r"><code>library(lme4)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     expand</code></pre>
+<pre class="r"><code>model_gtheory = lmer(score ~ item + (1|person), neuroticism_long)
+summary(model_gtheory, cor=F)</code></pre>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: score ~ item + (1 | person)
+##    Data: neuroticism_long
+## 
+## REML criterion at convergence: 46639.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1901 -0.6359 -0.0488  0.6185  3.4780 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  person   (Intercept) 1.161    1.078   
+##  Residual             1.333    1.154   
+## Number of obs: 13470, groups:  person, 2694
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  2.93133    0.03043  96.340
+## itemN2       0.57721    0.03146  18.350
+## itemN3       0.28545    0.03146   9.074
+## itemN4       0.25835    0.03146   8.213
+## itemN5       0.04195    0.03146   1.333</code></pre>
+<p>Let’s just focus on the variance components, which allow us to calculate the g-coefficient.</p>
+<pre class="r"><code>data.frame(VarCorr(model_gtheory)) %&gt;% 
+  select(-var1, -var2) %&gt;% 
+  mutate(prop = vcov/sum(vcov)) %&gt;% 
+  kable_df()</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+grp
+</th>
+<th style="text-align:right;">
+vcov
+</th>
+<th style="text-align:right;">
+sdcor
+</th>
+<th style="text-align:right;">
+prop
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+person
+</td>
+<td style="text-align:right;">
+1.161
+</td>
+<td style="text-align:right;">
+1.078
+</td>
+<td style="text-align:right;">
+0.466
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Residual
+</td>
+<td style="text-align:right;">
+1.333
+</td>
+<td style="text-align:right;">
+1.154
+</td>
+<td style="text-align:right;">
+0.534
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code># alpha as icc/generalizability statistic from g-theory
 bfi_long = bfi_items_only %&gt;% 
   gather(key = item, value = score) %&gt;% 
@@ -1694,6 +1790,7 @@ var_comp_draws = spread_draws(mixed_congeneric_bayes, Sigma[subject:(Intercept),
 print(alpha_bayes, par=&#39;alpha&#39;, digits=4)</code></pre>
 <div id="the-uncertainty-of-generalizability" class="section level4">
 <h4>The Uncertainty of Generalizability</h4>
+<p>The lme4 package provides a way to get an estimate of the uncertainty in the variance components, which should imply that any estimate using them would also have uncertainty. How will we calculate the uncertainty in the g-coefficient?</p>
 </div>
 <div id="simulated-data-1" class="section level4">
 <h4>Simulated Data</h4>

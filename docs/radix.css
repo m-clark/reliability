@@ -76,3 +76,11 @@ blockquote {
   color:  #947100;  /*#AAB400 #4daf4a; #FFC5D0*/
   font-weight: 500;
 }
+
+/* to fix aside; see issue #39 https://github.com/rstudio/distill/issues/39*/ 
+@media(min-width:768px) {
+  aside {
+      margin-top: -00px;
+      margin-bottom: -500px;
+  }
+}
