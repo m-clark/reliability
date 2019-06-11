@@ -10,6 +10,8 @@ kable_df <- function(..., digits=3) {
   kable(..., digits=digits) %>% 
     kable_styling(full_width = F)
 }
+
+rnd = function(x, digits = 3) arm::fround(x, digits = digits)
 ```
 
 ### Preliminaries
@@ -514,30 +516,39 @@ For simplicity we will focus only on the person variance in our examples. To cal
 library(lme4)
 model_gtheory = lmer(score ~ item + (1|person), neuroticism_long)
 summary(model_gtheory, cor=F)
-
 ```
 
-Let's just focus on the variance components, which allow us to calculate the g-coefficient.
+Let's just focus on the variance components, which allow us to calculate the g-coefficient.  First we note the proportion of variance accounted for by the individuals.
 
-```{r, }
-data.frame(VarCorr(model_gtheory)) %>% 
+```{r icc}
+icc = data.frame(VarCorr(model_gtheory)) %>% 
   select(-var1, -var2) %>% 
-  mutate(prop = vcov/sum(vcov)) %>% 
+  mutate(prop = vcov/sum(vcov)) 
+
+dependability = sjstats::icc(model_gtheory)
+
+generalizability = icc$vcov[1] / (icc$vcov[1] + icc$vcov[2]/ 5)
+
+icc %>% 
   kable_df()
 ```
 
 
-```{r psychICC, echo=FALSE, eval=FALSE}
+```{r psychICC, echo=FALSE, eval=F}
 # whether item is fixed or random determines ICC 2 vs. 3
 model_gtheory = lmer(score ~ (1|item) + (1|person), neuroticism_long)
 summary(model_gtheory, cor=F)
 psych::ICC(neuroticism)$results
-dependability = sjstats::icc(model_gtheory)
+
 anova(lm(score ~ item + factor(person), neuroticism_long))
 ```
 
 
+This proportion is `r rnd(sjstats::icc(model_gtheory), 2)`.  In other contexts this is called the <span class="emph">intraclass correlation</span> coefficient, which tells us also how correlated observations are within clusters.  Some also call this <span class="emph">repeatability</span>.  
 
+However, while this does give us a sense of the reliability of the measure, it is only that of a single observation/item.  If we want the generalizability coefficient, we need to divide the residual variance by the number of observations seen by each person.  While we normally have missing data, to keep things simple we'll just assume the complete data case. This would give us `r rnd(icc$vcov[1])` / (`r rnd(icc$vcov[1])` + `r rnd(icc$vcov[2])` / 5), or `r rnd(generalizability, 3)`.  
+
+That is not a typo. In this context the generalizability value is identical to the coefficient $\alpha$.  As such, we have a new context within which to understand $\alpha$, as the reliability of the average score over $n$ items.  Likewise we can understand generalizability in the context of coefficient $\alpha$ and the underlying assumptions it has. However, generalizability theory provides additional means to estimate generalizability/dependability in more complicated settings.
 
 
 
@@ -563,7 +574,26 @@ print(alpha_bayes, par='alpha', digits=4)
 
 #### The Uncertainty of Generalizability
 
-The lme4 package provides a way to get an estimate of the uncertainty in the variance components, which should imply that any estimate using them would also have uncertainty.  How will we calculate the uncertainty in the g-coefficient?
+The lme4 package provides a way to get an estimate of the uncertainty in the variance components,
+
+```{r vc-interval, echo=T}
+model_gtheory_interval = confint(model_gtheory)
+```
+
+```{r vc-interval-table, echo=FALSE}
+# source('code/extract_vc.R')
+# extract_vc(model_gtheory)
+vc_names = names(model_gtheory_interval)
+source('code/vc_interval.R')
+
+vc_interval(model_gtheory) %>% 
+  kable_df() 
+```
+
+
+which should imply that any estimate using them would also have uncertainty.  How will we calculate the uncertainty in the g-coefficient?
+
+
 
 #### Simulated Data
 #### Multidimensional Scale

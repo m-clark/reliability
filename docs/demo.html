@@ -1719,10 +1719,16 @@ summary(model_gtheory, cor=F)</code></pre>
 ## itemN3       0.28545    0.03146   9.074
 ## itemN4       0.25835    0.03146   8.213
 ## itemN5       0.04195    0.03146   1.333</code></pre>
-<p>Let’s just focus on the variance components, which allow us to calculate the g-coefficient.</p>
-<pre class="r"><code>data.frame(VarCorr(model_gtheory)) %&gt;% 
+<p>Let’s just focus on the variance components, which allow us to calculate the g-coefficient. First we note the proportion of variance accounted for by the individuals.</p>
+<pre class="r"><code>icc = data.frame(VarCorr(model_gtheory)) %&gt;% 
   select(-var1, -var2) %&gt;% 
-  mutate(prop = vcov/sum(vcov)) %&gt;% 
+  mutate(prop = vcov/sum(vcov)) 
+
+dependability = sjstats::icc(model_gtheory)
+
+generalizability = icc$vcov[1] / (icc$vcov[1] + icc$vcov[2]/ 5)
+
+icc %&gt;% 
   kable_df()</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1772,6 +1778,9 @@ Residual
 </tr>
 </tbody>
 </table>
+<p>This proportion is 0.47. In other contexts this is called the <span class="emph">intraclass correlation</span> coefficient, which tells us also how correlated observations are within clusters. Some also call this <span class="emph">repeatability</span>.</p>
+<p>However, while this does give us a sense of the reliability of the measure, it is only that of a single observation/item. If we want the generalizability coefficient, we need to divide the residual variance by the number of observations seen by each person. While we normally have missing data, to keep things simple we’ll just assume the complete data case. This would give us 1.161 / (1.161 + 1.333 / 5), or 0.813.</p>
+<p>That is not a typo. In this context the generalizability value is identical to the coefficient <span class="math inline">\(\alpha\)</span>. As such, we have a new context within which to understand <span class="math inline">\(\alpha\)</span>, as the reliability of the average score over <span class="math inline">\(n\)</span> items. Likewise we can understand generalizability in the context of coefficient <span class="math inline">\(\alpha\)</span> and the underlying assumptions it has. However, generalizability theory provides additional means to estimate generalizability/dependability in more complicated settings.</p>
 <pre class="r"><code># alpha as icc/generalizability statistic from g-theory
 bfi_long = bfi_items_only %&gt;% 
   gather(key = item, value = score) %&gt;% 
@@ -1790,7 +1799,50 @@ var_comp_draws = spread_draws(mixed_congeneric_bayes, Sigma[subject:(Intercept),
 print(alpha_bayes, par=&#39;alpha&#39;, digits=4)</code></pre>
 <div id="the-uncertainty-of-generalizability" class="section level4">
 <h4>The Uncertainty of Generalizability</h4>
-<p>The lme4 package provides a way to get an estimate of the uncertainty in the variance components, which should imply that any estimate using them would also have uncertainty. How will we calculate the uncertainty in the g-coefficient?</p>
+<p>The lme4 package provides a way to get an estimate of the uncertainty in the variance components,</p>
+<pre class="r"><code>model_gtheory_interval = confint(model_gtheory)</code></pre>
+<pre><code>## Computing profile confidence intervals ...</code></pre>
+<pre><code>## Computing profile confidence intervals ...</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Component
+</th>
+<th style="text-align:left;">
+2.5%
+</th>
+<th style="text-align:left;">
+97.5%
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Person
+</td>
+<td style="text-align:left;">
+1.04
+</td>
+<td style="text-align:left;">
+1.11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Residual
+</td>
+<td style="text-align:left;">
+1.14
+</td>
+<td style="text-align:left;">
+1.17
+</td>
+</tr>
+</tbody>
+</table>
+<p>which should imply that any estimate using them would also have uncertainty. How will we calculate the uncertainty in the g-coefficient?</p>
 </div>
 <div id="simulated-data-1" class="section level4">
 <h4>Simulated Data</h4>

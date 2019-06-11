@@ -60,7 +60,6 @@ kable_df <- function(..., digits=3) {
 }
 
 rnd = function(x, digits = 3) arm::fround(x, digits = digits)
-
 ```
 
 
