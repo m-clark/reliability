@@ -23,6 +23,10 @@
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="site_libs/viz-0.3/viz.js"></script>
+<link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="site_libs/grViz-binding-1.0.0/grViz.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -1852,10 +1856,37 @@ Residual
 </div>
 <div id="limitations-of-g-theory" class="section level4">
 <h4>Limitations of G-theory</h4>
+<ul>
+<li>unbalanced designs mean harmonic geometric median</li>
+<li>random slopes</li>
+<li>non-normal</li>
+</ul>
 </div>
 </div>
 <div id="factor-analysis" class="section level3">
 <h3>Factor Analysis</h3>
+<p>With <span class="emph">factor analysis</span>, or <span class="emph">latent variable modeling</span>, we seek to find hidden variables that can explain the ones we observe. Take our current example with neuroticism. There is no direct measurement of neuroticism. However, we can ask several questions that get at the idea of it, and presumably these items will be notably correlated if they do measure the underlying construct well. Factor analysis will help us determine just how well the observed variables, and allows us to understand a single contruct rather than possibly many items.</p>
+<aside>
+Factor analysis can also be grouped under a broad heading of dimension reduction techniques that include principal components analysis, mixture models, latent dirichlet allocation, and more.
+</aside>
+<p>As with classical test theory, we generally assume that the observed variables are random observations of the construct, such that repeated analysis would produce the same thing. For example, the five neuroticism items are random draws from 25, and we should get the same thing more or less, regardless of which handful of items we choose. More generally, the 25 items are drawn from a universe of items that could be used to measure the latent variable. This notion would hold to other scenarios of repeated measures or clustered observations in general.</p>
+<pre class="r"><code>htmltools::tags$div(style=&quot;width:50%; margin:0 auto; font-family:Roboto; font-size:50%&quot;,
+         DiagrammeR::grViz(&#39;code/graphical_models/neuroticism.gv&#39;, width=&#39;100%&#39;, height=&#39;250px&#39;)
+         )</code></pre>
+<div style="width:50%; margin:0 auto; font-family:Roboto; font-size:50%">
+<div id="htmlwidget-f77d2bc42896ad3d7661" style="width:100%;height:250px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f77d2bc42896ad3d7661">{"x":{"diagram":"digraph Factor  {\n graph [rankdir=TB  bgcolor=transparent]\n node [fontname=\"Roboto\" fontsize=10 fontcolor=gray50 shape=box width=.5 color=\"#ff5500\"];\n edge [fontname=\"Roboto\" fontsize=10 fontcolor=gray50 color=\"#00aaff80\" style=\"dashed\"];\n X1  [label = \"Anger\"];\n X2  [label = \"Irritated\"];\n X3  [label = \"Mood Swings\"];\n X4  [label = \"Feel Blue\"];\n X5  [label = \"Panic\"];\n\n node [shape=circle width=1];\n   C [label = \"Neuroticism\" style=filled color=\"#00aaff\", fillcolor=\"#ff550080\" fontcolor=\"#fffff8\" fontsize=14];\n   C -> X1  ;\n   C -> X2  ;\n   C -> X3  ;\n   C -> X4  ;\n   C -> X5  ;\n \n { rank=same; \n X1; X2; X3; X4; X5; }\n \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>Conducting factor analysis involves estimating the correlations implied by the paths from the latent construct to the observed variables (called <span class="emph">loadings</span>), as we well as estimating the (residual) variance of each item and (usually) the latent variable itself. The latent variable is assumed to have mean 0 and scaled arbitrarily to the first item, or simply standardized to have unit variance.</p>
+<p>Factor analysis can be said to take on a more <span class="emph">structured</span> approach, or one that is more <span class="emph">exploratory</span> and data-driven. If we have only a single construct these are indistinguishable. But let’s say we are developing this personality measure for the first time. Theory would suggest five total constructs, but since we in a testing stage, we may simply let the data decide how many factors there should be based on some criterion. In the structured approach, by contrast, we would only let the items we think measure neuroticism load on a neuroticism latent variable, and likewise for the other constructs. The following shows how this might look for two factors.</p>
+<pre class="r"><code>htmltools::tags$div(style=&quot;width:50%; margin:0 auto; font-family:Roboto; font-size:75%&quot;,
+         DiagrammeR::grViz(&#39;code/graphical_models/fa_graph.gv&#39;, width=&#39;100%&#39;)
+         )</code></pre>
+<div style="width:50%; margin:0 auto; font-family:Roboto; font-size:75%">
+<div id="htmlwidget-e507d1bdc477c4b98127" style="width:100%;height:500px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e507d1bdc477c4b98127">{"x":{"diagram":"digraph Factor  {\n graph [rankdir=TB  bgcolor=transparent]\n node [fontname=\"Roboto\" fontsize=10 fontcolor=gray50 shape=box width=2 color=\"#ff5500\"];\n edge [fontname=\"Roboto\" fontsize=10 fontcolor=gray50 color=\"#00aaff\"];\n A1  [label = \"A1\"];\n A2  [label = \"A2\"];\n A3  [label = \"A3\"];\n A4  [label = \"A4\"];\n A5  [label = \"A5\"];\n N1  [label = \"N1\"];\n N2  [label = \"N2\"];\n N3  [label = \"N3\"];\n N4  [label = \"N4\"];\n N5  [label = \"N5\"];\n\n node [shape=ellipse width=1];\n   Agree -> A1  ; #[label = -0.5];\n   Agree -> A2  ; #[label = 0.8];\n   Agree -> A3  ; #[label = 0.8];\n   Agree -> A4  ; #[label = 0.6];\n   Agree -> A5  ; #[label = 0.7];\n   Neuro -> N1  ; #[label = 0.8];\n   Neuro -> N2  ; #[label = 0.8];\n   Neuro -> N3  ; #[label = 0.7];\n   Neuro -> N4  ; #[label = 0.7];\n   Neuro -> N5  ; #[label = 0.5];\n \n Agree -> Neuro [arrowhead=\"both\"]\n \n { rank=same;\n A1; A2; A3; A4; A5; \n N1; N2; N3; N4; N5; }\n { rank=same;\n Neuro; Agree; \n }\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>We will keep things simple for our purposes starting out. Conducting a factor analysis can be very simple, and we will do so just for the neuroticism data as before.</p>
 <p>omega (as generalization of alpha), ave</p>
 <div id="the-uncertainty-of-factor-loadings" class="section level4">
 <h4>The Uncertainty of Factor Loadings</h4>

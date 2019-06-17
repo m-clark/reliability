@@ -1,0 +1,22 @@
+digraph Factor  {
+ graph [rankdir=TB  bgcolor=transparent]
+ node [fontname="Roboto" fontsize=10 fontcolor=gray50 shape=box width=.5 color='#ff5500'];
+ edge [fontname="Roboto" fontsize=10 fontcolor=gray50 color='#00aaff80' style="dashed"];
+ X1  [label = "Anger"];
+ X2  [label = "Irritated"];
+ X3  [label = "Mood Swings"];
+ X4  [label = "Feel Blue"];
+ X5  [label = "Panic"];
+
+ node [shape=circle width=1];
+   C [label = "Neuroticism" style=filled color='#00aaff', fillcolor="#ff550080" fontcolor="#fffff8" fontsize=14];
+   C -> X1  ;
+   C -> X2  ;
+   C -> X3  ;
+   C -> X4  ;
+   C -> X5  ;
+ 
+ { rank=same; 
+ X1; X2; X3; X4; X5; }
+ 
+}
