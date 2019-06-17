@@ -1,5 +1,5 @@
 digraph Factor  {
- graph [rankdir=TB  bgcolor=transparent]
+ graph [rankdir=LR  bgcolor=transparent]
  node [fontname="Roboto" fontsize=10 fontcolor=gray50 shape=box width=2 color='#ff5500'];
  edge [fontname="Roboto" fontsize=10 fontcolor=gray50 color='#00aaff'];
  A1  [label = "A1"];
