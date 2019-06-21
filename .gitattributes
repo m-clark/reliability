@@ -42,5 +42,5 @@ _book/*.pdf
 *.sh linguist-vendored
 *.css linguist-vendored
 
-# *.Rmd linguist-language=R
+*.Rmd linguist-language=R
 *.out linguist-generated=true
